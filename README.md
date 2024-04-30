@@ -1,3 +1,10 @@
+https://speech.microsoft.com/portal/cacf6cc3a466441fbabfd28d04166472/audiocontentcreation/file?voiceId=db3f068d-39b8-44bc-a809-2e895922741a&languageCode=en-US
+
+<speak xmlns="http://www.w3.org/2001/10/synthesis" xmlns:mstts="http://www.w3.org/2001/mstts" xmlns:emo="http://www.w3.org/2009/10/emotionml" version="1.0" xml:lang="en-US"><voice name="en-US-AvaMultilingualNeural" leadingsilence="0ms"><prosody contour="(80%, +0%)(85%, +46%)">When I went to the market yesterday,</prosody><prosody contour="(0%, -20%)"> which was unusually crowded, </prosody> <prosody contour="(0%, +20%)(60%, +0%)"> I couldn't find the apples I was looking for, </prosody><prosody contour="(0%, 50%) (10%, 0%)"> but I did manage to get some fresh oranges. </prosody></voice></speak>
+
+Paper:
+https://citeseerx.ist.psu.edu/document?repid=rep1&type=pdf&doi=39e34a8cb8788494a4927a7c390b766c5acfa459
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).

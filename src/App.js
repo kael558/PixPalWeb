@@ -1,24 +1,37 @@
 import logo from './logo.svg';
 import './App.css';
+import { AuthProvider } from './hooks/useAuth';
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+
+// Pages
+import LoginPage from './pages/LoginPage';
+import RegisterPage from './pages/RegisterPage';
+import ChatPage from './pages/ChatPage';
+import ErrorPage from './pages/ErrorPage';
+
+// Firebase
+import { initializeApp } from "firebase/app";
+
+import { firebaseConfig } from "./config";
+
+console.log(firebaseConfig);
+
+initializeApp(firebaseConfig);
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <BrowserRouter>
+      <AuthProvider>
+          <Routes>
+              <Route path="/register" element={<RegisterPage />} errorElement={<ErrorPage />} />
+              <Route path="/login" element={<LoginPage />} errorElement={<ErrorPage />} />
+              <Route path="/chat" element={<ChatPage />} errorElement={<ErrorPage />} />
+              {/* Catch all other routes */}
+              <Route path="*" element={<Navigate replace to="/login" />} />
+          </Routes>
+      </AuthProvider>
+  </BrowserRouter>
+
   );
 }
 
