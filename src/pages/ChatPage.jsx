@@ -1,89 +1,73 @@
-import React from 'react';
-import AnimatedSphere from '../components/AnimatedSphere/AnimatedSphere';
+import { useEffect, useState } from 'react';
+import Scene from '../components/AnimatedSphere/Scene';
 import Toolbar from '../components/toolbar/Toolbar';
 import ChatInput from '../components/ChatInput';
 
 import getAudioStream from '../components/AudioPlayer/AudioPlayer';  // Adjust the import path as necessary
 import { useAuth } from '../hooks/useAuth';
 
-/*
- const audioElement = document.getElementById('audioPlayer');
-        const mediaSource = new MediaSource();
-        audioElement.src = URL.createObjectURL(mediaSource);
-
-        mediaSource.addEventListener('sourceopen', sourceOpen, false);
-
-        async function sourceOpen(_) {
-            const sourceBuffer = mediaSource.addSourceBuffer('audio/mpeg');
-            const response = await fetch('http://localhost:3000/stream');
-            const reader = response.body.getReader();
-            const boundary = response.headers.get('Content-Type').split('boundary=')[1].trim();
-            const decoder = new TextDecoder('utf-8');
-            let buffer = '';
-
-            try {
-                while (true) {
-                    const { value, done } = await reader.read();
-                    if (done) {
-                        if (buffer) {
-                            processChunk(buffer, sourceBuffer);
-                        }
-                        mediaSource.endOfStream();
-                        break;
-                    }
-
-                    buffer += decoder.decode(value, { stream: true });
-
-                    const parts = buffer.split(`--${boundary}`);
-                    buffer = parts.pop(); // Save the last incomplete part in buffer
-
-                    for (let part of parts) {
-                        part = part.trim();
-                        if (!part) continue;
-                        processChunk(part, sourceBuffer);
-                    }
-                }
-            } catch (error) {
-                console.error('Streaming failed', error);
-                mediaSource.endOfStream();
-            }
-        }
-
-        function processChunk(part, sourceBuffer) {
-            const [headers, body] = part.split('\r\n\r\n');
-            const headerLines = headers.split('\r\n');
-            const contentTypeLine = headerLines.find(h => h.toLowerCase().startsWith('content-type:'));
-            const contentType = contentTypeLine.split(':')[1].trim();
-
-            if (contentType.includes('audio')) {
-                const audioData = body.split('').map(char => char.charCodeAt(0));
-                const audioBuffer = new Uint8Array(audioData);
-                sourceBuffer.appendBuffer(audioBuffer);
-            } else if (contentType.includes('text')) {
-                console.log('Received text:', body.trim());
-            }
-        }
-        */
-
-
-
 
 function ChatPage(){
+    const [audioContext, setAudioContext] = useState(null);
+    const [audioWorkletNode, setAudioWorkletNode] = useState(null); 
+
     const { get_access_token } = useAuth();
 
 
+    useEffect(() => {
+        // Initialize audio context only once
+        const ac = new AudioContext({ sampleRate: 48000 });
+        setAudioContext(ac);
+
+        return () => {
+            if (ac.state !== 'closed') {
+                ac.close(); // Clean up audio context on component unmount
+            }
+        };
+    }, []);
+
+    useEffect(() => {
+        if (!audioContext) return;
+
+        const setupAudio = async () => {
+            try {
+                await audioContext.audioWorklet.addModule('AudioStreamProcessor.js');
+
+                // Only resume if the context is suspended (e.g., after initial setup)
+           
+
+                const node = new AudioWorkletNode(audioContext, 'stream-audio-processor');
+                node.connect(audioContext.destination);
+
+        
+                setAudioWorkletNode(node);
+            } catch (error) {
+                console.error('Error setting up audio worklet:', error);
+            }
+        };
+
+        setupAudio();
+
+        return () => {
+            if (audioWorkletNode) {
+                audioWorkletNode.disconnect(); // Disconnect on cleanup
+            }
+        };
+    }, [audioContext]);  // Depend on audioContext
+        
+    
     const handleButtonClick = async (message="Hello, how are you?") => {
         const accessToken = await get_access_token();
+        if (audioContext.state === 'suspended') {
+            await audioContext.resume();
+        }
 
-        getAudioStream(message, "Kael", accessToken)
-            .catch(error => {
-                console.error('Error playing audio:', error);
-            });
+        getAudioStream(message, "Kael", accessToken, audioWorkletNode);
     };
 
     return (
         <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', backgroundColor: 'black' }}>
-            <AnimatedSphere/>
+            <Scene audioWorkletNode={audioWorkletNode}/>
             <Toolbar/>
             <ChatInput onSend={handleButtonClick}/>
         </div>

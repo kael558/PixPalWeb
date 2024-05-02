@@ -12,6 +12,7 @@
     "@types/react": "^18.2.12",
     "@types/react-dom": "^18.2.5",
     "@types/three": "^0.152.1",
+    "audiobuffer-to-wav": "^1.0.0",
     "axios": "^1.6.8",
     "babel-plugin-glsl": "^1.0.0",
     "firebase": "^10.11.1",

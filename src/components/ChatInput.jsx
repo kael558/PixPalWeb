@@ -1,8 +1,5 @@
 import { useState } from 'react';
 
-
-
-
 function ChatInput({ onSend }) {
     const [message, setMessage] = useState("");
 

@@ -1,11 +1,12 @@
 import { OrbitControls, useFBO } from "@react-three/drei";
 import { Canvas, useFrame, extend, createPortal  } from "@react-three/fiber";
-import { useMemo, useRef } from "react";
+import { useMemo, useRef, useEffect } from "react";
 import * as THREE from "three";
 
 import SimulationMaterial from './SimulationMaterial';
 
 //https://blog.maximeheckel.com/posts/the-magical-world-of-particles-with-react-three-fiber-and-shaders/
+
 
 const fragmentShader = `
 void main() {
@@ -35,11 +36,12 @@ void main() {
 
 extend({ SimulationMaterial: SimulationMaterial });
 
-const FBOParticles = () => {
+const FBOParticles = ({ audioWorkletNode }) => {
   const size = 256;
 
   const points = useRef();
   const simulationMaterialRef = useRef();
+  const baseShaderMaterialRef = useRef();
 
   const scene = new THREE.Scene();
   const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 1 / Math.pow(2, 53), 1);
@@ -65,11 +67,20 @@ const FBOParticles = () => {
     return particles;
   }, [size]);
 
+
   const uniforms = useMemo(() => ({
     uPositions: {
       value: null,
-    }
+    },
   }), [])
+
+  useEffect(() => {
+    if (!audioWorkletNode) return;
+    if (!baseShaderMaterialRef.current) return;
+
+    // TODO add glow effect - https://gist.github.com/ektogamat/af6cae96681679dde817e1f313278c8b
+    //audioWorkletNode.port.onmessage = (e) => {};
+  }, [audioWorkletNode]);
 
 
 
@@ -82,7 +93,6 @@ const FBOParticles = () => {
     gl.setRenderTarget(null);
 
     points.current.material.uniforms.uPositions.value = renderTarget.texture;
-
     simulationMaterialRef.current.uniforms.uTime.value = clock.elapsedTime;
   });
 
@@ -118,22 +128,23 @@ const FBOParticles = () => {
           />
         </bufferGeometry>
         <shaderMaterial
+          ref={baseShaderMaterialRef}
           blending={THREE.AdditiveBlending}
           depthWrite={false}
           fragmentShader={fragmentShader}
           vertexShader={vertexShader}
           uniforms={uniforms}
         />
-      </points>
+      </points>  
     </>
   );
 };
 
-const Scene = () => {
+const Scene = ({ audioWorkletNode }) => {
   return (
     <Canvas camera={{ position: [1.5, 1.5, 2.5] }}>
-      <ambientLight intensity={0.5} />
-      <FBOParticles />
+       <ambientLight intensity={0.5} />
+      <FBOParticles audioWorkletNode={audioWorkletNode} />
       <OrbitControls />
     </Canvas>
   );
