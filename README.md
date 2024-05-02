@@ -1,9 +1,132 @@
+Todo:
+[ ] - Finish voice streaming
+[ ] - Glow on voice activity
+[ ] - Tap to record/ tap to end
+[ ] - Login'
+[ ] - Buy tokens
+
+
+
 https://speech.microsoft.com/portal/cacf6cc3a466441fbabfd28d04166472/audiocontentcreation/file?voiceId=db3f068d-39b8-44bc-a809-2e895922741a&languageCode=en-US
 
 <speak xmlns="http://www.w3.org/2001/10/synthesis" xmlns:mstts="http://www.w3.org/2001/mstts" xmlns:emo="http://www.w3.org/2009/10/emotionml" version="1.0" xml:lang="en-US"><voice name="en-US-AvaMultilingualNeural" leadingsilence="0ms"><prosody contour="(80%, +0%)(85%, +46%)">When I went to the market yesterday,</prosody><prosody contour="(0%, -20%)"> which was unusually crowded, </prosody> <prosody contour="(0%, +20%)(60%, +0%)"> I couldn't find the apples I was looking for, </prosody><prosody contour="(0%, 50%) (10%, 0%)"> but I did manage to get some fresh oranges. </prosody></voice></speak>
 
 Paper:
 https://citeseerx.ist.psu.edu/document?repid=rep1&type=pdf&doi=39e34a8cb8788494a4927a7c390b766c5acfa459
+
+
+  /*
+  const particlesRef = useRef();
+  const numParticles = 1000;
+  const positions = useMemo(() => {
+    let positions = [];
+    for (let i = 0; i < numParticles; i++) {
+      const r = 5 + Math.random() * 2; // Radius offset
+      const theta = Math.random() * 2 * Math.PI;
+      const phi = (Math.random() - 0.5) * Math.PI;
+      positions.push(r * Math.sin(phi) * Math.cos(theta), r * Math.sin(phi) * Math.sin(theta), r * Math.cos(phi));
+    }
+    return new Float32Array(positions);
+  }, []);
+
+  useFrame(() => {
+    particlesRef.current.rotation.y += 0.005; // Slow rotation of particle system
+  });
+
+  return (
+    <points ref={particlesRef}>
+      <bufferGeometry attach="geometry">
+        <bufferAttribute attachObject={['attributes', 'position']} count={positions.length / 3} array={positions} itemSize={3} />
+      </bufferGeometry>
+      <shaderMaterial attach="material" args={[{
+        uniforms: {
+          pointTexture: { value: new TextureLoader().load('/logo192.png') }
+        },
+        vertexShader: `
+          void main() {
+            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+            gl_PointSize = 2.0; // Size of the points
+          }
+        `,
+        fragmentShader: `
+          uniform sampler2D pointTexture;
+          void main() {
+            gl_FragColor = vec4(1.0, 1.0, 1.0, 1.0) * texture2D(pointTexture, gl_PointCoord);
+          }
+        `,
+        blending: THREE.AdditiveBlending,
+        depthTest: false,
+        transparent: true,
+      }]} />
+    </points>
+  );*/
+
+
+/*const Wave = () => {
+  const ref = useRef();
+  useFrame(({ clock }) => (ref.current.uTime = clock.getElapsedTime()));
+
+  const [image] = useLoader(THREE.TextureLoader, [
+    "https://images.unsplash.com/photo-1604011092346-0b4346ed714e?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1534&q=80"
+  ]);
+
+  return (
+    <mesh>
+      <planeBufferGeometry args={[0.4, 0.6, 16, 16]} />
+      <waveShaderMaterial uColor={"hotpink"} ref={ref} uTexture={image} />
+    </mesh>
+  );
+};*/
+
+const WaveShaderMaterial = shaderMaterial(
+  // Uniform
+  {
+    uTime: 0,
+    uColor: new THREE.Color(0.0, 0.0, 0.0),
+    uTexture: new THREE.Texture()
+  },
+  // Vertex Shader
+  glsl`
+    precision mediump float;
+ 
+    varying vec2 vUv;
+    varying float vWave;
+
+    uniform float uTime;
+
+    #pragma glslify: snoise3 = require(glsl-noise/simplex/3d.glsl);
+
+    void main() {
+      vUv = uv;
+
+      vec3 pos = position;
+      float noiseFreq = 2.0;
+      float noiseAmp = 0.4;
+      vec3 noisePos = vec3(pos.x * noiseFreq + uTime, pos.y, pos.z);
+      pos.z += snoise3(noisePos) * noiseAmp;
+      vWave = pos.z;
+
+      gl_Position = projectionMatrix * modelViewMatrix * vec4(pos, 1.0);  
+    }
+  `,
+  // Fragment Shader
+  glsl`
+    precision mediump float;
+
+    uniform vec3 uColor;
+    uniform float uTime;
+    uniform sampler2D uTexture;
+
+    varying vec2 vUv;
+    varying float vWave;
+
+    void main() {
+      float wave = vWave * 0.2;
+      vec3 texture = texture2D(uTexture, vUv + wave).rgb;
+      gl_FragColor = vec4(texture, 1.0); 
+    }
+  `
+);
 
 # Getting Started with Create React App
 

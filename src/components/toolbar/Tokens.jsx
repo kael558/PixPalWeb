@@ -5,6 +5,8 @@ import { useNavigate } from "react-router-dom";
 
 async function get_tokens(accessToken){
     console.log('Bearer ' + accessToken);
+    //return { tokens: 0 }; // temp
+
     return fetch("https://0xlgvmu6h4.execute-api.us-east-1.amazonaws.com/tokens", {
         method: 'GET',
         headers: {

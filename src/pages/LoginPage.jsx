@@ -48,6 +48,8 @@ function LoginPage() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
+            autoFocus
+            autoComplete=""
           />
         </div>
         <div>

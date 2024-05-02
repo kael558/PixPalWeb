@@ -1,10 +1,10 @@
 import React from 'react';
-import AnimatedSphere from '../components/AnimatedSphere';
+import AnimatedSphere from '../components/AnimatedSphere/AnimatedSphere';
 import Toolbar from '../components/toolbar/Toolbar';
 import ChatInput from '../components/ChatInput';
 
-import getAudioStream from '../components/AudioPlayer';  // Adjust the import path as necessary
-
+import getAudioStream from '../components/AudioPlayer/AudioPlayer';  // Adjust the import path as necessary
+import { useAuth } from '../hooks/useAuth';
 
 /*
  const audioElement = document.getElementById('audioPlayer');
@@ -69,20 +69,24 @@ import getAudioStream from '../components/AudioPlayer';  // Adjust the import pa
 
 
 function ChatPage(){
-    const handleButtonClick = (message="Hello, how are you?") => {
-        getAudioStream(message, "Kael")
+    const { get_access_token } = useAuth();
+
+
+    const handleButtonClick = async (message="Hello, how are you?") => {
+        const accessToken = await get_access_token();
+
+        getAudioStream(message, "Kael", accessToken)
             .catch(error => {
                 console.error('Error playing audio:', error);
             });
     };
 
     return (
-        <>
-            
+        <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', backgroundColor: 'black' }}>
             <AnimatedSphere/>
             <Toolbar/>
             <ChatInput onSend={handleButtonClick}/>
-        </>
+        </div>
     )
 }
 
