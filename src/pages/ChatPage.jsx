@@ -2,16 +2,23 @@ import { useEffect, useState } from 'react';
 import Scene from '../components/AnimatedSphere/Scene';
 import Toolbar from '../components/toolbar/Toolbar';
 import ChatInput from '../components/ChatInput';
+import AuthenticationComponent from '../components/AuthComponent';
 
 import getAudioStream from '../components/AudioPlayer/AudioPlayer';  // Adjust the import path as necessary
 import { useAuth } from '../hooks/useAuth';
 
+import { motion } from 'framer-motion';
 
 function ChatPage(){
     const [audioContext, setAudioContext] = useState(null);
     const [audioWorkletNode, setAudioWorkletNode] = useState(null); 
+    const [messages, setMessages] = useState([]);  
+
+    const [isLoginVisible, setLoginVisible] = useState(false);
 
     const { get_access_token } = useAuth();
+
+
 
 
     useEffect(() => {
@@ -54,6 +61,11 @@ function ChatPage(){
             }
         };
     }, [audioContext]);  // Depend on audioContext
+
+    const addAssistantMessage = (message) => {
+        const new_messages = [...messages, { "role": "assistant", "content": message }];
+        setMessages(new_messages);
+    };
         
     
     const handleButtonClick = async (message="Hello, how are you?") => {
@@ -62,14 +74,20 @@ function ChatPage(){
             await audioContext.resume();
         }
 
-        getAudioStream(message, "Kael", accessToken, audioWorkletNode);
+        const new_messages = [...messages, { "role": "user", "content": message }];
+
+        setMessages(new_messages);
+        getAudioStream(new_messages, "Kael", accessToken, audioWorkletNode, addAssistantMessage);
     };
 
     return (
         <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', backgroundColor: 'black' }}>
+
+
             <Scene audioWorkletNode={audioWorkletNode}/>
-            <Toolbar/>
+            <Toolbar showLoginUI={() => setLoginVisible(true)}/>
             <ChatInput onSend={handleButtonClick}/>
+            <AuthenticationComponent isVisible={isLoginVisible} onClose={() => setLoginVisible(false)}/>
         </div>
     )
 }

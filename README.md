@@ -5,10 +5,13 @@ Todo:
 [ ] - Tap to record/ tap to end
 [ ] - Login'
 [ ] - Buy tokens
-[ ] - Sentence split first sentence and group rest. 
 
 Backlogged:
 [ ] - Glow on voice activity
+
+
+Optimizations:
+[ ] - Sentence split first sentence and group rest. 
 
 
 https://speech.microsoft.com/portal/cacf6cc3a466441fbabfd28d04166472/audiocontentcreation/file?voiceId=db3f068d-39b8-44bc-a809-2e895922741a&languageCode=en-US

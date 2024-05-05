@@ -94,7 +94,7 @@ export class AudioManager {
 //const streamProcessor = new URL('./AudioStreamProcessor.js', import.meta.url).href
 
 
-async function getAudioStream(message, username, accessToken, audioWorkletNode) {
+async function getAudioStream(messages, username, accessToken, audioWorkletNode, addAssistantMessage) {
     if (!audioWorkletNode) {
         throw new Error('AudioWorkletNode is not initialized');
     }
@@ -106,7 +106,8 @@ async function getAudioStream(message, username, accessToken, audioWorkletNode) 
             'Authorization': 'Bearer ' + accessToken
         },
         body: JSON.stringify({
-            user_message: 'hey there!', username: 'kael'
+          messages,
+          username
         })
     });
 
@@ -115,6 +116,18 @@ async function getAudioStream(message, username, accessToken, audioWorkletNode) 
     }
 
     const reader = response.body.getReader();
+
+
+    const { done: initialDone, value: initialValue } = await reader.read();
+    if (initialDone) {
+        throw new Error("Stream ended prematurely");
+    }
+    
+    // Assuming the text is short and comes in a single chunk
+    const initialText = new TextDecoder("utf-8").decode(initialValue);
+    console.log("Initial message from server:", initialText);
+
+    addAssistantMessage(initialText);
 
     let overflow = null;
     let float32Array = null;

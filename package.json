@@ -16,6 +16,7 @@
     "axios": "^1.6.8",
     "babel-plugin-glsl": "^1.0.0",
     "firebase": "^10.11.1",
+    "framer-motion": "^11.1.7",
     "glsl-noise": "^0.0.0",
     "glslify": "7.1.1",
     "leva": "^0.9.35",
@@ -25,6 +26,7 @@
     "react-router-dom": "^6.23.0",
     "react-scripts": "^5.0.1",
     "stream-browserify": "^3.0.0",
+    "styled-components": "^6.1.9",
     "three": "^0.153.0",
     "three-stdlib": "^2.29.10",
     "web-vitals": "^2.1.4"

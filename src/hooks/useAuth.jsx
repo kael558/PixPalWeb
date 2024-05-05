@@ -17,17 +17,6 @@ export const AuthProvider = ({ children }) => {
     const navigate = useNavigate();
     const auth = getAuth();
 
-    useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, (user) => {
-            if (user) {
-                navigate("/chat");
-            } else {
-                navigate("/login");
-            }
-        });
-
-        return unsubscribe; // Cleanup subscription on unmount
-    }, [auth, navigate]);
 
     const get_access_token = async () => {
         // check if existing token is still valid
@@ -59,8 +48,14 @@ export const AuthProvider = ({ children }) => {
 
 
     const login = async (data) => {
-        signInWithEmailAndPassword(auth, data.email, data.password)
-            .then((userCredential) => {
+        const userCredential = await signInWithEmailAndPassword(auth, data.email, data.password);
+
+        if (!userCredential) {
+            return false;
+        }
+
+        return true;
+            /*.then((userCredential) => {
                 // Signed in
                 const user = userCredential.user;
                 console.log('User:', user);
@@ -72,7 +67,7 @@ export const AuthProvider = ({ children }) => {
                 const errorMessage = error.message;
                 console.error('Error:', errorCode, errorMessage);
                 alert('Invalid email or password');
-            });
+            });*/
     };
 
     // call this function to sign out logged in user
