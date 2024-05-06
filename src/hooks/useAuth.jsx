@@ -1,6 +1,7 @@
 
 import { createContext, useContext, useMemo, useState, useEffect } from "react";
 import { useLocalStorage } from "./useLocalStorage";
+import { toast } from 'react-toastify';
 
 import {
     getAuth,
@@ -8,7 +9,9 @@ import {
     signInAnonymously,
     createUserWithEmailAndPassword,
     signInWithEmailAndPassword,
-    signOut
+    signOut,
+    linkWithCredential,
+    EmailAuthProvider 
 } from "firebase/auth";
 
 const AuthContext = createContext();
@@ -16,76 +19,151 @@ const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
     const auth = getAuth();
 
+    const showErrorToast = (msg) => {
+        toast.error(msg, {
+            position: "top-center",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "dark"
+        });
+    }
 
-    const get_access_token = async () => {
-        // check if existing token is still valid
+    const showSuccessToast = (msg) => {
+        toast.success(msg, {
+            position: "top-center",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "dark"
+        });
+    }
+
+    const getAccessToken = async () => {
+        if (!auth.currentUser) {
+            showErrorToast('No user logged in');
+            return false;
+        }
+
         return (await auth.currentUser.getIdTokenResult(true)).token;
     };
 
-    const is_authenticated = () => {
+    const isAuthenticated = () => {
+        if (!auth.currentUser) {
+            showErrorToast('No user logged in');
+            return false;
+        }
+
         return auth.currentUser !== null;
     };
 
-    const anonymousSignIn = async () => {
-        const user = await signInAnonymously(auth);
-        if (!user) {
+    const loginAnonymously = async () => {
+        try {
+            const user = await signInAnonymously(auth);
+            if (!user) {
+                showErrorToast('Failed to log in anonymously');
+                return false;
+            }
+    
+            showSuccessToast('Logged in anonymously');
+            return true;
+        } catch (error) {
+            showErrorToast('Failed to log in anonymously');
             return false;
         }
-        return true;
     };
-
-
 
 
     // call this function when you want to authenticate the user
-    const register = async (data) => {
-        const user = await createUserWithEmailAndPassword(auth, data.email, data.password);
-        if (!user) {
+    const registerWithEmailAndPassword = async (data) => {
+        try {
+            const user = await createUserWithEmailAndPassword(auth, data.email, data.password);
+            if (!user) {
+                showErrorToast('Failed to register user');
+                return false;
+            }
+
+            showSuccessToast('Registered user');
+            return true;
+        } catch (error) {
+            showErrorToast('Failed to register user');
             return false;
         }
-        return true;
     };
 
 
-    const login = async (data) => {
-        const userCredential = await signInWithEmailAndPassword(auth, data.email, data.password);
-
-        if (!userCredential) {
-            return false;
+    const loginWithEmailAndPassword = async (data) => {
+        // if user is anonymous, then connect the anonymous user to the email/password account
+        if (auth.currentUser?.isAnonymous) {
+            try {
+                const credential = EmailAuthProvider.credential(data.email, data.password);
+                const userCredential = await linkWithCredential(auth.currentUser, credential);
+    
+                if (!userCredential) {
+                    showErrorToast('Failed to link anonymous user');
+                    return false;
+                }
+    
+                showSuccessToast('Linked anonymous user');
+                return true;
+            } catch (error) {
+                showErrorToast('Failed to link anonymous user');
+                return false;
+            }
         }
 
-        return true;
-            /*.then((userCredential) => {
-                // Signed in
-                const user = userCredential.user;
-                console.log('User:', user);
+        try {
+            const userCredential = await signInWithEmailAndPassword(auth, data.email, data.password);
+            if (!userCredential) {
+                showErrorToast('Failed to log in user');
+                return false;
+            }
 
-                
-            })
-            .catch((error) => {
-                const errorCode = error.code;
-                const errorMessage = error.message;
-                console.error('Error:', errorCode, errorMessage);
-                alert('Invalid email or password');
-            });*/
+            showSuccessToast('Logged in user');
+            return true;
+        } catch (error) {
+            showErrorToast('Failed to log in user');
+            return false;
+        }
     };
 
     // call this function to sign out logged in user
     const logout = () => {
+        if (!auth.currentUser) {
+            showErrorToast('No user logged in');
+            return;
+        }
+
+        if (auth.currentUser.isAnonymous) {
+            showErrorToast('Cannot log out anonymous user');
+            return;
+        }
+
+        showSuccessToast('You have been logged out.');
         signOut(auth);
+    };
+
+    const isAnonymous = () => {
+        return auth?.currentUser?.isAnonymous;
     };
 
     const value = useMemo(
         () => ({
-            user: auth.currentUser,
-            anonymousSignIn,
-            register,
-            login,
+            loginAnonymously,
+            registerWithEmailAndPassword,
+            loginWithEmailAndPassword,
             logout,
-            get_access_token,
-            is_authenticated
+            getAccessToken,
+            isAuthenticated,
+            isAnonymous
         }),
-        [auth.currentUser, register, login, logout, get_access_token, is_authenticated]
+        [auth.currentUser]
     );
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

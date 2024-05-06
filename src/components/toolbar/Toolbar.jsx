@@ -4,7 +4,7 @@ import Tokens from './TokensBar';
 import { useAuth } from '../../hooks/useAuth';
 
 function Toolbar({ showLoginUI, showTokensPanel }) {
-  const auth = useAuth();
+  const { isAuthenticated, logout } = useAuth();
 
   // State to manage the visibility of the hamburger menu
   const [menuOpen, setMenuOpen] = useState(false);
@@ -50,9 +50,9 @@ function Toolbar({ showLoginUI, showTokensPanel }) {
           }}
         >
            <Tokens showTokensPanel={showTokensPanel} />
-          {auth.is_authenticated ? (
+          {isAuthenticated() ? (
             <button
-              onClick={auth.logout}
+              onClick={logout}
               style={{
                 marginTop: '10px',
                 padding: '8px 20px',

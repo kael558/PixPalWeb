@@ -6,32 +6,26 @@ function AuthenticationComponent({ isVisible, onClose }) {
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [isLoginView, setIsLoginView] = useState(true); // Toggle between login and register view
-    const [showComponent, setShowComponent] = useState(isVisible);
 
-    useEffect(() => {
-        if (isVisible) {
-            setShowComponent(true);
-        }
-    }, [isVisible]);
+	const { loginWithEmailAndPassword, registerWithEmailAndPassword } = useAuth();
 
-
-	const { user, login, register } = useAuth();
-
-	const handleLogin = (event) => {
+	const handleLogin = async (event) => {
 		event.preventDefault();
 		console.log("Login Details:", { email, password });
-		login({ email, password });
+        if (await loginWithEmailAndPassword({ email, password })){
+            onClose();
+        }
 	};
 
-	const handleRegister = (event) => {
+	const handleRegister = async (event) => {
 		event.preventDefault();
 		console.log("Register Details:", { email, password });
-		register({ email, password });
+		registerWithEmailAndPassword({ email, password });
 	};
 
 	return (
         <AnimatePresence>
-            {showComponent && (
+            {isVisible && (
             <motion.div          
                 style={{
                     display: "flex",
@@ -65,11 +59,7 @@ function AuthenticationComponent({ isVisible, onClose }) {
                     damping: 20, // Damping - higher numbers will slow it down more
                     duration: 0.8 // Duration of the transition in seconds
                 }}
-                onAnimationComplete={() => {
-                    if (!isVisible) {
-                        setShowComponent(false);
-                    }
-                }}
+
                     style={{
                         display: "flex",
                         flexDirection: "column",
@@ -114,8 +104,9 @@ function AuthenticationComponent({ isVisible, onClose }) {
                                 autoFocus
                                 autoComplete="username"
                                 style={{
+                                    boxSizing: "border-box",
                                     width: "100%",
-                                    padding: "10px 0px",
+                                    padding: "10px 10px",
                                     borderRadius: "5px",
                                     border: "1px solid #ccc",
                                 }}
@@ -136,8 +127,9 @@ function AuthenticationComponent({ isVisible, onClose }) {
                                 required
                                 autoComplete="current-password"
                                 style={{
+                                    boxSizing: "border-box",
                                     width: "100%",
-                                    padding: "10px 0px",
+                                    padding: "10px 10px",
                                     borderRadius: "5px",
                                     border: "1px solid #ccc",
                                 }}

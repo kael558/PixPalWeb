@@ -12,14 +12,14 @@ import { initializeApp } from "firebase/app";
 
 import { firebaseConfig } from "./config";
 
-
 initializeApp(firebaseConfig);
 
 function App() {
+
   return (
-    <AuthProvider>
-        <ChatPage />
-    </AuthProvider>
+      <AuthProvider>
+          <ChatPage />
+      </AuthProvider>
   );
 }
 

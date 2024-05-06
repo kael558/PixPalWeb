@@ -5,7 +5,10 @@ import ChatInput from '../components/ChatInput';
 import AuthenticationComponent from '../components/AuthComponent';
 import TokensComponent from '../components/TokensComponent';
 
-import getAudioStream from '../components/AudioPlayer/AudioPlayer';  // Adjust the import path as necessary
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
+import { getAudioStreamFromTextInput } from '../components/AudioPlayer/AudioPlayer';  // Adjust the import path as necessary
 import { useAuth } from '../hooks/useAuth';
 
 import { motion } from 'framer-motion';
@@ -18,8 +21,7 @@ function ChatPage(){
     const [isLoginVisible, setLoginVisible] = useState(false);
     const [isTokensPanelVisible, setTokensPanelVisible] = useState(false);
 
-    const { get_access_token } = useAuth();
-
+    const { getAccessToken } = useAuth();
 
 
 
@@ -70,8 +72,12 @@ function ChatPage(){
     };
         
     
-    const handleButtonClick = async (message="Hello, how are you?") => {
-        const accessToken = await get_access_token();
+    const onMessageSend = async (message) => {
+        const accessToken = await getAccessToken();
+        if (!accessToken) {
+            return;
+        }
+
         if (audioContext.state === 'suspended') {
             await audioContext.resume();
         }
@@ -79,16 +85,15 @@ function ChatPage(){
         const new_messages = [...messages, { "role": "user", "content": message }];
 
         setMessages(new_messages);
-        getAudioStream(new_messages, "Kael", accessToken, audioWorkletNode, addAssistantMessage);
+        getAudioStreamFromTextInput(new_messages, "Kael", accessToken, audioWorkletNode, addAssistantMessage);
     };
 
     return (
         <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', backgroundColor: 'black' }}>
-
-
+            <ToastContainer/>
             <Scene audioWorkletNode={audioWorkletNode}/>
             <Toolbar showLoginUI={() => setLoginVisible(true)} showTokensPanel={() => setTokensPanelVisible(true)}/>
-            <ChatInput onSend={handleButtonClick}/>
+            <ChatInput onSend={onMessageSend} messages={messages}  audioWorkletNode={audioWorkletNode} addAssistantMessage={addAssistantMessage}/>
             <AuthenticationComponent isVisible={isLoginVisible} onClose={() => setLoginVisible(false)}/>
             <TokensComponent isVisible={isTokensPanelVisible} onClose={() => {
                 console.log('Closing Tokens Panel');

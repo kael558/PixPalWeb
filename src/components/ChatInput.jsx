@@ -1,67 +1,153 @@
-import { useState } from 'react';
+import { useState } from "react";
+import VoiceInput from "./AudioRecorder";
+import { getAudioStreamFromAudioInput } from "./AudioPlayer/AudioPlayer";
 
-function ChatInput({ onSend }) {
-    const [message, setMessage] = useState("");
+import { useAuth } from "../hooks/useAuth";
+const voiceInput = new VoiceInput();
 
-    const handleSubmit = (event) => {
-        event.preventDefault();
-        console.log("Message:", message);
-        // Here you would handle the message logic, like sending data to a server
-        if (!message) {
-            alert("Please enter a message");
+function ChatInput({ onSend, messages, audioWorkletNode, addAssistantMessage }) {
+	const [message, setMessage] = useState("");
+	const [isRecording, setIsRecording] = useState(false);
+
+    const { getAccessToken, isAuthenticated } = useAuth();
+
+	const handleSubmit = (event) => {
+		event.preventDefault();
+		console.log("Message:", message);
+		if (!message) {
+			alert("Please enter a message");
+			return;
+		}
+		onSend(message);
+		setMessage("");
+	};
+
+	const startRecording = (event) => {
+		event.preventDefault(); // Prevent form submission
+		event.stopPropagation(); // Stop event bubbling up to form
+
+        if (isRecording) {
             return;
         }
 
-        onSend(message);
+        if (!isAuthenticated()){
+            return;
+        }
 
-        setMessage("");
-    };
+		setIsRecording(true);
+		console.log("Recording started...");
+		// Add your recording start logic here
 
-    return (
-        <form onSubmit={handleSubmit} style={{
-            position: 'fixed',
-            bottom: '10px', // Give some padding from the bottom
-            left: '50%',
-            transform: 'translateX(-50%)',
-            width: '60%',
-            display: 'flex',
-            backgroundColor: '#f8f9fa', // Light grey background
-            padding: '10px 20px', // Padding around the form
-            borderRadius: '25px', // Rounded borders
-            boxShadow: '0 4px 6px rgba(0,0,0,0.1)', // Subtle shadow for depth
-            alignItems: 'center',
-            justifyContent: 'space-between' // Distributes space between children
+        voiceInput.startRecording();
+       
+	};
+
+	const stopRecording = async (event) => {
+		event.preventDefault(); // Prevent form submission
+		event.stopPropagation(); // Stop event bubbling up to form
+        if (!isRecording) {
+            return;
+        }
+
+		setIsRecording(false);
+		console.log("Recording stopped.");
+		// Add your recording stop logic here
+
+     
+        const chunks = voiceInput.stopRecording();
+        if (!chunks.length) {
+            console.error("No audio data recorded");
+            return;
+        }
+
+        const accessToken = await getAccessToken();
+        const blob = new Blob(chunks, { type: "audio/webm" });
+        getAudioStreamFromAudioInput(blob, messages, "Kael", accessToken, audioWorkletNode, addAssistantMessage);
+	};
+
+	return (
+		<div 		style={{
+            position: "fixed",
+            bottom: "10px",
+            left: "50%",
+            transform: "translateX(-50%)",
+            width: "60%",
+            display: "flex",
+            backgroundColor: "#068FFF",
+            backdropFilter: "blur(10px)",
+            padding: "10px 20px",
+            borderRadius: "25px",
+            boxShadow: "0 4px 6px rgba(0,0,0,0.3)",
+            alignItems: "center",
+            justifyContent: "space-between",
+            border: "1px solid rgba(255, 255, 255, 0.2)",
         }}>
-          
-            <input
-                type="text"
-                id="message"
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-                required
+			<form
+				onSubmit={handleSubmit}
                 style={{
-                    flex: 1, // Allows input to fill the form width
-                    marginRight: '10px', // Space between input and button
-                    padding: '10px', // Padding inside input
-                    border: 'none', // Remove border
-                    borderRadius: '15px', // Rounded corners for the input
-                    fontSize: '16px', // Larger font size for readability
-                    width: '100%' // Allows input to fill the parent div
+                    alignItems: "center",
+                    justifyContent: "space-between",
+		            display: "flex",
+                    width: "100%"
                 }}
-            />
-         
-            <button type="submit" style={{
-                backgroundColor: '#007bff', // Bootstrap primary color
-                color: 'white', // Text color
-                border: 'none',
-                borderRadius: '15px',
-                padding: '10px 20px', // Padding inside button
-                fontSize: '16px', // Matching font size with input
-                cursor: 'pointer', // Cursor indicates clickable
-            }}>Send
-            </button>
-        </form>
-    );
+			>
+				<input
+					type="text"
+					id="message"
+					value={message}
+					onChange={(e) => setMessage(e.target.value)}
+					autoComplete="off"
+					required
+					style={{
+						flex: 1,
+						marginRight: "10px",
+						padding: "10px",
+						border: "none",
+						borderRadius: "15px",
+						fontSize: "16px",
+						background: "#EEEEEEB3",
+						color: "#333",
+						boxShadow: "inset 0 2px 4px rgba(0,0,0,0.05)",
+					}}
+				/>
+				<button
+					type="submit"
+					style={{
+						background: "linear-gradient(45deg, #6a11cb, #2575fc)",
+						color: "white",
+						border: "none",
+						borderRadius: "15px",
+						padding: "10px 20px",
+						fontSize: "16px",
+						cursor: "pointer",
+						transition: "transform 0.2s",
+						boxShadow: "0 2px 4px rgba(0,0,0,0.2)",
+					}}
+					onMouseOver={({ target }) => (target.style.transform = "scale(1.05)")}
+					onMouseOut={({ target }) => (target.style.transform = "scale(1)")}
+				>
+					Send
+				</button>
+			</form>
+			<button
+				onMouseDown={startRecording}
+				onMouseUp={stopRecording}
+				onMouseLeave={isRecording ? stopRecording : null}
+				style={{
+					marginLeft: "10px",
+					background: isRecording ? "red" : "green",
+					color: "white",
+					border: "none",
+					borderRadius: "50%",
+					padding: "10px",
+					fontSize: "16px",
+					cursor: "pointer",
+				}}
+			>
+				🎙️
+			</button>
+		</div>
+	);
 }
 
 export default ChatInput;

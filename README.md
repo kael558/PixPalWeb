@@ -2,17 +2,33 @@ Todo:
 [x] - Finish voice streaming
 [x] - RP script on backend with SSML
 
-[ ] - Tap to record/ tap to end with recording
-[ ] - Chat bar UI
+Today:
+[x] - Chat bar UI
 [ ] - Login, stay as anonymous user if signed out
 [ ] - Buy tokens, hook up buttons
+[ ] - Host on pixpal.ca
+[ ] - First message sequence tutorial
+[ ] - Toast system
+[ ] - Automatically show token shop
+[ ] - Tap to record/ tap to end with recording
 
 Backlogged:
 [ ] - Glow on voice activity
 [ ] - Cooler voice recording UI
+[ ] - VAD chatting
 
 Optimizations:
 [ ] - Sentence split first sentence and group rest. 
+[ ] - Whisper Jax to bring down costs of transcription
+
+Daesol:
+[ ] - Color pallettes and design
+
+[ ] - User is on an anonymous account
+[ ] - User is signed out
+
+
+
 
 
 https://speech.microsoft.com/portal/cacf6cc3a466441fbabfd28d04166472/audiocontentcreation/file?voiceId=db3f068d-39b8-44bc-a809-2e895922741a&languageCode=en-US

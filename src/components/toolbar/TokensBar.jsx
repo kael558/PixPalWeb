@@ -66,16 +66,16 @@ function Tokens({showTokensPanel}) {
 	const [tokens, setTokens] = useState(null);
 	const [loading, setLoading] = useState(true);
 
-	const auth = useAuth();
+	const { isAuthenticated, getAccessToken } = useAuth();
 
 	useEffect(() => {
-		if (!auth.is_authenticated()) {
+		if (!isAuthenticated()) {
 			return;
 		}
 
 		setLoading(true);
-		auth
-			.get_access_token()
+	
+			getAccessToken()
 			.then((token) => {
 				get_tokens(token).then((data) => {
 					console.log("Data:", data);
@@ -90,10 +90,12 @@ function Tokens({showTokensPanel}) {
 				console.error("Error getting ID token:", error);
 				setLoading(false);
 			});
-	}, [auth.user]); // Include auth.user in dependency array to react to changes
+	}, []); // Include auth.user in dependency array to react to changes
 
 	return (
 		<div>
+			{}
+
 			<div className={styles.moneyContainer}>
 				<img
 					src="/diamonds/small_bundle_diamonds.png"
