@@ -14,11 +14,6 @@ function AuthenticationComponent({ isVisible, onClose }) {
         }
     }, [isVisible]);
 
-    const handleAnimationComplete = () => {
-        if (!isVisible) {
-            setShowComponent(false);
-        }
-    };
 
 	const { user, login, register } = useAuth();
 

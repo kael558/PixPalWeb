@@ -1,9 +1,11 @@
 import React from 'react';
-import './RainbowButton.css'; // Assume your styles are saved here
+
+import styles from './RainbowButton.module.css';
+
 
 const RainbowButton = ({ text, onClick }) => {
   return (
-    <button className="button" onClick={onClick}>
+    <button className={styles.button} onClick={onClick}>
       {text}
     </button>
   );

@@ -1,0 +1,24 @@
+.moneyContainer {
+    background-color: white;
+    padding: 10px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    height: 20px;
+}
+
+.moneyImage {
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    left: 0px;
+    top: 10px;
+}
+
+.currency {
+    position: absolute;  /* This allows absolute positioning within the .moneyContainer */
+    right: 5px;          /* This moves the element to the right edge of its nearest positioned ancestor */
+    top: 20px;            /* Optional: adjust as needed to align vertically */
+    font-size: 20px;
+    font-weight: bold;
+
+}

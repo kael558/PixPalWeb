@@ -1,14 +1,15 @@
 Todo:
 [x] - Finish voice streaming
-[ ] - RP script on backend with SSML
+[x] - RP script on backend with SSML
 
-[ ] - Tap to record/ tap to end
-[ ] - Login'
-[ ] - Buy tokens
+[ ] - Tap to record/ tap to end with recording
+[ ] - Chat bar UI
+[ ] - Login, stay as anonymous user if signed out
+[ ] - Buy tokens, hook up buttons
 
 Backlogged:
 [ ] - Glow on voice activity
-
+[ ] - Cooler voice recording UI
 
 Optimizations:
 [ ] - Sentence split first sentence and group rest. 

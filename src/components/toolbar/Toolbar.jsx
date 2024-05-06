@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import Tokens from './Tokens';
+import Tokens from './TokensBar';
 
 import { useAuth } from '../../hooks/useAuth';
 
-function Toolbar({ showLoginUI }) {
+function Toolbar({ showLoginUI, showTokensPanel }) {
   const auth = useAuth();
 
   // State to manage the visibility of the hamburger menu
@@ -14,6 +14,7 @@ function Toolbar({ showLoginUI }) {
     setMenuOpen(!menuOpen);
   };
 
+
   return (
     <div
       style={{
@@ -23,11 +24,12 @@ function Toolbar({ showLoginUI }) {
         width: '100%',
         height: '50px',
         display: 'flex',
-        justifyContent: 'flex-end',
-        alignItems: 'center',
+        justifyContent: 'flex-end', // Align children to the right
+        alignItems: 'center', // Align children vertically in the middle
         padding: '10px',
       }}
     >
+     
       <div style={{ margin: '10px', cursor: 'pointer', color: "white", fontSize: "32px" }} onClick={toggleMenu}>
         ☰
       </div>
@@ -47,8 +49,8 @@ function Toolbar({ showLoginUI }) {
             boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
           }}
         >
-          <Tokens />
-          {auth.user ? (
+           <Tokens showTokensPanel={showTokensPanel} />
+          {auth.is_authenticated ? (
             <button
               onClick={auth.logout}
               style={{

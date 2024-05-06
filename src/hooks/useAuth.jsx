@@ -1,11 +1,11 @@
 
 import { createContext, useContext, useMemo, useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { useLocalStorage } from "./useLocalStorage";
 
 import {
     getAuth,
     onAuthStateChanged,
+    signInAnonymously,
     createUserWithEmailAndPassword,
     signInWithEmailAndPassword,
     signOut
@@ -14,7 +14,6 @@ import {
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-    const navigate = useNavigate();
     const auth = getAuth();
 
 
@@ -27,23 +26,24 @@ export const AuthProvider = ({ children }) => {
         return auth.currentUser !== null;
     };
 
+    const anonymousSignIn = async () => {
+        const user = await signInAnonymously(auth);
+        if (!user) {
+            return false;
+        }
+        return true;
+    };
+
+
+
 
     // call this function when you want to authenticate the user
     const register = async (data) => {
-        // add a UID to the user object
-        createUserWithEmailAndPassword(auth, data.email, data.password)
-            .then((userCredential) => {
-                // Signed in
-                const user = userCredential.user;
-                console.log('User:', user);
-                navigate("/login");
-            })
-            .catch((error) => {
-                const errorCode = error.code;
-                const errorMessage = error.message;
-                console.error('Error:', errorCode, errorMessage);
-                alert('Error creating user');
-            });
+        const user = await createUserWithEmailAndPassword(auth, data.email, data.password);
+        if (!user) {
+            return false;
+        }
+        return true;
     };
 
 
@@ -78,6 +78,7 @@ export const AuthProvider = ({ children }) => {
     const value = useMemo(
         () => ({
             user: auth.currentUser,
+            anonymousSignIn,
             register,
             login,
             logout,

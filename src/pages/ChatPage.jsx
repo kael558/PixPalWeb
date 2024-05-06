@@ -3,6 +3,7 @@ import Scene from '../components/AnimatedSphere/Scene';
 import Toolbar from '../components/toolbar/Toolbar';
 import ChatInput from '../components/ChatInput';
 import AuthenticationComponent from '../components/AuthComponent';
+import TokensComponent from '../components/TokensComponent';
 
 import getAudioStream from '../components/AudioPlayer/AudioPlayer';  // Adjust the import path as necessary
 import { useAuth } from '../hooks/useAuth';
@@ -15,6 +16,7 @@ function ChatPage(){
     const [messages, setMessages] = useState([]);  
 
     const [isLoginVisible, setLoginVisible] = useState(false);
+    const [isTokensPanelVisible, setTokensPanelVisible] = useState(false);
 
     const { get_access_token } = useAuth();
 
@@ -85,9 +87,13 @@ function ChatPage(){
 
 
             <Scene audioWorkletNode={audioWorkletNode}/>
-            <Toolbar showLoginUI={() => setLoginVisible(true)}/>
+            <Toolbar showLoginUI={() => setLoginVisible(true)} showTokensPanel={() => setTokensPanelVisible(true)}/>
             <ChatInput onSend={handleButtonClick}/>
             <AuthenticationComponent isVisible={isLoginVisible} onClose={() => setLoginVisible(false)}/>
+            <TokensComponent isVisible={isTokensPanelVisible} onClose={() => {
+                console.log('Closing Tokens Panel');
+                return setTokensPanelVisible(false)
+            }}/>
         </div>
     )
 }
