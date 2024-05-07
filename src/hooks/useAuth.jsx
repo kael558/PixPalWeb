@@ -123,18 +123,15 @@ export const AuthProvider = ({ children }) => {
         return auth?.currentUser?.isAnonymous;
     };
 
-    const value = useMemo(
-        () => ({
-            loginAnonymously,
-            registerWithEmailAndPassword,
-            loginWithEmailAndPassword,
-            logout,
-            getAccessToken,
-            isAuthenticated,
-            isAnonymous
-        }),
-        [loginAnonymously, registerWithEmailAndPassword, loginWithEmailAndPassword, logout, getAccessToken, isAuthenticated, isAnonymous]
-    );
+    const value = {
+        loginAnonymously,
+        registerWithEmailAndPassword,
+        loginWithEmailAndPassword,
+        logout,
+        getAccessToken,
+        isAuthenticated,
+        isAnonymous
+    };
     
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
