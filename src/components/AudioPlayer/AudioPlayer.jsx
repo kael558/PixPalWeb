@@ -1,4 +1,4 @@
-async function get_stream2() {
+/*async function get_stream2() {
 	const response = await fetch(
 		"https://eastus.tts.speech.microsoft.com/cognitiveservices/v1",
 		{

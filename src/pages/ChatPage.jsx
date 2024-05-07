@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import {  useState } from 'react';
 import Scene from '../components/AnimatedSphere/Scene';
 import Toolbar from '../components/toolbar/Toolbar';
 import ChatInput from '../components/ChatInput';
@@ -12,7 +12,6 @@ import { getAudioStreamFromTextInput, getAudioStreamFromAudioInput } from '../co
 import { useAuth } from '../hooks/useAuth';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 
-import { motion } from 'framer-motion';
 
 const audioContext = new AudioContext({ sampleRate: 48000 });
 let audioWorkletNode;

@@ -16,7 +16,7 @@ function ChatInput({ onSend, onAudio }) {
 
 	useEffect(() => {
 		voiceInputRef.current = new VoiceInput(onAudio);
-	}, []);
+	}, [onAudio]);
 
 	const handleSubmit = (event) => {
 		event.preventDefault();

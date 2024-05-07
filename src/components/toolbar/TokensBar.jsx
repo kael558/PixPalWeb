@@ -35,36 +35,9 @@ async function get_tokens(accessToken) {
 		});
 }
 
-async function initiate_purchase(accessToken) {
-	return fetch(
-		"https://0xlgvmu6h4.execute-api.us-east-1.amazonaws.com/session",
-		{
-			method: "POST",
-			headers: {
-				Authorization: `Bearer ${accessToken}`,
-			},
-		}
-	)
-		.then((response) => {
-			if (response.ok) {
-				return response.json(); // Return the promise to be handled by the next .then()
-			} else {
-				throw new Error("Failed to initiate purchase");
-			}
-		})
-		.then((data) => {
-			console.log("Data:", data);
-			return data; // Return data for subsequent handling
-		})
-		.catch((error) => {
-			console.error("Error:", error);
-			return { url: 0 }; // Return default object in case of error
-		});
-}
 
 function Tokens({showTokensPanel}) {
 	const [tokens, setTokens] = useState(null);
-	const [loading, setLoading] = useState(true);
 
 	const { isAuthenticated, getAccessToken } = useAuth();
 
@@ -73,8 +46,6 @@ function Tokens({showTokensPanel}) {
 			return;
 		}
 
-		setLoading(true);
-	
 			getAccessToken()
 			.then((token) => {
 				get_tokens(token).then((data) => {
@@ -83,12 +54,11 @@ function Tokens({showTokensPanel}) {
                     let tokens = data?.tokens?.toString()?.replace(/\B(?=(\d{3})+(?!\d))/g, ",") || 0;
           
 					setTokens(tokens); // Fallback to 0 if data.tokens is undefined
-					setLoading(false);
+
 				});
 			})
 			.catch((error) => {
 				console.error("Error getting ID token:", error);
-				setLoading(false);
 			});
 	}, []); // Include auth.user in dependency array to react to changes
 
@@ -99,7 +69,7 @@ function Tokens({showTokensPanel}) {
 			<div className={styles.moneyContainer}>
 				<img
 					src="/diamonds/small_bundle_diamonds.png"
-					alt="Money Image"
+					alt="Money"
 					className={styles.moneyImage}
 				/>
 				<span className={styles.currency}>{tokens ?? 'Loading...' }</span>

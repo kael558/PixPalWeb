@@ -1,11 +1,9 @@
 
-import { createContext, useContext, useMemo, useState, useEffect } from "react";
-import { useLocalStorage } from "./useLocalStorage";
+import { createContext, useContext, useMemo } from "react";
 import { toast } from 'react-toastify';
 
 import {
     getAuth,
-    onAuthStateChanged,
     signInAnonymously,
     createUserWithEmailAndPassword,
     signInWithEmailAndPassword,
@@ -135,8 +133,9 @@ export const AuthProvider = ({ children }) => {
             isAuthenticated,
             isAnonymous
         }),
-        [auth.currentUser]
+        [auth.currentUser, loginAnonymously, registerWithEmailAndPassword, loginWithEmailAndPassword, logout, getAccessToken, isAuthenticated, isAnonymous]
     );
+    
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 

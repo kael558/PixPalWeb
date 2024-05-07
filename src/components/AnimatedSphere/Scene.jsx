@@ -2,7 +2,7 @@ import { OrbitControls, useFBO } from "@react-three/drei";
 import { Canvas, useFrame, extend, createPortal  } from "@react-three/fiber";
 import { useMemo, useRef, useEffect, useState, Suspense  } from "react";
 import * as THREE from "three";
-import { Points, PointMaterial, Preload } from "@react-three/drei";
+import { Points, PointMaterial } from "@react-three/drei";
 import * as random from "maath/random/dist/maath-random.esm";
 
 import SimulationMaterial from './SimulationMaterialv1';
