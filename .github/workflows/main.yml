@@ -11,6 +11,20 @@ jobs:
     steps:
     - uses: actions/checkout@v3
 
+    # Set up Node.js environment
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '19' 
+        
+    # Install dependencies
+    - name: Install dependencies
+      run: npm install
+
+    # Build the project
+    - name: Build project
+      run: npm run build
+
     - name: Upload to Namecheap
       uses: SamKirkland/FTP-Deploy-Action@4.3.0
       with:
