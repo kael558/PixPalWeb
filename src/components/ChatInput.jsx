@@ -1,15 +1,22 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import VoiceInput from "./AudioRecorder";
-import { getAudioStreamFromAudioInput } from "./AudioPlayer/AudioPlayer";
+
+import { toast } from "react-toastify";
 
 import { useAuth } from "../hooks/useAuth";
-const voiceInput = new VoiceInput();
 
-function ChatInput({ onSend, messages, audioWorkletNode, addAssistantMessage }) {
+
+function ChatInput({ onSend, onAudio }) {
 	const [message, setMessage] = useState("");
 	const [isRecording, setIsRecording] = useState(false);
 
     const { getAccessToken, isAuthenticated } = useAuth();
+
+	const voiceInputRef = useRef(null);
+
+	useEffect(() => {
+		voiceInputRef.current = new VoiceInput(onAudio);
+	}, []);
 
 	const handleSubmit = (event) => {
 		event.preventDefault();
@@ -31,6 +38,7 @@ function ChatInput({ onSend, messages, audioWorkletNode, addAssistantMessage }) 
         }
 
         if (!isAuthenticated()){
+            toast.error("Please log in to record audio");
             return;
         }
 
@@ -38,9 +46,11 @@ function ChatInput({ onSend, messages, audioWorkletNode, addAssistantMessage }) 
 		console.log("Recording started...");
 		// Add your recording start logic here
 
-        voiceInput.startRecording();
+        voiceInputRef.current.startRecording();
        
 	};
+
+
 
 	const stopRecording = async (event) => {
 		event.preventDefault(); // Prevent form submission
@@ -54,19 +64,13 @@ function ChatInput({ onSend, messages, audioWorkletNode, addAssistantMessage }) 
 		// Add your recording stop logic here
 
      
-        const chunks = voiceInput.stopRecording();
-        if (!chunks.length) {
-            console.error("No audio data recorded");
-            return;
-        }
-
-        const accessToken = await getAccessToken();
-        const blob = new Blob(chunks, { type: "audio/webm" });
-        getAudioStreamFromAudioInput(blob, messages, "Kael", accessToken, audioWorkletNode, addAssistantMessage);
+        voiceInputRef.current.stopRecording();
+       
 	};
 
 	return (
-		<div 		style={{
+		<div 		
+            style={{
             position: "fixed",
             bottom: "10px",
             left: "50%",

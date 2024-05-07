@@ -6,6 +6,11 @@ import { useAuth } from '../../hooks/useAuth';
 function Toolbar({ showLoginUI, showTokensPanel }) {
   const { isAuthenticated, logout } = useAuth();
 
+  const handleLogout = () => {
+    logout();
+    setMenuOpen(false);
+  };
+
   // State to manage the visibility of the hamburger menu
   const [menuOpen, setMenuOpen] = useState(false);
 
@@ -52,7 +57,7 @@ function Toolbar({ showLoginUI, showTokensPanel }) {
            <Tokens showTokensPanel={showTokensPanel} />
           {isAuthenticated() ? (
             <button
-              onClick={logout}
+              onClick={handleLogout}
               style={{
                 marginTop: '10px',
                 padding: '8px 20px',

@@ -19,35 +19,8 @@ const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
     const auth = getAuth();
 
-    const showErrorToast = (msg) => {
-        toast.error(msg, {
-            position: "top-center",
-            autoClose: 3000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "dark"
-        });
-    }
-
-    const showSuccessToast = (msg) => {
-        toast.success(msg, {
-            position: "top-center",
-            autoClose: 3000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "dark"
-        });
-    }
-
     const getAccessToken = async () => {
         if (!auth.currentUser) {
-            showErrorToast('No user logged in');
             return false;
         }
 
@@ -56,7 +29,6 @@ export const AuthProvider = ({ children }) => {
 
     const isAuthenticated = () => {
         if (!auth.currentUser) {
-            showErrorToast('No user logged in');
             return false;
         }
 
@@ -67,14 +39,14 @@ export const AuthProvider = ({ children }) => {
         try {
             const user = await signInAnonymously(auth);
             if (!user) {
-                showErrorToast('Failed to log in anonymously');
+                toast.error('Failed to log in anonymously');
                 return false;
             }
     
-            showSuccessToast('Logged in anonymously');
+            toast.success('Logged in anonymously');
             return true;
         } catch (error) {
-            showErrorToast('Failed to log in anonymously');
+            toast.error('Failed to log in anonymously');
             return false;
         }
     };
@@ -85,14 +57,14 @@ export const AuthProvider = ({ children }) => {
         try {
             const user = await createUserWithEmailAndPassword(auth, data.email, data.password);
             if (!user) {
-                showErrorToast('Failed to register user');
+                toast.error('Failed to register user');
                 return false;
             }
 
-            showSuccessToast('Registered user');
+            toast.success('Registered user');
             return true;
         } catch (error) {
-            showErrorToast('Failed to register user');
+            toast.error('Failed to register user');
             return false;
         }
     };
@@ -106,14 +78,14 @@ export const AuthProvider = ({ children }) => {
                 const userCredential = await linkWithCredential(auth.currentUser, credential);
     
                 if (!userCredential) {
-                    showErrorToast('Failed to link anonymous user');
+                    toast.error('Failed to link anonymous user');
                     return false;
                 }
     
-                showSuccessToast('Linked anonymous user');
+                toast.success('Linked anonymous user');
                 return true;
             } catch (error) {
-                showErrorToast('Failed to link anonymous user');
+                toast.error('Failed to link anonymous user');
                 return false;
             }
         }
@@ -121,14 +93,14 @@ export const AuthProvider = ({ children }) => {
         try {
             const userCredential = await signInWithEmailAndPassword(auth, data.email, data.password);
             if (!userCredential) {
-                showErrorToast('Failed to log in user');
+                toast.error('Failed to log in user');
                 return false;
             }
 
-            showSuccessToast('Logged in user');
+            toast.success('Logged in user');
             return true;
         } catch (error) {
-            showErrorToast('Failed to log in user');
+            toast.error('Failed to log in user');
             return false;
         }
     };
@@ -136,16 +108,16 @@ export const AuthProvider = ({ children }) => {
     // call this function to sign out logged in user
     const logout = () => {
         if (!auth.currentUser) {
-            showErrorToast('No user logged in');
+            toast.error('No user logged in');
             return;
         }
 
         if (auth.currentUser.isAnonymous) {
-            showErrorToast('Cannot log out anonymous user');
+            toast.error('Cannot log out anonymous user');
             return;
         }
 
-        showSuccessToast('You have been logged out.');
+        toast.success('You have been logged out.');
         signOut(auth);
     };
 

@@ -4,13 +4,13 @@ Todo:
 
 Today:
 [x] - Chat bar UI
-[ ] - Login, stay as anonymous user if signed out
 [ ] - Buy tokens, hook up buttons
+[x] - Tap to record/ tap to end with recording
 [ ] - Host on pixpal.ca
+
 [ ] - First message sequence tutorial
-[ ] - Toast system
+[x] - Toast system
 [ ] - Automatically show token shop
-[ ] - Tap to record/ tap to end with recording
 
 Backlogged:
 [ ] - Glow on voice activity

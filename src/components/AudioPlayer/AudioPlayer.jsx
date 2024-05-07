@@ -148,12 +148,12 @@ export async function getAudioStreamFromAudioInput(
   }
 
   const fd = new FormData();
-  fd.append("file", blob, "speech.webm");
+  fd.append("audiofile", blob, "speech.webm");
   fd.append("messages", JSON.stringify(messages));
   fd.append("username", username);
 
   const response = await fetch(
-    "https://lg5m7pmkstz3ims7qkmh7u4xfi0gjebf.lambda-url.us-east-1.on.aws/",
+    "https://jfjrhqljjddvfemmcwbtn6fvmi0wndeu.lambda-url.us-east-1.on.aws/",
     {
       method: "POST",
       headers: {
