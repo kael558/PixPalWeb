@@ -60,7 +60,7 @@ function Tokens({showTokensPanel}) {
 			.catch((error) => {
 				console.error("Error getting ID token:", error);
 			});
-	}, []); // Include auth.user in dependency array to react to changes
+	}, [isAuthenticated, getAccessToken]);
 
 	return (
 		<div>

@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useAuth } from "../hooks/useAuth";
 
 import {toast} from 'react-toastify';
@@ -160,7 +160,7 @@ function TokensComponent({ isVisible, onClose }) {
 							}}
 						
 						>
-							 <div style={{ color: 'white', fontSize: '30px' }}>Loading...</div> // Simple loading text, replace with your spinner if desired
+							 <div style={{ color: 'white', fontSize: '30px' }}>Loading...</div>
 							<button onClick={() => setPurchaseInProgress(false)}>Cancel</button>
 						</div>
                     ) : (

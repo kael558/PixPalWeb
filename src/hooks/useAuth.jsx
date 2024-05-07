@@ -133,7 +133,7 @@ export const AuthProvider = ({ children }) => {
             isAuthenticated,
             isAnonymous
         }),
-        [auth.currentUser, loginAnonymously, registerWithEmailAndPassword, loginWithEmailAndPassword, logout, getAccessToken, isAuthenticated, isAnonymous]
+        [loginAnonymously, registerWithEmailAndPassword, loginWithEmailAndPassword, logout, getAccessToken, isAuthenticated, isAnonymous]
     );
     
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
