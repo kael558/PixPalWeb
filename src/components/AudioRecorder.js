@@ -12,6 +12,11 @@ class VoiceInput {
 
 	async startRecording() {
 		try {
+			if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+				console.error("getUserMedia is not supported in this browser");
+				return;
+			}
+
 			this.mediaStream = await navigator.mediaDevices.getUserMedia({
 				audio: true,
 			});
@@ -34,11 +39,15 @@ class VoiceInput {
 			};
 
 			this.mediaRecorder.onstop = async (event) => {
-				console.log("Recording stopped");
+				if (this.chunks.length === 0) {
+					console.error("No data recorded");
+					return;
+				}
+
 				await this.next(this.chunks);
 				this.chunks = [];
 			};
-
+		
 			console.log("Starting media recorder...", this.mediaRecorder);
 			this.mediaRecorder.start();
 		} catch (error) {

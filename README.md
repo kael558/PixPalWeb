@@ -4,28 +4,46 @@ Todo:
 
 Today:
 [x] - Chat bar UI
-[ ] - Buy tokens, hook up buttons
+[x] - Buy tokens, hook up buttons
 [x] - Tap to record/ tap to end with recording
-[ ] - Host on pixpal.ca
+[x] - Host on pixpal.ca
 
-[ ] - First message sequence tutorial
-[x] - Toast system
-[ ] - Automatically show token shop
+[x] - Toast system -> displays errors & success messages
+[x] - Record audio -> send to backend -> get response 
+[x] - CHeck memory -> memory is fixed to local storage
+[x] - Randomize orb movement parameters
+[ ] - Record high quality audio because transcription sucks otherwise.
+Build
+
+[ ] - Use multi part on first messages to make sure there is no overflow
+[ ] - Flush audio worklet on end
+[ ] - Basic onboarding sequence
+[ ] - check iPhone 15+, chrome and safari
+[ ] - Automatically show token shop, change settings, privacy policy
+[ ] - Stress test!
+[ ] - Text output on screen
+
+LAUNCH!
+
+Start sequence:
+[ ] - Onboarding sequence - 
+  - "Hey, I'm your personal AI, you can talk to me about anything. You can tap the screen to start recording, and tap again to stop. You can also type messages."
+  - Ask for your settings. 
+
+Onboarding sequence:
+  - The orb grows on start-up
+
 
 Backlogged:
 [ ] - Glow on voice activity
-[ ] - Cooler voice recording UI
-[ ] - VAD chatting
+[ ] - Cooler voice recording UI based off Daesol's redesign
+[ ] - VAD chatting (not super important, but should be an option)
 
 Optimizations:
 [ ] - Sentence split first sentence and group rest. 
 [ ] - Whisper Jax to bring down costs of transcription
 
-Daesol:
-[ ] - Color pallettes and design
 
-[ ] - User is on an anonymous account
-[ ] - User is signed out
 
 
 

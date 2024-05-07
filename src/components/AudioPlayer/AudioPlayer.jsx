@@ -94,8 +94,21 @@ export class AudioManager {
 
 //const streamProcessor = new URL('./AudioStreamProcessor.js', import.meta.url).href
 
-async function parseStream(response, audioWorkletNode, addAssistantMessage) {
+const textDecoder = new TextDecoder("utf-8");
+
+async function parseStream(response, audioWorkletNode, addMessage, getUserMessage=false) {
 	const reader = response.body.getReader();
+
+	if (getUserMessage){
+		const { done: initialDone, value: initialValue } = await reader.read();
+		if (initialDone) {
+			throw new Error("Stream ended prematurely");
+		}
+
+		const userMessage = textDecoder.decode(initialValue);
+
+		addMessage('user', userMessage);
+	}
 
 	const { done: initialDone, value: initialValue } = await reader.read();
 	if (initialDone) {
@@ -103,10 +116,10 @@ async function parseStream(response, audioWorkletNode, addAssistantMessage) {
 	}
 
 	// Assuming the text is short and comes in a single chunk
-	const initialText = new TextDecoder("utf-8").decode(initialValue);
-	console.log("Initial message from server:", initialText);
+	const assistantMessage = textDecoder.decode(initialValue);
+	console.log("Initial message from server:", assistantMessage);
 
-	addAssistantMessage(initialText);
+	addMessage('assistant', assistantMessage);
 
 	let overflow = null;
 	let float32Array = null;
@@ -141,19 +154,18 @@ export async function getAudioStreamFromAudioInput(
   username,
   accessToken,
   audioWorkletNode,
-  addAssistantMessage
+  addMessage
 ) {
   if (!audioWorkletNode) {
     throw new Error("AudioWorkletNode is not initialized");
   }
 
   const fd = new FormData();
-  fd.append("audiofile", blob, "speech.webm");
   fd.append("messages", JSON.stringify(messages));
   fd.append("username", username);
+  fd.append("file", blob, "speech.webm");
 
-  const response = await fetch(
-    "https://jfjrhqljjddvfemmcwbtn6fvmi0wndeu.lambda-url.us-east-1.on.aws/",
+  const response = await fetch("https://jfjrhqljjddvfemmcwbtn6fvmi0wndeu.lambda-url.us-east-1.on.aws/",
     {
       method: "POST",
       headers: {
@@ -167,7 +179,7 @@ export async function getAudioStreamFromAudioInput(
     throw new Error("Network response was not ok");
   }
 
-  await parseStream(response, audioWorkletNode, addAssistantMessage); 
+  await parseStream(response, audioWorkletNode, addMessage, true); 
 }
 
 
@@ -176,7 +188,7 @@ export async function getAudioStreamFromTextInput(
 	username,
 	accessToken,
 	audioWorkletNode,
-	addAssistantMessage
+	addMessage
 ) {
 	if (!audioWorkletNode) {
 		throw new Error("AudioWorkletNode is not initialized");
@@ -201,7 +213,7 @@ export async function getAudioStreamFromTextInput(
 		throw new Error("Network response was not ok");
 	}
 
-  await parseStream(response, audioWorkletNode, addAssistantMessage);
+  await parseStream(response, audioWorkletNode, addMessage);
 }
 
 

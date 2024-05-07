@@ -10,7 +10,7 @@ function ChatInput({ onSend, onAudio }) {
 	const [message, setMessage] = useState("");
 	const [isRecording, setIsRecording] = useState(false);
 
-    const { getAccessToken, isAuthenticated } = useAuth();
+    const { isAuthenticated } = useAuth();
 
 	const voiceInputRef = useRef(null);
 
@@ -20,11 +20,6 @@ function ChatInput({ onSend, onAudio }) {
 
 	const handleSubmit = (event) => {
 		event.preventDefault();
-		console.log("Message:", message);
-		if (!message) {
-			alert("Please enter a message");
-			return;
-		}
 		onSend(message);
 		setMessage("");
 	};
@@ -43,11 +38,7 @@ function ChatInput({ onSend, onAudio }) {
         }
 
 		setIsRecording(true);
-		console.log("Recording started...");
-		// Add your recording start logic here
-
-        voiceInputRef.current.startRecording();
-       
+		voiceInputRef.current.startRecording();
 	};
 
 
@@ -60,12 +51,7 @@ function ChatInput({ onSend, onAudio }) {
         }
 
 		setIsRecording(false);
-		console.log("Recording stopped.");
-		// Add your recording stop logic here
-
-     
         voiceInputRef.current.stopRecording();
-       
 	};
 
 	return (

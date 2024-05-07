@@ -5,7 +5,7 @@ import * as THREE from "three";
 import { Points, PointMaterial, Preload } from "@react-three/drei";
 import * as random from "maath/random/dist/maath-random.esm";
 
-import SimulationMaterial from './SimulationMaterial';
+import SimulationMaterial from './SimulationMaterialv1';
 
 //https://blog.maximeheckel.com/posts/the-magical-world-of-particles-with-react-three-fiber-and-shaders/
 
@@ -30,16 +30,16 @@ void main() {
 
   gl_Position = projectedPosition;
 
-  gl_PointSize = 3.0;
+  gl_PointSize = 2.0;
   // Size attenuation;
-  gl_PointSize *= step(1.0 - (1.0/64.0), position.x) + 0.5;
+  gl_PointSize *= step(1.0 - (1.0/64.0), position.x) + 0.7;
 }
 `;
 
 extend({ SimulationMaterial: SimulationMaterial });
 
 const FBOParticles = ({ audioWorkletNode }) => {
-  const size = 256;
+  const size = 300;
 
   const points = useRef();
   const simulationMaterialRef = useRef();
@@ -95,7 +95,7 @@ const FBOParticles = ({ audioWorkletNode }) => {
     gl.setRenderTarget(null);
 
     points.current.material.uniforms.uPositions.value = renderTarget.texture;
-    simulationMaterialRef.current.uniforms.uTime.value = clock.elapsedTime;
+    simulationMaterialRef.current.uniforms.uTime.value =  clock.elapsedTime;
   });
 
   return (

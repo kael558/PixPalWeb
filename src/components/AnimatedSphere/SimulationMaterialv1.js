@@ -5,6 +5,12 @@ uniform sampler2D positions;
 uniform float uTime;
 uniform float uFrequency;
 
+uniform float uModulationFrequency;
+uniform float uModulationAmplitude;
+
+uniform float uModulationSpeed; // Speed of modulation
+uniform float uModulationScale; // Scale of modulation effect
+
 varying vec2 vUv;
 
 
@@ -149,13 +155,24 @@ vec3 curlNoise( vec3 p ){
 
 }
 
+vec3 modulateCurlNoise(vec3 p, float time) {
+  // Create a sine wave that changes over time
+  float sineWave = sin(time * uModulationSpeed) * uModulationScale + 1.0;
+
+  // Apply sine wave modulation to frequency or amplitude of the noise
+  vec3 modulatedPosition = p * (uFrequency + sineWave * uModulationFrequency);
+  vec3 modulatedAmplitude = curlNoise(modulatedPosition + time * 0.1) * (1.0 + sineWave * uModulationAmplitude);
+
+  return modulatedAmplitude;
+}
+
 void main() {
   vec3 pos = texture2D(positions, vUv).rgb;
   vec3 curlPos = texture2D(positions, vUv).rgb;
 
-  pos = curlNoise(pos * uFrequency + uTime * 0.1);
-  curlPos = curlNoise(curlPos * uFrequency + uTime * 0.1);
-  curlPos += curlNoise(curlPos * uFrequency * 2.0) * 0.25;
+  pos = modulateCurlNoise(pos, uTime);
+  curlPos = modulateCurlNoise(curlPos, uTime);
+  curlPos += modulateCurlNoise(curlPos * uFrequency * 2.0, uTime) * 0.25;
 
   gl_FragColor = vec4(mix(pos, curlPos, sin(uTime)), 1.0);
 }
@@ -217,6 +234,10 @@ class SimulationMaterial extends THREE.ShaderMaterial {
       positions: { value: positionsTexture },
       uFrequency: { value: 0.25 },
       uTime: { value: 0 },
+      uModulationSpeed: { value: 1.1 }, // Speed of the sine wave modulation
+        uModulationScale: { value: 0.5 }, // Scale of the modulation effect
+        uModulationFrequency: { value: 0.2 }, // Frequency modulation factor
+        uModulationAmplitude: { value: 0.3 } // Amplitude modulation factor
     };
 
     super({

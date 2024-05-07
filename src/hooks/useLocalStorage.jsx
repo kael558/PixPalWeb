@@ -15,12 +15,15 @@ export const useLocalStorage = (keyName, defaultValue) => {
     }
   });
   const setValue = (newValue) => {
-    try {
-      window.localStorage.setItem(keyName, JSON.stringify(newValue));
-    } catch (err) {
-      console.log(err);
-    }
-    setStoredValue(newValue);
+    setStoredValue(prevValue => {
+      const updatedValue = typeof newValue === 'function' ? newValue(prevValue) : newValue;
+      try {
+        window.localStorage.setItem(keyName, JSON.stringify(updatedValue));
+      } catch (err) {
+        console.log(err);
+      }
+      return updatedValue;
+    });
   };
   return [storedValue, setValue];
 };

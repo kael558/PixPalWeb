@@ -10,6 +10,7 @@ import 'react-toastify/dist/ReactToastify.css';
 
 import { getAudioStreamFromTextInput, getAudioStreamFromAudioInput } from '../components/AudioPlayer/AudioPlayer';  // Adjust the import path as necessary
 import { useAuth } from '../hooks/useAuth';
+import { useLocalStorage } from '../hooks/useLocalStorage';
 
 import { motion } from 'framer-motion';
 
@@ -24,20 +25,22 @@ let audioWorkletNode;
 })();
 
 function ChatPage(){
-    const [messages, setMessages] = useState([]);  
-
+    const [messages, setMessages] = useLocalStorage('messages', []);
+    console.log(messages);
     const [isLoginVisible, setLoginVisible] = useState(false);
     const [isTokensPanelVisible, setTokensPanelVisible] = useState(false);
 
     const { getAccessToken } = useAuth();
 
-    const addAssistantMessage = (message) => {
-        const new_messages = [...messages, { "role": "assistant", "content": message }];
-        setMessages(new_messages);
+    const addMessage = (role, content) => {
+        console.log("Adding message:", { role, content })
+
+        console.log("Current messages:", messages);
+
+        setMessages(prevMessages => [...prevMessages, { role, content }]);
     };
-        
-    
-    const onMessageSend = async (message) => {
+      
+    const onMessageSend = async (content) => {
         const accessToken = await getAccessToken();
         if (!accessToken) {
             toast.error('Please log in to send messages');
@@ -48,10 +51,8 @@ function ChatPage(){
             await audioContext.resume();
         }
 
-        const new_messages = [...messages, { "role": "user", "content": message }];
-
-        setMessages(new_messages);
-        getAudioStreamFromTextInput(new_messages, "Kael", accessToken, audioWorkletNode, addAssistantMessage);
+        setMessages(prevMessages => [...prevMessages, { role: "user", content }]);
+        getAudioStreamFromTextInput(messages, "Kael", accessToken, audioWorkletNode, addMessage);
     };
 
     const onAudioSend = async (chunks) => {
@@ -67,7 +68,7 @@ function ChatPage(){
 
         const blob = new Blob(chunks, { type: "audio/webm" });
 
-        getAudioStreamFromAudioInput(blob, messages, "Kael", accessToken, audioWorkletNode, addAssistantMessage);
+        getAudioStreamFromAudioInput(blob, messages, "Kael", accessToken, audioWorkletNode, addMessage);
     }
 
     return (
