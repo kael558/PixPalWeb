@@ -24,6 +24,7 @@ function ChatPage(){
                 node.connect(audioContext.destination);
                 setAudioWorkletNode(node);
                 nodeRef.current = node;
+                console.log("Audio worklet node created");
             } catch (error) {
                 console.error("Failed to load audio worklet module or create node:", error);
                 toast.error("Audio output failed to load. Please refresh the page and try again.");

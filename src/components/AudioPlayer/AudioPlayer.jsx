@@ -28,6 +28,13 @@ async function parseStream(response, audioWorkletNode, addMessage, getUserMessag
 	let overflow = null;
 	let float32Array = null;
 
+	const audioContext = audioWorkletNode.context;
+
+	if (audioContext.state !== 'running') {
+		console.log("Resuming audio context");
+		await audioContext.resume();
+	}
+
 	while (true) {
 		let { done, value } = await reader.read();
 		if (done) {
@@ -163,6 +170,12 @@ async function getAudioStreamFromTextInput(
 
 async function playAudioFromFilePath(audioFilePath, audioWorkletNode) {
     const audioContext = audioWorkletNode.context;
+
+	if (audioContext.state !== 'running') {
+		console.log("Resuming audio context");
+		await audioContext.resume();
+	}
+	
 
     // Fetch the audio file from the provided path
     const response = await fetch(audioFilePath);

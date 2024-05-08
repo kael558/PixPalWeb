@@ -1,7 +1,6 @@
 // const bufferSize = 4096;
 // const maxBuffers = 16;
 
-
 function resample(sampleArray, srcSampleRate, targetSampleRate) {
 	if (srcSampleRate === targetSampleRate) {
 		return sampleArray.slice();
@@ -33,6 +32,7 @@ class StreamAudioProcessor extends AudioWorkletProcessor {
 
 		this.buffers = [];
 		this.port.onmessage = (e) => {
+
 			const { method, args } = e.data;
 			switch (method) {
 				case "buffer": {
@@ -172,21 +172,21 @@ class StreamAudioProcessor extends AudioWorkletProcessor {
 			}
 		}
 
-		//console.log("process", this.buffers.length);
+		//console.log("process2", this.buffers.length);
 
-
-        /*if (outputs[0].length > 0) {
-            const output = outputs[0][0]; // Assuming mono input
-            let sum = 0;
-            for (let i = 0; i < output.length; i++) {
-                sum += Math.abs(output[i]);
-            }
-            let averageLevel = sum / output.length;
-            let isTalking = averageLevel > 0.1;
-            this.port.postMessage({ isTalking });
-        }*/
+		/*if (outputs[0].length > 0) {
+		const output = outputs[0][0]; // Assuming mono input
+		let sum = 0;
+		for (let i = 0; i < output.length; i++) {
+			sum += Math.abs(output[i]);
+		}
+		let averageLevel = sum / output.length;
+		let isTalking = averageLevel > 0.1;
+		this.port.postMessage({ isTalking });
+	}*/
 
 		return true;
+	
 	}
 }
 registerProcessor("stream-audio-processor", StreamAudioProcessor);

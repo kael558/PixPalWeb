@@ -17,6 +17,8 @@ Today:
 [x] - Basic onboarding sequence with button and name input
 
 Build
+[ ] - Conversation style! Speak in shorter sentences but add pauses to wait for reply. If reply comes through, then you interrupt and go again. 
+
 [ ] - Use multi part on first messages to make sure there is no overflow (probably not necessary because it won't be chunked)
 [ ] - check iPhone 15+, chrome and safari
 [ ] - Automatically show token shop, change settings, privacy policy
