@@ -172,6 +172,8 @@ class StreamAudioProcessor extends AudioWorkletProcessor {
 			}
 		}
 
+		//console.log("process", this.buffers.length);
+
 
         /*if (outputs[0].length > 0) {
             const output = outputs[0][0]; // Assuming mono input

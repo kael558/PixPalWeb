@@ -1,99 +1,3 @@
-/*async function get_stream2() {
-	const response = await fetch(
-		"https://eastus.tts.speech.microsoft.com/cognitiveservices/v1",
-		{
-			method: "POST",
-			headers: {
-				"X-Microsoft-OutputFormat": "raw-44100hz-16bit-mono-pcm",
-				"Content-Type": "application/ssml+xml",
-				"Ocp-Apim-Subscription-Key": "f45d4df30f924181920b8168abd05e03",
-				"User-Agent": "TextToSpeechKael",
-			},
-			body: '<speak xmlns="http://www.w3.org/2001/10/synthesis" xmlns:mstts="http://www.w3.org/2001/mstts" xmlns:emo="http://www.w3.org/2009/10/emotionml" version="1.0" xml:lang="en-US"><voice name="en-US-AvaMultilingualNeural"><mstts:viseme type="FacialExpression"/><mstts:express-as style="Default"><prosody rate="0%" pitch="0%"><lang xml:lang="en-US">Hey there!</lang></prosody></mstts:express-as></voice></speak>',
-		}
-	);
-
-	return response;
-}
-/*
-const microphoneWorkletUrl = new URL('./microphone-worklet.js', import.meta.url).href
-const wsInjectWorkletUrl = new URL('./ws-inject-worklet.js', import.meta.url).href
-const wsInputWorkletUrl = new URL('./ws-input-worklet.js', import.meta.url).href
-const wsOutputWorkletUrl = new URL('./ws-output-worklet.js', import.meta.url).href
-export const loadWorkletModules = async audioContext => {
-  const audioWorkletPromises = [
-    audioContext.audioWorklet.addModule(microphoneWorkletUrl),
-    audioContext.audioWorklet.addModule(wsInjectWorkletUrl),
-    audioContext.audioWorklet.addModule(wsInputWorkletUrl),
-    audioContext.audioWorklet.addModule(wsOutputWorkletUrl),
-  ];
-  
-  await Promise.all(audioWorkletPromises);
-};
-
-//
-
-export class AudioManager {
-  constructor({audioContext}) {
-    this.audioContext = audioContext;
-    this.audioContext.gain = this.audioContext.createGain();
-    this.audioContext.gain.connect(this.audioContext.destination);
-    
-    this.loadPromise = loadWorkletModules(this.audioContext);
-  }
-
-  setVolume(volume) {
-    this.audioContext.gain.gain.value = volume;
-  }
-
-  playBuffer(audioBuffer) {
-    const sourceNode = this.audioContext.createBufferSource();
-    sourceNode.buffer = audioBuffer;
-    sourceNode.connect(this.audioContext.destination);
-    sourceNode.start();
-  }
-
-  async enumerateDevices() {
-    const devices = await navigator.mediaDevices.enumerateDevices();
-    return devices;
-  }
-
-  async getUserMedia(opts) {
-    try {
-      const mediaStream = await navigator.mediaDevices.getUserMedia(opts);
-      return mediaStream;
-    } catch (error) {
-      // Check for specific error conditions
-      if (error.name === 'NotAllowedError') {
-        console.log('User denied access to media devices.');
-        return new Error('User denied access to media devices.');
-      } else if (error.name === 'NotFoundError' || error.name === 'DevicesNotFoundError') {
-        console.log('No media devices found.');
-        return new Error('No media devices found.');
-      } else if (error.name === 'NotReadableError' || error.name === 'TrackStartError') {
-        console.log('The media track could not be read or started.');
-        return new Error('The media track could not be read or started.');
-      } else if (error.name === 'OverconstrainedError' || error.name === 'ConstraintNotSatisfiedError') {
-        console.log('The requested media constraints could not be satisfied.');
-        return new Error('The requested media constraints could not be satisfied.');
-      } else if (error.name === 'SecurityError' || error.name === 'PermissionDeniedError') {
-        console.log('Permission to access media devices was denied.');
-        return new Error('Permission to access media devices was denied.');
-      } else {
-        console.log('An error occurred while accessing media devices:', error);
-        return new Error('An error occurred while accessing media devices');
-      }
-    }
-  }
-
-  async waitForLoad() {
-    await this.loadPromise;
-  }
-}
-// export default new AudioManager();*/
-
-//const streamProcessor = new URL('./AudioStreamProcessor.js', import.meta.url).href
-
 const textDecoder = new TextDecoder("utf-8");
 
 async function parseStream(response, audioWorkletNode, addMessage, getUserMessage=false) {
@@ -127,28 +31,68 @@ async function parseStream(response, audioWorkletNode, addMessage, getUserMessag
 	while (true) {
 		let { done, value } = await reader.read();
 		if (done) {
+			// send overflow if there is any
+			if (overflow) {
+				[float32Array, overflow] = convertAndNormalizeToFloat32Array(overflow);
+				if (float32Array){
+					audioWorkletNode.port.postMessage({
+						method: "buffer",
+						args: { channelData: [float32Array], sampleRate: 48000 },
+					});
+				}
+			}
 			audioWorkletNode.port.postMessage({ method: "end" });
 			break; // Stream finished
 		}
+
+		//console.log("Received chunk of size", value.byteLength);
 
 		if (overflow) {
 			let combinedValue = new Uint8Array(overflow.length + value.byteLength);
 			combinedValue.set(overflow); // Set overflow at the beginning
 			combinedValue.set(value, overflow.length); // Set new value after the overflow
-
 			value = combinedValue;
 		}
 
 		[float32Array, overflow] = convertAndNormalizeToFloat32Array(value);
-
-		audioWorkletNode.port.postMessage({
-			method: "buffer",
-			args: { channelData: [float32Array], sampleRate: 48000 },
-		});
+		if (float32Array){
+			audioWorkletNode.port.postMessage({
+				method: "buffer",
+				args: { channelData: [float32Array], sampleRate: 48000 },
+			});
+		}
 	}
 }
 
-export async function getAudioStreamFromAudioInput(
+function convertAndNormalizeToFloat32Array(value) {
+	let bufferLength = value.byteLength;
+
+	if (bufferLength < 100){ // ignore small chunks
+		return [null, value];
+	}
+
+	let overflow = null;
+
+	if (bufferLength % 2 !== 0) {
+		// remove last byte
+		overflow = new Uint8Array([value[bufferLength - 1]]);
+		value = value.subarray(0, bufferLength - 1);
+	}
+
+	let int16Array = new Int16Array(
+		value.buffer,
+		0,
+		value.byteLength / Int16Array.BYTES_PER_ELEMENT
+	);
+	
+	const float32Array = new Float32Array(int16Array.length);
+	for (let i = 0; i < int16Array.length; i++) {
+		float32Array[i] = int16Array[i] / 32768.0; // Normalize PCM data to [-1, 1] range
+	}
+	return [float32Array, overflow];
+}
+
+async function getAudioStreamFromAudioInput(
   blob,
   messages,
   username,
@@ -161,7 +105,7 @@ export async function getAudioStreamFromAudioInput(
   }
 
   const fd = new FormData();
-  fd.append("messages", JSON.stringify(messages));
+  fd.append("messages", JSON.stringify(messages.slice(-5)));
   fd.append("username", username);
   fd.append("file", blob, "speech.webm");
 
@@ -183,7 +127,7 @@ export async function getAudioStreamFromAudioInput(
 }
 
 
-export async function getAudioStreamFromTextInput(
+async function getAudioStreamFromTextInput(
 	messages,
 	username,
 	accessToken,
@@ -217,39 +161,46 @@ export async function getAudioStreamFromTextInput(
 }
 
 
-function convertAndNormalizeToFloat32Array(value) {
-	let bufferLength = value.byteLength;
+async function playAudioFromFilePath(audioFilePath, audioWorkletNode) {
+    const audioContext = audioWorkletNode.context;
 
-	let overflow = null;
+    // Fetch the audio file from the provided path
+    const response = await fetch(audioFilePath);
+    if (!response.ok) {
+        throw new Error(`Failed to load audio file: ${response.statusText}`);
+    }
 
-	if (bufferLength % 2 !== 0) {
-		// remove last byte
-		overflow = new Uint8Array([value[bufferLength - 1]]);
-		value = value.subarray(0, bufferLength - 1);
-	}
+    // Convert the response to an ArrayBuffer
+    const arrayBuffer = await response.arrayBuffer();
 
-	let int16Array;
-	try {
-		int16Array = new Int16Array(
-			value.buffer,
-			value.byteOffset,
-			value.byteLength / Int16Array.BYTES_PER_ELEMENT
-		);
-	} catch (error) {
-		console.error("Error converting to Int16Array:", error);
-		console.log("Value:", value);
-		int16Array = new Int16Array(
-			value.buffer,
-			value.byteOffset,
-			value.byteLength / Int16Array.BYTES_PER_ELEMENT
-		);
-	}
+    // Decode the audio data from the ArrayBuffer
+    const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+	console.log("Audio buffer decoded", audioBuffer.sampleRate, audioBuffer.length);
 
-	const float32Array = new Float32Array(int16Array.length);
-	for (let i = 0; i < int16Array.length; i++) {
-		float32Array[i] = int16Array[i] / 32768.0; // Normalize PCM data to [-1, 1] range
-	}
-	return [float32Array, overflow];
+    // Process and send the decoded audio data to the AudioWorkletNode
+    const float32Arrays = audioBuffer.getChannelData(0); // Assuming mono audio for simplicity
+    const bufferSize = 1024; // Size of each chunk to send
+    for (let i = 0; i < float32Arrays.length; i += bufferSize) {
+        const end = Math.min(i + bufferSize, float32Arrays.length);
+        const chunk = float32Arrays.slice(i, end);
+        audioWorkletNode.port.postMessage({
+			method: "buffer",
+			args: { channelData: [chunk], sampleRate: audioBuffer.sampleRate },
+		});
+    }
+
+
+	audioWorkletNode.port.postMessage({ method: "end" });
+
+    console.log("All audio data sent to AudioWorkletNode");
 }
 
+// Ensure you have added the audio processor script and instantiated the AudioWorkletNode appropriately
+// Example:
+// const audioContext = new AudioContext();
+// await audioContext.audioWorklet.addModule('path/to/your/audio-processor.js');
+// const audioWorkletNode = new AudioWorkletNode(audioContext, 'playback-processor');
+// PlayAudioFromFilePath('path/to/your/audiofile.wav', audioWorkletNode).catch(console.error);
 
+
+export { getAudioStreamFromTextInput, getAudioStreamFromAudioInput, playAudioFromFilePath};

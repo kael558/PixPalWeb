@@ -1,73 +1,44 @@
-import {  useState } from 'react';
+import {  useState, useEffect, useRef } from 'react';
 import Scene from '../components/AnimatedSphere/Scene';
-import Toolbar from '../components/toolbar/Toolbar';
-import ChatInput from '../components/ChatInput';
-import AuthenticationComponent from '../components/AuthComponent';
-import TokensComponent from '../components/TokensComponent';
+
+import ChatPageComponent from '../components/ChatPageComponent';
+
 
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-import { getAudioStreamFromTextInput, getAudioStreamFromAudioInput } from '../components/AudioPlayer/AudioPlayer';  // Adjust the import path as necessary
-import { useAuth } from '../hooks/useAuth';
-import { useLocalStorage } from '../hooks/useLocalStorage';
 
 
 const audioContext = new AudioContext({ sampleRate: 48000 });
-let audioWorkletNode;
 
-(async ()=>{
-    await audioContext.audioWorklet.addModule('AudioStreamProcessor.js');
-    audioWorkletNode = new AudioWorkletNode(audioContext, 'stream-audio-processor');
-
-    audioWorkletNode.connect(audioContext.destination);
-})();
 
 function ChatPage(){
-    const [messages, setMessages] = useLocalStorage('messages', []);
-    console.log(messages);
-    const [isLoginVisible, setLoginVisible] = useState(false);
-    const [isTokensPanelVisible, setTokensPanelVisible] = useState(false);
+    const [audioWorkletNode, setAudioWorkletNode] = useState(null);
+    const nodeRef = useRef(null); 
 
-    const { getAccessToken } = useAuth();
+    useEffect(() => {
+        const initAudioWorkletNode = async () => {
+            try {
+                await audioContext.audioWorklet.addModule('AudioStreamProcessor.js');
+                const node = new AudioWorkletNode(audioContext, 'stream-audio-processor');
+                node.connect(audioContext.destination);
+                setAudioWorkletNode(node);
+                nodeRef.current = node;
+            } catch (error) {
+                console.error("Failed to load audio worklet module or create node:", error);
+                toast.error("Audio output failed to load. Please refresh the page and try again.");
+            }
+        };
 
-    const addMessage = (role, content) => {
-        console.log("Adding message:", { role, content })
+        initAudioWorkletNode();
 
-        console.log("Current messages:", messages);
+        return () => {
+            nodeRef.current?.disconnect();
+        };
+    }, []);
 
-        setMessages(prevMessages => [...prevMessages, { role, content }]);
-    };
-      
-    const onMessageSend = async (content) => {
-        const accessToken = await getAccessToken();
-        if (!accessToken) {
-            toast.error('Please log in to send messages');
-            return;
-        }
-
-        if (audioContext.state === 'suspended') {
-            await audioContext.resume();
-        }
-
-        setMessages(prevMessages => [...prevMessages, { role: "user", content }]);
-        getAudioStreamFromTextInput(messages, "Kael", accessToken, audioWorkletNode, addMessage);
-    };
-
-    const onAudioSend = async (chunks) => {
-        const accessToken = await getAccessToken();
-        if (!accessToken) {
-            toast.error('Please log in to send messages');
-            return;
-        }
-
-        if (audioContext.state === 'suspended') {
-            await audioContext.resume();
-        }
-
-        const blob = new Blob(chunks, { type: "audio/webm" });
-
-        getAudioStreamFromAudioInput(blob, messages, "Kael", accessToken, audioWorkletNode, addMessage);
+    if (!audioWorkletNode) {
+        return <div>Loading audio components...</div>;
     }
 
     return (
@@ -86,13 +57,7 @@ function ChatPage(){
         
             />
             <Scene audioWorkletNode={audioWorkletNode}/>
-            <Toolbar showLoginUI={() => setLoginVisible(true)} showTokensPanel={() => setTokensPanelVisible(true)}/>
-            <ChatInput onSend={onMessageSend} onAudio={onAudioSend}/>
-            <AuthenticationComponent isVisible={isLoginVisible} onClose={() => setLoginVisible(false)}/>
-            <TokensComponent isVisible={isTokensPanelVisible} onClose={() => {
-                console.log('Closing Tokens Panel');
-                return setTokensPanelVisible(false)
-            }}/>
+            <ChatPageComponent audioWorkletNode={audioWorkletNode}/>
         </div>
     )
 }

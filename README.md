@@ -12,12 +12,12 @@ Today:
 [x] - Record audio -> send to backend -> get response 
 [x] - CHeck memory -> memory is fixed to local storage
 [x] - Randomize orb movement parameters
-[ ] - Record high quality audio because transcription sucks otherwise.
-Build
+[x] - Fix re-rendering of orb
+[x] - Fix audio bugging, think it is fixed :)
+[x] - Basic onboarding sequence with button and name input
 
-[ ] - Use multi part on first messages to make sure there is no overflow
-[ ] - Flush audio worklet on end
-[ ] - Basic onboarding sequence
+Build
+[ ] - Use multi part on first messages to make sure there is no overflow (probably not necessary because it won't be chunked)
 [ ] - check iPhone 15+, chrome and safari
 [ ] - Automatically show token shop, change settings, privacy policy
 [ ] - Stress test!
@@ -38,6 +38,7 @@ Backlogged:
 [ ] - Glow on voice activity
 [ ] - Cooler voice recording UI based off Daesol's redesign
 [ ] - VAD chatting (not super important, but should be an option)
+[ ] - Record high quality audio because transcription sucks otherwise.
 
 Optimizations:
 [ ] - Sentence split first sentence and group rest. 
