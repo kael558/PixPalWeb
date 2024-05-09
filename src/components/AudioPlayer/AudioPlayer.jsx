@@ -1,28 +1,37 @@
 const textDecoder = new TextDecoder("utf-8");
 
-async function parseStream(response, audioWorkletNode, addMessage, getUserMessage=false) {
+async function parseStream(response, audioWorkletNode, addMessage, showComponent, getUserMessage=false) {
 	const reader = response.body.getReader();
 
+
 	if (getUserMessage){
-		const { done: initialDone, value: initialValue } = await reader.read();
+		const { done: initialDone, value: userMessageValue } = await reader.read();
 		if (initialDone) {
 			throw new Error("Stream ended prematurely");
 		}
 
-		const userMessage = textDecoder.decode(initialValue);
+		const userMessage = textDecoder.decode(userMessageValue);
 
 		addMessage('user', userMessage);
 	}
 
-	const { done: initialDone, value: initialValue } = await reader.read();
+	const { done: isDone, value: componentList } = await reader.read();
+	if (isDone) {
+		throw new Error("Stream ended prematurely");
+	}
+
+	const components = JSON.parse(textDecoder.decode(componentList));
+	for (const component of components) {
+		showComponent(component);
+	}
+
+	const { done: initialDone, value: assistantMessageValue } = await reader.read();
 	if (initialDone) {
 		throw new Error("Stream ended prematurely");
 	}
 
 	// Assuming the text is short and comes in a single chunk
-	const assistantMessage = textDecoder.decode(initialValue);
-	console.log("Initial message from server:", assistantMessage);
-
+	const assistantMessage = textDecoder.decode(assistantMessageValue);
 	addMessage('assistant', assistantMessage);
 
 	let overflow = null;
@@ -105,7 +114,8 @@ async function getAudioStreamFromAudioInput(
   username,
   accessToken,
   audioWorkletNode,
-  addMessage
+  addMessage,
+  showComponent
 ) {
   if (!audioWorkletNode) {
     throw new Error("AudioWorkletNode is not initialized");
@@ -130,7 +140,7 @@ async function getAudioStreamFromAudioInput(
     throw new Error("Network response was not ok");
   }
 
-  await parseStream(response, audioWorkletNode, addMessage, true); 
+  await parseStream(response, audioWorkletNode, addMessage, showComponent, true); 
 }
 
 
@@ -139,7 +149,8 @@ async function getAudioStreamFromTextInput(
 	username,
 	accessToken,
 	audioWorkletNode,
-	addMessage
+	addMessage,
+	showComponent
 ) {
 	if (!audioWorkletNode) {
 		throw new Error("AudioWorkletNode is not initialized");
@@ -164,7 +175,7 @@ async function getAudioStreamFromTextInput(
 		throw new Error("Network response was not ok");
 	}
 
-  await parseStream(response, audioWorkletNode, addMessage);
+  await parseStream(response, audioWorkletNode, addMessage, showComponent);
 }
 
 
@@ -172,11 +183,9 @@ async function playAudioFromFilePath(audioFilePath, audioWorkletNode) {
     const audioContext = audioWorkletNode.context;
 
 	if (audioContext.state !== 'running') {
-		console.log("Resuming audio context");
 		await audioContext.resume();
 	}
 	
-
     // Fetch the audio file from the provided path
     const response = await fetch(audioFilePath);
     if (!response.ok) {
@@ -188,7 +197,6 @@ async function playAudioFromFilePath(audioFilePath, audioWorkletNode) {
 
     // Decode the audio data from the ArrayBuffer
     const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
-	console.log("Audio buffer decoded", audioBuffer.sampleRate, audioBuffer.length);
 
     // Process and send the decoded audio data to the AudioWorkletNode
     const float32Arrays = audioBuffer.getChannelData(0); // Assuming mono audio for simplicity

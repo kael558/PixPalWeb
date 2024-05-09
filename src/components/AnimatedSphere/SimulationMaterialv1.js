@@ -232,12 +232,12 @@ class SimulationMaterial extends THREE.ShaderMaterial {
 
     const simulationUniforms = {
       positions: { value: positionsTexture },
-      uFrequency: { value: 0.25 },
+      uFrequency: { value: 0.2 },
       uTime: { value: 0 },
       uModulationSpeed: { value: 1.1 }, // Speed of the sine wave modulation
-        uModulationScale: { value: 0.5 }, // Scale of the modulation effect
+        uModulationScale: { value: 0.3 }, // Scale of the modulation effect
         uModulationFrequency: { value: 0.2 }, // Frequency modulation factor
-        uModulationAmplitude: { value: 0.3 } // Amplitude modulation factor
+        uModulationAmplitude: { value: 0.2 } // Amplitude modulation factor
     };
 
     super({

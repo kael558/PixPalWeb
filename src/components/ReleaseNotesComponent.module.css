@@ -1,0 +1,18 @@
+.releaseNotes {
+    color: #666;
+    font-size: 14px;
+    margin: 0;
+  }
+  
+  /* Specific styles for h2 elements within the markdown */
+  .releaseNotes h3 {
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+  
+  /* You can add more specific selectors for other elements if needed */
+  .releaseNotes pre {
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+  

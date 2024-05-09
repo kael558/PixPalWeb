@@ -5,6 +5,10 @@ import ChatInput from '../components/ChatInput';
 import AuthenticationComponent from '../components/AuthComponent';
 import TokensComponent from '../components/TokensComponent';
 import OnboardingComponent from '../components/OnboardingComponent';
+import PrivacyPolicyComponent from '../components/PrivacyPolicyComponent';
+import ReleaseNotesComponent from './ReleaseNotesComponent';
+
+import { CURRENT_VERSION } from "../Constants";
 
 import {  toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -13,21 +17,43 @@ import { getAudioStreamFromTextInput, getAudioStreamFromAudioInput } from '../co
 import { useAuth } from '../hooks/useAuth';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 
-
-
-
-
 function ChatPageComponent({ audioWorkletNode }){
     const [messages, setMessages] = useLocalStorage('messages', []);
     const [name, setName] = useLocalStorage("name", "");
-
+    const [version, setVersion] = useLocalStorage("appVersion", "0.0.0");
+    const [isPrivacyPolicyAccepted, setPrivacyPolicyAccepted] = useLocalStorage("privacyPolicyAccepted", false);
 
     const [isLoginVisible, setLoginVisible] = useState(false);
     const [isTokensPanelVisible, setTokensPanelVisible] = useState(false);
     const [isOnboardingVisible, setOnboardingVisible] = useState(name === "");
-
+    const [isPrivacyPolicyVisible, setPrivacyPolicyVisible] = useState(!isPrivacyPolicyAccepted);
+    const [isReleaseNotesVisible, setReleaseNotesVisible] = useState(version !== CURRENT_VERSION);
 
     const { getAccessToken } = useAuth();
+
+    const showComponent = (component) => {
+        switch (component) {
+            case "Token Shop":
+                setTokensPanelVisible(true);
+                break;
+            case "Privacy Policy":
+                setPrivacyPolicyVisible(true);
+                break;
+            default:
+                break;
+        }
+    }
+
+
+    const acceptPrivacyPolicy = () => {
+        setPrivacyPolicyAccepted(true);
+        setPrivacyPolicyVisible(false);
+    }
+
+    const acceptNewVersion = () => {
+        setVersion(CURRENT_VERSION);
+        setReleaseNotesVisible(false);
+    }
 
     const addMessage = (role, content) => {
         setMessages(prevMessages => [...prevMessages, { role, content }]);
@@ -42,7 +68,7 @@ function ChatPageComponent({ audioWorkletNode }){
 
         setMessages(prevMessages => [...prevMessages, { role: "user", content }]);
         try {
-            await getAudioStreamFromTextInput(messages, name, accessToken, audioWorkletNode, addMessage);
+            await getAudioStreamFromTextInput(messages, name, accessToken, audioWorkletNode, addMessage, showComponent);
         } catch (error) {
             console.error(error);
             toast.error("There was an error with the server");
@@ -58,7 +84,7 @@ function ChatPageComponent({ audioWorkletNode }){
 
         try{ 
             const blob = new Blob(chunks, { type: 'audio/webm' });
-            await getAudioStreamFromAudioInput(blob, messages, name, accessToken, audioWorkletNode, addMessage);
+            await getAudioStreamFromAudioInput(blob, messages, name, accessToken, audioWorkletNode, addMessage, showComponent);
         } catch (error){
             console.error(error);
             toast.error("There was an error with the server");
@@ -72,6 +98,8 @@ function ChatPageComponent({ audioWorkletNode }){
             <AuthenticationComponent isVisible={isLoginVisible} onClose={() => setLoginVisible(false)}/>
             <TokensComponent isVisible={isTokensPanelVisible} onClose={() => setTokensPanelVisible(false)}/>
             <OnboardingComponent isVisible={isOnboardingVisible} onClose={() => setOnboardingVisible(false)} audioWorkletNode={audioWorkletNode} name={name} setName={setName}  />
+            <PrivacyPolicyComponent isVisible={isPrivacyPolicyVisible} onClose={acceptPrivacyPolicy}/>
+            <ReleaseNotesComponent isVisible={isReleaseNotesVisible} onClose={acceptNewVersion} version={version}/>
         </div>
     )
 }

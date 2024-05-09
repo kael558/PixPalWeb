@@ -41,8 +41,6 @@ function ChatInput({ onSend, onAudio }) {
 		voiceInputRef.current.startRecording();
 	};
 
-
-
 	const stopRecording = async (event) => {
 		event.preventDefault(); // Prevent form submission
 		event.stopPropagation(); // Stop event bubbling up to form
