@@ -13,11 +13,11 @@ import { CURRENT_VERSION } from "../Constants";
 import {  toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-import { getAudioStreamFromTextInput, getAudioStreamFromAudioInput } from '../components/AudioPlayer/AudioPlayer';  // Adjust the import path as necessary
 import { useAuth } from '../hooks/useAuth';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 
-function ChatPageComponent({ audioWorkletNode }){
+
+function ChatPageComponent({ streamManager }){
     const [messages, setMessages] = useLocalStorage('messages', []);
     const [name, setName] = useLocalStorage("name", "");
     const [version, setVersion] = useLocalStorage("appVersion", "0.0.0");
@@ -66,9 +66,25 @@ function ChatPageComponent({ audioWorkletNode }){
             return;
         }
 
-        setMessages(prevMessages => [...prevMessages, { role: "user", content }]);
+        const updatedMessages = [...messages, { role: "user", content }];
+        setMessages(updatedMessages);
+        
         try {
-            await getAudioStreamFromTextInput(messages, name, accessToken, audioWorkletNode, addMessage, showComponent);
+            const url = "https://lg5m7pmkstz3ims7qkmh7u4xfi0gjebf.lambda-url.us-east-1.on.aws/";
+            const options ={
+                method: "POST",
+                headers: {
+                    Authorization: "Bearer " + accessToken,
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    messages: updatedMessages,
+                    username: name
+                }),
+            }
+
+            const response = await streamManager.fetchData(url, options);
+            await streamManager.parseStream(response, addMessage, showComponent);
         } catch (error) {
             console.error(error);
             toast.error("There was an error with the server");
@@ -84,7 +100,24 @@ function ChatPageComponent({ audioWorkletNode }){
 
         try{ 
             const blob = new Blob(chunks, { type: 'audio/webm' });
-            await getAudioStreamFromAudioInput(blob, messages, name, accessToken, audioWorkletNode, addMessage, showComponent);
+
+            const fd = new FormData();
+            fd.append("messages", JSON.stringify(messages.slice(-5)));
+            fd.append("username", name);
+            fd.append("file", blob, "speech.webm");
+
+            const url = "https://jfjrhqljjddvfemmcwbtn6fvmi0wndeu.lambda-url.us-east-1.on.aws/";
+            const options = {
+                method: "POST",
+                headers: {
+                    Authorization: "Bearer " + accessToken,
+                },
+                body: fd,
+            }
+
+            const response = await streamManager.fetchData(url, options);
+            await streamManager.parseStream(response, addMessage, showComponent, true);
+            //await getAudioStreamFromAudioInput(blob, messages, name, accessToken, audioWorkletNode, addMessage, showComponent, abortController);
         } catch (error){
             console.error(error);
             toast.error("There was an error with the server");
@@ -93,11 +126,11 @@ function ChatPageComponent({ audioWorkletNode }){
 
     return (
         <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
-            <Toolbar showLoginUI={() => setLoginVisible(true)} showTokensPanel={() => setTokensPanelVisible(true)}/>
-            <ChatInput onSend={onMessageSend} onAudio={onAudioSend}/>
+            <Toolbar showLoginUI={() => setLoginVisible(true)} showTokensPanel={() => setTokensPanelVisible(true)} streamManager={streamManager}/>
+            <ChatInput onSend={onMessageSend} onAudio={onAudioSend} streamManager={streamManager}/>
             <AuthenticationComponent isVisible={isLoginVisible} onClose={() => setLoginVisible(false)}/>
             <TokensComponent isVisible={isTokensPanelVisible} onClose={() => setTokensPanelVisible(false)}/>
-            <OnboardingComponent isVisible={isOnboardingVisible} onClose={() => setOnboardingVisible(false)} audioWorkletNode={audioWorkletNode} name={name} setName={setName}  />
+            <OnboardingComponent isVisible={isOnboardingVisible} onClose={() => setOnboardingVisible(false)} streamManager={streamManager} name={name} setName={setName}  />
             <PrivacyPolicyComponent isVisible={isPrivacyPolicyVisible} onClose={acceptPrivacyPolicy}/>
             <ReleaseNotesComponent isVisible={isReleaseNotesVisible} onClose={acceptNewVersion} version={version}/>
         </div>

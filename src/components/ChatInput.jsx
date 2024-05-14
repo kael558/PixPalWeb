@@ -6,7 +6,7 @@ import { toast } from "react-toastify";
 import { useAuth } from "../hooks/useAuth";
 
 
-function ChatInput({ onSend, onAudio }) {
+function ChatInput({ onSend, onAudio, streamManager }) {
 	const [message, setMessage] = useState("");
 	const [isRecording, setIsRecording] = useState(false);
 
@@ -20,7 +20,15 @@ function ChatInput({ onSend, onAudio }) {
 
 	const handleSubmit = (event) => {
 		event.preventDefault();
-		onSend(message);
+
+		const userMessage = message.trim();
+		if (!userMessage) {
+			toast.error("Please enter a message to send");
+			return;
+		}
+
+		streamManager.stop(); // interrupt any ongoing audio playback
+		onSend(userMessage);
 		setMessage("");
 	};
 
@@ -38,6 +46,8 @@ function ChatInput({ onSend, onAudio }) {
         }
 
 		setIsRecording(true);
+		streamManager.stop(); // interrupt any ongoing audio playback
+
 		voiceInputRef.current.startRecording();
 	};
 
@@ -59,7 +69,8 @@ function ChatInput({ onSend, onAudio }) {
             bottom: "10px",
             left: "50%",
             transform: "translateX(-50%)",
-            width: "60%",
+            width: "100%",
+			maxWidth: "600px",
             display: "flex",
             backgroundColor: "#068FFF",
             backdropFilter: "blur(10px)",
@@ -79,6 +90,8 @@ function ChatInput({ onSend, onAudio }) {
                     width: "100%"
                 }}
 			>
+	
+
 				<input
 					type="text"
 					id="message"
@@ -118,9 +131,7 @@ function ChatInput({ onSend, onAudio }) {
 				</button>
 			</form>
 			<button
-				onMouseDown={startRecording}
-				onMouseUp={stopRecording}
-				onMouseLeave={isRecording ? stopRecording : null}
+				onClick={isRecording ? stopRecording : startRecording}
 				style={{
 					marginLeft: "10px",
 					background: isRecording ? "red" : "green",

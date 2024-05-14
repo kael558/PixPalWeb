@@ -170,8 +170,8 @@ void main() {
   vec3 pos = texture2D(positions, vUv).rgb;
   vec3 curlPos = texture2D(positions, vUv).rgb;
 
-  pos = modulateCurlNoise(pos, uTime);
-  curlPos = modulateCurlNoise(curlPos, uTime);
+  pos = modulateCurlNoise(pos, uTime) + 0.5;
+  curlPos = modulateCurlNoise(curlPos, uTime) + 0.5;
   curlPos += modulateCurlNoise(curlPos * uFrequency * 2.0, uTime) * 0.25;
 
   gl_FragColor = vec4(mix(pos, curlPos, sin(uTime)), 1.0);
@@ -181,6 +181,7 @@ void main() {
 const simulationVertexShader= `
 
 varying vec2 vUv;
+
 
 void main() {
   vUv = uv;
@@ -210,7 +211,7 @@ const getRandomData = (width, height) => {
     const theta = THREE.MathUtils.randFloatSpread(360); 
     const phi = THREE.MathUtils.randFloatSpread(360); 
 
-    data[stride] =  distance * Math.sin(theta) * Math.cos(phi)
+    data[stride] =  distance * Math.sin(theta) * Math.cos(phi);
     data[stride + 1] =  distance * Math.sin(theta) * Math.sin(phi);
     data[stride + 2] =  distance * Math.cos(theta);
     data[stride + 3] =  1.0; // this value will not have any impact
@@ -221,6 +222,8 @@ const getRandomData = (width, height) => {
 
 class SimulationMaterial extends THREE.ShaderMaterial {
   constructor(size) {
+
+
     const positionsTexture = new THREE.DataTexture(
       getRandomData(size, size),
       size,
@@ -237,8 +240,10 @@ class SimulationMaterial extends THREE.ShaderMaterial {
       uModulationSpeed: { value: 1.1 }, // Speed of the sine wave modulation
         uModulationScale: { value: 0.3 }, // Scale of the modulation effect
         uModulationFrequency: { value: 0.2 }, // Frequency modulation factor
-        uModulationAmplitude: { value: 0.2 } // Amplitude modulation factor
+        uModulationAmplitude: { value: 0.2 }, // Amplitude modulation factor
+
     };
+    
 
     super({
       uniforms: simulationUniforms,

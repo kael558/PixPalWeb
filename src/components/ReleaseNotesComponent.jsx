@@ -3,7 +3,14 @@ import ReactMarkdown from "react-markdown";
 import style from "./ReleaseNotesComponent.module.css";
 
 function getApplicableReleaseNotes(version) {
-    const totalReleaseNotes = `### Version 0.9.0 *[Beta]*
+    const totalReleaseNotes = `### Version 0.9.1 *[Beta]*
+	- Change audio input to tap instead of hold
+	- Now interrupts companion on new message
+	- Fix Asterisk spam
+	- Fix mobile UI
+	- Add mute button
+	
+	### Version 0.9.0 *[Beta]*
     - Added support for chat messages
     - Improved audio quality
     - Conversation style chat
@@ -30,7 +37,7 @@ function getApplicableReleaseNotes(version) {
     const formattedVersions = versions.map(version => `### ${version}`);
     const versionIndex = formattedVersions.findIndex(text => text.includes(`Version ${version}`));
  
-    return formattedVersions.slice(0, versionIndex + 1).join('\n\n');
+    return formattedVersions.slice(0, versionIndex).join('\n\n');
 }
 
 const ReleaseNotesComponent = ({ isVisible, onClose, version }) => {

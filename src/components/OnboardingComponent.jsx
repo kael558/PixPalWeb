@@ -1,15 +1,14 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { playAudioFromFilePath } from "./AudioPlayer/AudioPlayer";
 import { toast } from "react-toastify";
 
-function OnboardingComponent({ isVisible, onClose, audioWorkletNode, name, setName }) {
+function OnboardingComponent({ isVisible, onClose, streamManager, name, setName }) {
 	const play_onboarding = async () => {	
         if (name === "") {
             toast.error("Please enter a name");
             return;
         }
 
-        playAudioFromFilePath("onboarding.wav", audioWorkletNode).catch(console.error);
+		streamManager.playAudioFile("onboarding.wav").catch(console.error);
         onClose();
 	};
 

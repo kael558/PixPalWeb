@@ -14,31 +14,27 @@ Today:
 [x] - Randomize orb movement parameters
 [x] - Fix re-rendering of orb
 [x] - Fix audio bugging, think it is fixed :)
-[x] - Basic onboarding sequence with button and name input
+[x] - Basic onboarding sequence with button and name input - "Hey, I'm your personal AI, you can talk to me about anything. You can tap the screen to start recording, and tap again to stop. You can also type messages."
+[x] - Add automated open privacy policy/token shop
+[x] - User interrupts + streamed response refactor
+[x] - Fix UI for mobile
+[ ] - Fix tick in sound
+[ ] - Anonymous sign in at start
+[ ] - Onboarding name ask
+[ ] - The orb grows on start-up
+[ ] - Glow on voice activity
 
 Build
-[ ] - Conversation style! Speak in shorter sentences but add pauses to wait for reply. If reply comes through, then you interrupt and go again. 
 [ ] - Firebase analytics
-
-[ ] - Use multi part on first messages to make sure there is no overflow (probably not necessary because it won't be chunked)
 [ ] - check iPhone 15+, chrome and safari
-[ ] - Automatically show token shop, change settings, privacy policy
 [ ] - Stress test!
 [ ] - Text output on screen
 
 LAUNCH!
-
 Start sequence:
-[ ] - Onboarding sequence - 
-  - "Hey, I'm your personal AI, you can talk to me about anything. You can tap the screen to start recording, and tap again to stop. You can also type messages."
-  - Ask for your settings. 
-
-Onboarding sequence:
-  - The orb grows on start-up
-
+[ ] - Onboarding sequence expansion to ask for role type
 
 Backlogged:
-[ ] - Glow on voice activity
 [ ] - Cooler voice recording UI based off Daesol's redesign
 [ ] - VAD chatting (not super important, but should be an option)
 [ ] - Record high quality audio because transcription sucks otherwise.
@@ -46,6 +42,10 @@ Backlogged:
 Optimizations:
 [ ] - Sentence split first sentence and group rest. 
 [ ] - Whisper Jax to bring down costs of transcription
+
+
+
+
 
 
 

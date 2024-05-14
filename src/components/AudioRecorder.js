@@ -2,7 +2,6 @@
 //https://developer.mozilla.org/en-US/docs/Web/Media/Formats/Audio_codecs
 class VoiceInput {
     constructor(next) {
-        this.abortController = new AbortController();
         this.mediaStream = null;
         this.mediaRecorder = null;
         this.chunks = [];

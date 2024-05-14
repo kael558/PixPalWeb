@@ -1,9 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Tokens from './TokensBar';
 
 import { useAuth } from '../../hooks/useAuth';
 
-function Toolbar({ showLoginUI, showTokensPanel }) {
+function Toolbar({ showLoginUI, showTokensPanel, streamManager }) {
   const { isAuthenticated, logout } = useAuth();
 
   const handleLogout = () => {
@@ -13,12 +13,16 @@ function Toolbar({ showLoginUI, showTokensPanel }) {
 
   // State to manage the visibility of the hamburger menu
   const [menuOpen, setMenuOpen] = useState(false);
+  const [isMuted, setIsMuted] = useState(streamManager.isMuted());
+
+  useEffect(() => {
+    streamManager.setMuted(isMuted);
+  }, [isMuted, streamManager]);
 
   // Toggle the menu's visibility
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
   };
-
 
   return (
     <div
@@ -34,10 +38,16 @@ function Toolbar({ showLoginUI, showTokensPanel }) {
         padding: '10px',
       }}
     >
-     
+      <div style={{ margin: '10px', cursor: 'pointer', color: "white", fontSize: "32px" }} onClick={() => streamManager.stop()}>
+        ⏸️
+      </div>
+      <div style={{ margin: '10px', cursor: 'pointer', color: "white", fontSize: "32px" }} onClick={() => setIsMuted(!isMuted)}>
+        {isMuted ? '🔇' : '🔊'}
+      </div>
       <div style={{ margin: '10px', cursor: 'pointer', color: "white", fontSize: "32px" }} onClick={toggleMenu}>
         ☰
       </div>
+
       {menuOpen && (
         <div
           style={{

@@ -1,27 +1,40 @@
-import {  useState, useEffect, useRef } from 'react';
 import Scene from '../components/AnimatedSphere/Scene';
 
 import ChatPageComponent from '../components/ChatPageComponent';
+import StreamManager from '../components/AudioPlayer/StreamManager';
 
-
-import { ToastContainer, toast } from 'react-toastify';
+import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-
-
-const audioContext = new AudioContext({ sampleRate: 48000 });
+//const audioContext = new AudioContext({ sampleRate: 48000 });
+const streamManager = new StreamManager();
+(async () => {
+    await streamManager.setupAudioWorkletNode();
+})();
 
 
 function ChatPage(){
-    const [audioWorkletNode, setAudioWorkletNode] = useState(null);
-    const nodeRef = useRef(null); 
+  
+    //const [audioWorkletNode, setAudioWorkletNode] = useState(null);
+    //const nodeRef = useRef(null); 
 
-    useEffect(() => {
+    /*useEffect(() => {
         const initAudioWorkletNode = async () => {
             try {
                 await audioContext.audioWorklet.addModule('AudioStreamProcessor.js');
                 const node = new AudioWorkletNode(audioContext, 'stream-audio-processor');
                 node.connect(audioContext.destination);
+                setAudioWorkletNode(node);
+                nodeRef.current = node;
+                console.log("Audio worklet node created");
+            } catch (error) {
+                console.error("Failed to load audio worklet module or create node:", error);
+                toast.error("Audio output failed to load. Please refresh the page and try again.");
+            }
+        };
+        const initAudioWorkletNode = async () => {
+            try {
+                const node = await streamManager.setupAudioWorkletNode();
                 setAudioWorkletNode(node);
                 nodeRef.current = node;
                 console.log("Audio worklet node created");
@@ -36,11 +49,11 @@ function ChatPage(){
         return () => {
             nodeRef.current?.disconnect();
         };
-    }, []);
+    }, []);*/
 
-    if (!audioWorkletNode) {
+    /*if (!streamManager.audioWorkletNode) {
         return <div>Loading audio components...</div>;
-    }
+    }*/
 
     return (
         <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', backgroundColor: 'black' }}>
@@ -57,8 +70,8 @@ function ChatPage(){
                 theme='dark'
         
             />
-            <Scene audioWorkletNode={audioWorkletNode}/>
-            <ChatPageComponent audioWorkletNode={audioWorkletNode}/>
+            <Scene streamManager={streamManager}/>
+            <ChatPageComponent streamManager={streamManager}/>
         </div>
     )
 }

@@ -1,2 +1,2 @@
 // constants.js
-export const CURRENT_VERSION = '0.9.0';
+export const CURRENT_VERSION = '0.9.1';
