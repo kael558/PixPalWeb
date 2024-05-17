@@ -17,6 +17,8 @@ const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
     const auth = getAuth();
 
+
+
     const getAccessToken = async () => {
         if (!auth.currentUser) {
             return false;
@@ -52,6 +54,16 @@ export const AuthProvider = ({ children }) => {
 
     // call this function when you want to authenticate the user
     const registerWithEmailAndPassword = async (data) => {
+        if (!data.email || !data.password) {
+            toast.error('Invalid email or password');
+            return false;
+        }
+
+        // if the user is anonymous, link the anonymous account to the email
+        if (auth.currentUser.isAnonymous) {
+            return await linkAnonymousToEmail(data);
+        }
+
         try {
             const user = await createUserWithEmailAndPassword(auth, data.email, data.password);
             if (!user) {
@@ -67,25 +79,34 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
+    const linkAnonymousToEmail = async (data) => {
+        try {
+            const credential = EmailAuthProvider.credential(data.email, data.password);
+            const userCredential = await linkWithCredential(auth.currentUser, credential);
 
-    const loginWithEmailAndPassword = async (data) => {
-        // if user is anonymous, then connect the anonymous user to the email/password account
-        if (auth.currentUser?.isAnonymous) {
-            try {
-                const credential = EmailAuthProvider.credential(data.email, data.password);
-                const userCredential = await linkWithCredential(auth.currentUser, credential);
-    
-                if (!userCredential) {
-                    toast.error('Failed to link anonymous user');
-                    return false;
-                }
-    
-                toast.success('Linked anonymous user');
-                return true;
-            } catch (error) {
+            if (!userCredential) {
                 toast.error('Failed to link anonymous user');
                 return false;
             }
+
+            toast.success('Successfully linked anonymous user');
+            return true;
+        } catch (error) {
+            toast.error('Failed to link anonymous user');
+            return false;
+        }
+    };
+
+
+    const loginWithEmailAndPassword = async (data) => {
+        if (auth.currentUser && auth.currentUser.isAnonymous) {
+            toast.error('You must first register an account to link your anonymous account');
+            return false;
+        }
+
+        if (auth.currentUser){
+            toast.error('You are already logged in');
+            return false;
         }
 
         try {
@@ -107,11 +128,6 @@ export const AuthProvider = ({ children }) => {
     const logout = () => {
         if (!auth.currentUser) {
             toast.error('No user logged in');
-            return;
-        }
-
-        if (auth.currentUser.isAnonymous) {
-            toast.error('Cannot log out anonymous user');
             return;
         }
 

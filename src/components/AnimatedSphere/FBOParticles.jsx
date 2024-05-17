@@ -5,7 +5,7 @@ import {
 	useRef,
 	useEffect} from "react";
 import * as THREE from "three";
-
+import { UnrealBloomPass } from 'three-stdlib'
 import SimulationMaterial from "./SimulationMaterialv1";
 
 const fragmentShader = `
@@ -18,7 +18,7 @@ void main() {
 const vertexShader = `
 uniform sampler2D uPositions;
 uniform float uTime;
-uniform float uTargetScale;
+uniform float uTargetGrowthScale;
 
 void main() {
   vec3 pos = texture2D(uPositions, position.xy).xyz;
@@ -93,7 +93,9 @@ const FBOParticles = ({ streamManager }) => {
 		if (!streamManager.audioWorkletNode) return;
 		if (!baseShaderMaterialRef.current) return;
 
-		//streamManager.audioWorkletNode.port.onmessage = (e) => {};
+		/*streamManager.audioWorkletNode.port.onmessage = (e) => {
+			simulationMaterialRef.current.uniforms.uAdditionalGrowthScale.value = 1.0 + e.data.averageLevel/10;
+		};*/
 
 		// TODO add glow effect - https://gist.github.com/ektogamat/af6cae96681679dde817e1f313278c8b
 		//audioWorkletNode.port.onmessage = (e) => {};
@@ -109,6 +111,9 @@ const FBOParticles = ({ streamManager }) => {
 
 		points.current.material.uniforms.uPositions.value = renderTarget.texture;
 		simulationMaterialRef.current.uniforms.uTime.value = clock.elapsedTime;
+
+		const growthScale = Math.min(1.0, clock.elapsedTime / 10);
+		simulationMaterialRef.current.uniforms.uTargetGrowthScale.value = growthScale;
 	});
 	return (
 		<>
@@ -132,7 +137,7 @@ const FBOParticles = ({ streamManager }) => {
 				</mesh>,
 				scene
 			)}
-			<points ref={points}>
+			<points ref={points} >
 				<bufferGeometry>
 					<bufferAttribute
 						attach="attributes-position"
@@ -143,6 +148,7 @@ const FBOParticles = ({ streamManager }) => {
 				</bufferGeometry>
 				<shaderMaterial
 					ref={baseShaderMaterialRef}
+					emissive="#f272c8"
 					blending={THREE.AdditiveBlending}
 					depthWrite={false}
 					fragmentShader={fragmentShader}

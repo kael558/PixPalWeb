@@ -2,16 +2,27 @@ import { useState, useEffect } from 'react';
 import Tokens from './TokensBar';
 
 import { useAuth } from '../../hooks/useAuth';
+import { Button, Dialog, DialogDismiss, DialogHeading } from "@ariakit/react";
 
 function Toolbar({ showLoginUI, showTokensPanel, streamManager }) {
-  const { isAuthenticated, logout } = useAuth();
+  const [open, setOpen] = useState(false);
+  const { isAuthenticated, logout, isAnonymous } = useAuth();
 
   const handleLogout = () => {
+    if (isAuthenticated() && isAnonymous()) {
+      setOpen(true);
+      return;
+    }
+
+    doLogout();
+  };
+
+  const doLogout = () => {
     logout();
     setMenuOpen(false);
   };
 
-  // State to manage the visibility of the hamburger menu
+
   const [menuOpen, setMenuOpen] = useState(false);
   const [isMuted, setIsMuted] = useState(streamManager.isMuted());
 
@@ -48,6 +59,25 @@ function Toolbar({ showLoginUI, showTokensPanel, streamManager }) {
         ☰
       </div>
 
+      <Dialog
+        open={open}
+        onClose={() => setOpen(false)}
+        getPersistentElements={() => document.querySelectorAll(".Toastify")}
+        backdrop={<div className="backdrop" />}
+        className="dialog"
+      >
+        <DialogHeading className="heading">Warning</DialogHeading>
+        <p className="description">
+          You are currently logged in as a guest. You will lose all your data if you log out. Are you sure you want to log out?
+        </p>
+        <div className="buttons">
+          <Button className="button" onClick={doLogout}>
+            Logout
+          </Button>
+          <DialogDismiss className="button secondary">Cancel</DialogDismiss>
+        </div>
+      </Dialog>
+
       {menuOpen && (
         <div
           style={{
@@ -65,8 +95,8 @@ function Toolbar({ showLoginUI, showTokensPanel, streamManager }) {
           }}
         >
            <Tokens showTokensPanel={showTokensPanel} />
-          {isAuthenticated() ? (
-            <button
+          {isAuthenticated() && (
+              <button
               onClick={handleLogout}
               style={{
                 marginTop: '10px',
@@ -80,21 +110,25 @@ function Toolbar({ showLoginUI, showTokensPanel, streamManager }) {
             >
               Logout
             </button>
-          ) : (
+          )}
+
+          {(!isAuthenticated() || isAnonymous()) && (
             <button
-              onClick={showLoginUI}
-              style={{
-                marginTop: '10px',
-                padding: '8px 20px',
-                borderRadius: '5px',
-                backgroundColor: '#4CAF50',
-                color: 'white',
-                border: 'none',
-                cursor: 'pointer'
-              }}
-            >
-              Login
-            </button>
+            onClick={showLoginUI}
+            style={{
+              marginTop: '10px',
+              padding: '8px 20px',
+              borderRadius: '5px',
+              backgroundColor: '#4CAF50',
+              color: 'white',
+              border: 'none',
+              cursor: 'pointer'
+            }}
+          >
+            Login
+          </button>
+           
+
           )}
         </div>
       )}

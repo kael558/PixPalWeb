@@ -11,6 +11,12 @@ uniform float uModulationAmplitude;
 uniform float uModulationSpeed; // Speed of modulation
 uniform float uModulationScale; // Scale of modulation effect
 
+uniform float uTargetGrowthScale;
+uniform float uAdditionalGrowthScale;
+
+uniform float uPreviousTotalGrowthScale;  // Previous growth scale
+
+
 varying vec2 vUv;
 
 
@@ -170,9 +176,17 @@ void main() {
   vec3 pos = texture2D(positions, vUv).rgb;
   vec3 curlPos = texture2D(positions, vUv).rgb;
 
+  float currentTotalGrowthScale = uTargetGrowthScale * uAdditionalGrowthScale;
+  float diff = currentTotalGrowthScale - uPreviousTotalGrowthScale;
+
+  float interpolatedGrowthScale = (uPreviousTotalGrowthScale + diff) * 0.5;
+
   pos = modulateCurlNoise(pos, uTime) + 0.5;
+  pos *= interpolatedGrowthScale;
+
   curlPos = modulateCurlNoise(curlPos, uTime) + 0.5;
   curlPos += modulateCurlNoise(curlPos * uFrequency * 2.0, uTime) * 0.25;
+  curlPos *= interpolatedGrowthScale;
 
   gl_FragColor = vec4(mix(pos, curlPos, sin(uTime)), 1.0);
 }
@@ -241,7 +255,8 @@ class SimulationMaterial extends THREE.ShaderMaterial {
         uModulationScale: { value: 0.3 }, // Scale of the modulation effect
         uModulationFrequency: { value: 0.2 }, // Frequency modulation factor
         uModulationAmplitude: { value: 0.2 }, // Amplitude modulation factor
-
+        uTargetGrowthScale: { value: 0.0 },
+        uAdditionalGrowthScale: { value: 1.0 },
     };
     
 

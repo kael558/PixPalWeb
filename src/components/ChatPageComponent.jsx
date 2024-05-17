@@ -1,4 +1,4 @@
-import {  useState } from 'react';
+import {  useState, useEffect } from 'react';
 
 import Toolbar from '../components/toolbar/Toolbar';
 import ChatInput from '../components/ChatInput';
@@ -7,6 +7,7 @@ import TokensComponent from '../components/TokensComponent';
 import OnboardingComponent from '../components/OnboardingComponent';
 import PrivacyPolicyComponent from '../components/PrivacyPolicyComponent';
 import ReleaseNotesComponent from './ReleaseNotesComponent';
+import StartComponent from './StartComponent';
 
 import { CURRENT_VERSION } from "../Constants";
 
@@ -23,13 +24,30 @@ function ChatPageComponent({ streamManager }){
     const [version, setVersion] = useLocalStorage("appVersion", "0.0.0");
     const [isPrivacyPolicyAccepted, setPrivacyPolicyAccepted] = useLocalStorage("privacyPolicyAccepted", false);
 
+    const [userMood, setUserMood] = useState("");
+    const [role, setRole] = useState("");
+
+
     const [isLoginVisible, setLoginVisible] = useState(false);
     const [isTokensPanelVisible, setTokensPanelVisible] = useState(false);
     const [isOnboardingVisible, setOnboardingVisible] = useState(name === "");
     const [isPrivacyPolicyVisible, setPrivacyPolicyVisible] = useState(!isPrivacyPolicyAccepted);
     const [isReleaseNotesVisible, setReleaseNotesVisible] = useState(version !== CURRENT_VERSION);
+    const [isStartVisible, setStartVisible] = useState(true);
 
     const { getAccessToken } = useAuth();
+
+
+    useEffect(() => {
+        if (!userMood) return;
+        onMessageSend("I'm feeling " + userMood);
+    }, [userMood]);
+
+    useEffect(() => {
+        if (!role) return;
+        onMessageSend("I want you to be my " + role);
+        setStartVisible(false);
+    }, [role]);
 
     const showComponent = (component) => {
         switch (component) {
@@ -79,7 +97,8 @@ function ChatPageComponent({ streamManager }){
                 },
                 body: JSON.stringify({
                     messages: updatedMessages,
-                    username: name
+                    username: name,
+                    role: role
                 }),
             }
 
@@ -130,9 +149,11 @@ function ChatPageComponent({ streamManager }){
             <ChatInput onSend={onMessageSend} onAudio={onAudioSend} streamManager={streamManager}/>
             <AuthenticationComponent isVisible={isLoginVisible} onClose={() => setLoginVisible(false)}/>
             <TokensComponent isVisible={isTokensPanelVisible} onClose={() => setTokensPanelVisible(false)}/>
-            <OnboardingComponent isVisible={isOnboardingVisible} onClose={() => setOnboardingVisible(false)} streamManager={streamManager} name={name} setName={setName}  />
+
             <PrivacyPolicyComponent isVisible={isPrivacyPolicyVisible} onClose={acceptPrivacyPolicy}/>
             <ReleaseNotesComponent isVisible={isReleaseNotesVisible} onClose={acceptNewVersion} version={version}/>
+            <StartComponent isVisible={isStartVisible}userMood={userMood} setUserMood={setUserMood} setRole={setRole}/>
+            <OnboardingComponent isVisible={isOnboardingVisible} onClose={() => setOnboardingVisible(false)} streamManager={streamManager} name={name} setName={setName}  />
         </div>
     )
 }

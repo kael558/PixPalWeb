@@ -36,6 +36,7 @@ class StreamManager {
     }
 
     async playAudioFile(audioFilePath) {
+        console.log("Playing audio file:", audioFilePath);
         const response = await this.fetchData(audioFilePath);
         const arrayBuffer = await response.arrayBuffer();
         if (this.audioContext.state !== "running") {

@@ -19,8 +19,10 @@ function AuthenticationComponent({ isVisible, onClose }) {
 
 	const handleRegister = async (event) => {
 		event.preventDefault();
-		console.log("Register Details:", { email, password });
-		registerWithEmailAndPassword({ email, password });
+
+        if (await registerWithEmailAndPassword({ email, password })){
+            onClose();
+        }
 	};
 
 	return (

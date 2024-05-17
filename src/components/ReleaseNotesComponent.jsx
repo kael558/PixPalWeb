@@ -3,7 +3,16 @@ import ReactMarkdown from "react-markdown";
 import style from "./ReleaseNotesComponent.module.css";
 
 function getApplicableReleaseNotes(version) {
-    const totalReleaseNotes = `### Version 0.9.1 *[Beta]*
+    const totalReleaseNotes = `### Version 0.9.2 *[Beta]*
+	- Mute and Interrupt buttons
+	- Fix UI for mobile
+	- Anonymous sign-in at start
+	- Orb grows on start-up
+	- Start sequence asking for mood and role
+	- Improved conversation quality
+	- Added improved FX to visuals
+	
+	### Version 0.9.1 *[Beta]*
 	- Change audio input to tap instead of hold
 	- Now interrupts companion on new message
 	- Fix Asterisk spam

@@ -18,30 +18,54 @@ Today:
 [x] - Add automated open privacy policy/token shop
 [x] - User interrupts + streamed response refactor
 [x] - Fix UI for mobile
-[ ] - Fix tick in sound
-[ ] - Anonymous sign in at start
-[ ] - Onboarding name ask
-[ ] - The orb grows on start-up
-[ ] - Glow on voice activity
+[x] - Anonymous sign in at start
+[x] - The orb grows on start-up
+[x] - Onboarding name ask, 2 questions: onboarding, How are you feeling right now? What do you want from this?
+[ ] - Mood changes with color
+[ ] - NSFW models
+[ ] - UI
+[ ] - Change talking speed & volume based on time.
+
+
+
+
 
 Build
 [ ] - Firebase analytics
 [ ] - check iPhone 15+, chrome and safari
 [ ] - Stress test!
 [ ] - Text output on screen
+[ ] - Make orb interactive, moving cursor displaces particles
+[ ] - Shorten pauses for conversation unless.
+
 
 LAUNCH!
-Start sequence:
-[ ] - Onboarding sequence expansion to ask for role type
 
 Backlogged:
 [ ] - Cooler voice recording UI based off Daesol's redesign
 [ ] - VAD chatting (not super important, but should be an option)
-[ ] - Record high quality audio because transcription sucks otherwise.
 
 Optimizations:
 [ ] - Sentence split first sentence and group rest. 
 [ ] - Whisper Jax to bring down costs of transcription
+[ ] - Send input audio in chunks to minimize content upload time
+
+Auth flow:
+Null user:
+- registers account (new account)
+- signs in 
+Anon user:
+- registers account (link to email)
+- signs in
+- signs out (warning of data loss)
+Regular user
+ - signs in
+
+Results in:
+- First time user is signed in anon
+
+
+anon user trying to sign in with another email -> error
 
 
 

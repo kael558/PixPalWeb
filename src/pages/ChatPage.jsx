@@ -3,8 +3,12 @@ import Scene from '../components/AnimatedSphere/Scene';
 import ChatPageComponent from '../components/ChatPageComponent';
 import StreamManager from '../components/AudioPlayer/StreamManager';
 
+import { useEffect } from 'react';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+
+import { useAuth } from '../hooks/useAuth';
+import { useLocalStorage } from '../hooks/useLocalStorage';
 
 //const audioContext = new AudioContext({ sampleRate: 48000 });
 const streamManager = new StreamManager();
@@ -14,46 +18,16 @@ const streamManager = new StreamManager();
 
 
 function ChatPage(){
-  
-    //const [audioWorkletNode, setAudioWorkletNode] = useState(null);
-    //const nodeRef = useRef(null); 
+    const [name, _] = useLocalStorage("name", "");
 
-    /*useEffect(() => {
-        const initAudioWorkletNode = async () => {
-            try {
-                await audioContext.audioWorklet.addModule('AudioStreamProcessor.js');
-                const node = new AudioWorkletNode(audioContext, 'stream-audio-processor');
-                node.connect(audioContext.destination);
-                setAudioWorkletNode(node);
-                nodeRef.current = node;
-                console.log("Audio worklet node created");
-            } catch (error) {
-                console.error("Failed to load audio worklet module or create node:", error);
-                toast.error("Audio output failed to load. Please refresh the page and try again.");
-            }
-        };
-        const initAudioWorkletNode = async () => {
-            try {
-                const node = await streamManager.setupAudioWorkletNode();
-                setAudioWorkletNode(node);
-                nodeRef.current = node;
-                console.log("Audio worklet node created");
-            } catch (error) {
-                console.error("Failed to load audio worklet module or create node:", error);
-                toast.error("Audio output failed to load. Please refresh the page and try again.");
-            }
-        };
+    const { loginAnonymously, isAuthenticated } = useAuth();
 
-        initAudioWorkletNode();
-
-        return () => {
-            nodeRef.current?.disconnect();
-        };
-    }, []);*/
-
-    /*if (!streamManager.audioWorkletNode) {
-        return <div>Loading audio components...</div>;
-    }*/
+    useEffect(() => {
+        // first time user is signed in anonymously
+        if (!isAuthenticated() && name === "") { //
+            loginAnonymously();
+        }
+    }, []);
 
     return (
         <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', backgroundColor: 'black' }}>
