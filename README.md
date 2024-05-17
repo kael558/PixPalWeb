@@ -21,8 +21,8 @@ Today:
 [x] - Anonymous sign in at start
 [x] - The orb grows on start-up
 [x] - Onboarding name ask, 2 questions: onboarding, How are you feeling right now? What do you want from this?
-[ ] - Mood changes with color
-[ ] - NSFW models
+[ ] - Color and particle speed changes with mood & vibe
+[ ] - NSFW mode
 [ ] - UI
 [ ] - Change talking speed & volume based on time.
 

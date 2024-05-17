@@ -1,5 +1,5 @@
-import { Canvas, useThree } from "@react-three/fiber";
-import { useRef, useState, Suspense, lazy } from "react";
+import { Canvas } from "@react-three/fiber";
+import { Suspense, lazy } from "react";
 import { EffectComposer, Bloom, Noise, Vignette } from "@react-three/postprocessing";
 import Stars from "./Stars";
 

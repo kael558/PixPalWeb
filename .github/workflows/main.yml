@@ -24,6 +24,8 @@ jobs:
     # Build the project
     - name: Build project
       run: npm run build
+      env:
+        CI: false
 
     - name: Upload to Namecheap
       uses: SamKirkland/FTP-Deploy-Action@4.3.0

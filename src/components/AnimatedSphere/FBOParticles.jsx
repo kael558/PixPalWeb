@@ -5,7 +5,6 @@ import {
 	useRef,
 	useEffect} from "react";
 import * as THREE from "three";
-import { UnrealBloomPass } from 'three-stdlib'
 import SimulationMaterial from "./SimulationMaterialv1";
 
 const fragmentShader = `

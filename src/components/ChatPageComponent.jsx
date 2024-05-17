@@ -38,16 +38,7 @@ function ChatPageComponent({ streamManager }){
     const { getAccessToken } = useAuth();
 
 
-    useEffect(() => {
-        if (!userMood) return;
-        onMessageSend("I'm feeling " + userMood);
-    }, [userMood]);
 
-    useEffect(() => {
-        if (!role) return;
-        onMessageSend("I want you to be my " + role);
-        setStartVisible(false);
-    }, [role]);
 
     const showComponent = (component) => {
         switch (component) {
@@ -142,6 +133,17 @@ function ChatPageComponent({ streamManager }){
             toast.error("There was an error with the server");
         }
     }
+
+    useEffect(() => {
+        if (!userMood) return;
+        onMessageSend("I'm feeling " + userMood);
+    }, [userMood]);
+
+    useEffect(() => {
+        if (!role) return;
+        onMessageSend("I want you to be my " + role);
+        setStartVisible(false);
+    }, [role]);
 
     return (
         <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
