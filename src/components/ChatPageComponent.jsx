@@ -152,9 +152,9 @@ function ChatPageComponent({ streamManager }){
             <AuthenticationComponent isVisible={isLoginVisible} onClose={() => setLoginVisible(false)}/>
             <TokensComponent isVisible={isTokensPanelVisible} onClose={() => setTokensPanelVisible(false)}/>
 
+            <StartComponent isVisible={isStartVisible}userMood={userMood} setUserMood={setUserMood} setRole={setRole}/>
             <PrivacyPolicyComponent isVisible={isPrivacyPolicyVisible} onClose={acceptPrivacyPolicy}/>
             <ReleaseNotesComponent isVisible={isReleaseNotesVisible} onClose={acceptNewVersion} version={version}/>
-            <StartComponent isVisible={isStartVisible}userMood={userMood} setUserMood={setUserMood} setRole={setRole}/>
             <OnboardingComponent isVisible={isOnboardingVisible} onClose={() => setOnboardingVisible(false)} streamManager={streamManager} name={name} setName={setName}  />
         </div>
     )
