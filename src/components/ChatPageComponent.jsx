@@ -87,7 +87,7 @@ function ChatPageComponent({ streamManager }){
                     "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
-                    messages: updatedMessages,
+                    messages: updatedMessages.slice(-5),
                     username: name,
                     role: role
                 }),

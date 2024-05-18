@@ -1,4 +1,5 @@
 const textDecoder = new TextDecoder("utf-8");
+const textEncoder = new TextEncoder("utf-8");
 
 class StreamManager {
     constructor() {
@@ -65,13 +66,41 @@ class StreamManager {
     async parseStream(response, addMessage, showComponent, getUserMessage = false) {
         const reader = response.body.getReader();
         try {
-            if (getUserMessage) {
-                await this.handleUserMessage(reader, addMessage);
+            
+            let index = getUserMessage ? -1 : 0;
+
+            let buffer = '';
+            while (index < 2) {
+                let { done, value } = await reader.read();
+                if (done) break;
+                
+                buffer += textDecoder.decode(value);
+                const delimiterIndex = buffer.indexOf('|||');
+
+                if (delimiterIndex !== -1) {
+                    const data = buffer.slice(0, delimiterIndex);
+                    const overflow = buffer.slice(delimiterIndex + 3);
+
+                    if (index === -1) {
+                        await this.handleUserMessage(data, addMessage);
+                    } else if (index === 0) {
+                        await this.handleComponents(data, showComponent);
+                    } else if (index === 1) {
+                        await this.handleAssistantMessage(data, addMessage);
+                    } 
+
+                    if (overflow) {
+                        buffer = overflow;
+                    } else {
+                        buffer = '';
+                    }
+
+                    index++;
+                }
             }
 
-            await this.handleComponents(reader, showComponent);
-            await this.handleAssistantMessage(reader, addMessage);
-            await this.processAudio(reader);
+            const overflow = textEncoder.encode(buffer);
+            await this.processAudio(reader, overflow);
         } catch (error) {
             console.error('Stream processing error:', error);
         } finally {
@@ -79,36 +108,29 @@ class StreamManager {
         }
     }
 
-    async handleUserMessage(reader, addMessage) {
-        const { value: userMessageValue, done: userMessageDone } = await reader.read();
-        if (userMessageDone) throw new Error("Stream ended prematurely");
-        const userMessage = textDecoder.decode(userMessageValue);
+    async handleUserMessage(userMessage, addMessage) {
+        console.log(userMessage);
         addMessage("user", userMessage);
     }
 
-    async handleComponents(reader, showComponent) {
-        const { value: componentList, done: componentDone } = await reader.read();
-        if (componentDone) throw new Error("Stream ended prematurely");
-        const components = JSON.parse(textDecoder.decode(componentList));
+    async handleComponents(componentList, showComponent) {
+        const components = JSON.parse(componentList);
+        console.log(components);
         components.forEach(component => showComponent(component));
     }
 
-    async handleAssistantMessage(reader, addMessage) {
-        const { value: assistantMessageValue, done: assistantMessageDone } = await reader.read();
-        if (assistantMessageDone) throw new Error("Stream ended prematurely");
-        const assistantMessage = textDecoder.decode(assistantMessageValue);
+    async handleAssistantMessage(assistantMessage, addMessage) {
+        console.log(assistantMessage);
         addMessage("assistant", assistantMessage);
     }
 
-    async processAudio(reader) {
+    async processAudio(reader, overflow) {
         // resume audio context if it's in suspended state
         if (this.audioContext.state !== "running") {
             await this.audioContext.resume();
         }
 
-        let overflow;
         let float32Array;
-
         while (true) {
             let { done, value } = await reader.read();
             if (done) {

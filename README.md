@@ -21,13 +21,11 @@ Today:
 [x] - Anonymous sign in at start
 [x] - The orb grows on start-up
 [x] - Onboarding name ask, 2 questions: onboarding, How are you feeling right now? What do you want from this?
-[ ] - Color and particle speed changes with mood & vibe
+[ ] - Color and particle speed changes with mood & vibe -> https://huggingface.co/mrm8488/t5-base-finetuned-emotion?text=I+wish+you+were+here+but+it+is+impossible
 [ ] - NSFW mode
 [ ] - UI
 [ ] - Change talking speed & volume based on time.
-
-
-
+[ ] - Fix bug of missing audio!
 
 
 Build
