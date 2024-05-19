@@ -63,7 +63,7 @@ class StreamManager {
 
 
 
-    async parseStream(response, addMessage, showComponent, getUserMessage = false) {
+    /*async parseStream(response, addMessage, showComponent, getUserMessage = false) {
         const reader = response.body.getReader();
         try {
             
@@ -108,21 +108,91 @@ class StreamManager {
         } finally {
             reader.releaseLock();
         }
+    }*/
+    findBinaryDelimiter(buffer, delimiter) {
+        // Convert buffer to Uint8Array if it's not already one.
+        if (!(buffer instanceof Uint8Array)) {
+            buffer = new Uint8Array(buffer);
+        }
+        
+        // Check every possible position in the buffer where the delimiter could start.
+        for (let i = 0; i <= buffer.length - delimiter.length; i++) {
+            let match = true;
+            for (let j = 0; j < delimiter.length; j++) {
+                if (buffer[i + j] !== delimiter[j]) {
+                    match = false;
+                    break;
+                }
+            }
+            if (match) return i;
+        }
+        return -1; // Return -1 if no delimiter is found.
     }
 
+    async parseStream(response, addMessage, showComponent, getUserMessage = false) {
+        const reader = response.body.getReader();
+        try {
+            // Find delimiter as binary data
+            const delimiter = textEncoder.encode('|||');
+            let index = getUserMessage ? -1 : 0;
+    
+            let buffer = new Uint8Array();
+            while (index < 2) {
+                let { done, value } = await reader.read();
+                if (done) break;
+    
+                // Combine the new value with any existing overflow
+                let combinedBuffer = new Uint8Array(buffer.length + value.length);
+                combinedBuffer.set(buffer);
+                combinedBuffer.set(value, buffer.length);
+    
+                let delimiterIndex = this.findBinaryDelimiter(combinedBuffer, delimiter);
+
+                //const tempDecoded = textDecoder.decode(combinedBuffer);
+                //console.log("Temp decoded:", tempDecoded, "Delimiter index:", delimiterIndex);
+
+                if (delimiterIndex !== -1) {
+                    const data = combinedBuffer.slice(0, delimiterIndex);
+                    const overflow = combinedBuffer.slice(delimiterIndex + delimiter.length);
+    
+                    if (index === -1) {
+                        await this.handleUserMessage(textDecoder.decode(data), addMessage);
+                    } else if (index === 0) {
+                        await this.handleComponents(textDecoder.decode(data), showComponent);
+                    } else if (index === 1) {
+                        await this.handleAssistantMessage(textDecoder.decode(data), addMessage);
+                    } 
+    
+                    buffer = overflow;
+                    index++;
+                } else {
+                    buffer = combinedBuffer;
+                }
+            }
+    
+            //console.log("Remaining data for audio processing:", buffer);
+            await this.processAudio(reader, buffer);
+        } catch (error) {
+            console.error('Stream processing error:', error);
+        } finally {
+            reader.releaseLock();
+        }
+    }
+    
+
     async handleUserMessage(userMessage, addMessage) {
-        console.log("User message:", userMessage);
+        //console.log("User message:", userMessage);
         addMessage("user", userMessage);
     }
 
     async handleComponents(componentList, showComponent) {
-        console.log("Component list:", componentList);
+        //console.log("Component list:", componentList);
         const components = JSON.parse(componentList);
         components.forEach(component => showComponent(component));
     }
 
     async handleAssistantMessage(assistantMessage, addMessage) {
-        console.log("Assistant message:", assistantMessage);
+        //console.log("Assistant message:", assistantMessage);
         addMessage("assistant", assistantMessage);
     }
 

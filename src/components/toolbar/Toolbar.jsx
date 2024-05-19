@@ -4,7 +4,7 @@ import Tokens from './TokensBar';
 import { useAuth } from '../../hooks/useAuth';
 import { Button, Dialog, DialogDismiss, DialogHeading } from "@ariakit/react";
 
-function Toolbar({ showLoginUI, showTokensPanel, streamManager }) {
+function Toolbar({ showLoginUI, showTokensPanel, streamManager, setMessages }) {
   const [open, setOpen] = useState(false);
   const { isAuthenticated, logout, isAnonymous } = useAuth();
 
@@ -16,6 +16,12 @@ function Toolbar({ showLoginUI, showTokensPanel, streamManager }) {
 
     doLogout();
   };
+
+  const resetMessages = () => {
+    // delete messages from localstorage
+    localStorage.removeItem('messages');
+    setMessages([]);
+  }
 
   const doLogout = () => {
     logout();
@@ -130,6 +136,10 @@ function Toolbar({ showLoginUI, showTokensPanel, streamManager }) {
            
 
           )}
+
+          <button onClick={resetMessages} style={{ marginTop: '10px', padding: '8px 20px', borderRadius: '5px', backgroundColor: '#2196F3', color: 'white', border: 'none', cursor: 'pointer' }}>
+            Reset Messages
+          </button>
         </div>
       )}
     </div>

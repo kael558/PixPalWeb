@@ -150,7 +150,7 @@ function ChatPageComponent({ streamManager }){
 
     return (
         <div style={{ display: 'flex', flexDirection: 'column', flex: 1 }}>
-            <Toolbar showLoginUI={() => setLoginVisible(true)} showTokensPanel={() => setTokensPanelVisible(true)} streamManager={streamManager}/>
+            <Toolbar showLoginUI={() => setLoginVisible(true)} showTokensPanel={() => setTokensPanelVisible(true)} streamManager={streamManager} setMessages={setMessages} />
             <ChatInput onSend={onMessageSend} onAudio={onAudioSend} streamManager={streamManager}/>
             <AuthenticationComponent isVisible={isLoginVisible} onClose={() => setLoginVisible(false)}/>
             <TokensComponent isVisible={isTokensPanelVisible} onClose={() => setTokensPanelVisible(false)}/>
