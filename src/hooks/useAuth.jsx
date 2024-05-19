@@ -42,7 +42,7 @@ export const AuthProvider = ({ children }) => {
                 toast.error('Failed to log in anonymously');
                 return false;
             }
-    
+
             toast.success('Logged in anonymously');
             return true;
         } catch (error) {

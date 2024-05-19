@@ -6,7 +6,7 @@ import styles from "./Tokens.module.css";
 import RainbowButton from "../RainbowButton";
 
 async function get_tokens(accessToken) {
-	console.log("Bearer " + accessToken);
+	//console.log("Bearer " + accessToken);
 	//return { tokens: 0 }; // temp
 
 	return fetch(
@@ -31,7 +31,7 @@ async function get_tokens(accessToken) {
 		})
 		.catch((error) => {
 			console.error("Error:", error);
-			return { tokens: 0 }; // Return default object in case of error
+			return { tokenCount: 0 }; // Return default object in case of error
 		});
 }
 
@@ -51,7 +51,7 @@ function Tokens({showTokensPanel}) {
 				get_tokens(token).then((data) => {
 					console.log("Data:", data);
                     // put commas in the number
-                    let tokens = data?.tokens?.toString()?.replace(/\B(?=(\d{3})+(?!\d))/g, ",") || 0;
+                    let tokens = data?.tokenCount?.toString()?.replace(/\B(?=(\d{3})+(?!\d))/g, ",") || 0;
           
 					setTokens(tokens); // Fallback to 0 if data.tokens is undefined
 

@@ -65,6 +65,7 @@ function ChatPageComponent({ streamManager }){
     }
 
     const addMessage = (role, content) => {
+        if (content === "") return;
         setMessages(prevMessages => [...prevMessages, { role, content }]);
     };
       
@@ -102,7 +103,7 @@ function ChatPageComponent({ streamManager }){
         }
     };
 
-    const onAudioSend = async (chunks) => {
+    const onAudioSend = async (blob) => {
         const accessToken = await getAccessToken();
         if (!accessToken) {
             toast.error('Please log in to send messages');
@@ -110,7 +111,7 @@ function ChatPageComponent({ streamManager }){
         }
 
         try{ 
-            const blob = new Blob(chunks, { type: 'audio/webm' });
+            //const blob = new Blob(chunks, { type: 'audio/webm' });
 
             const fd = new FormData();
             fd.append("messages", JSON.stringify(messages.slice(-5)));

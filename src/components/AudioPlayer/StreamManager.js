@@ -99,6 +99,8 @@ class StreamManager {
                 }
             }
 
+            console.log("Overflow:", buffer);
+
             const overflow = textEncoder.encode(buffer);
             await this.processAudio(reader, overflow);
         } catch (error) {
@@ -109,15 +111,18 @@ class StreamManager {
     }
 
     async handleUserMessage(userMessage, addMessage) {
+        console.log("User message:", userMessage);
         addMessage("user", userMessage);
     }
 
     async handleComponents(componentList, showComponent) {
+        console.log("Component list:", componentList);
         const components = JSON.parse(componentList);
         components.forEach(component => showComponent(component));
     }
 
     async handleAssistantMessage(assistantMessage, addMessage) {
+        console.log("Assistant message:", assistantMessage);
         addMessage("assistant", assistantMessage);
     }
 
