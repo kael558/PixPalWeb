@@ -20,25 +20,21 @@ Today:
 [x] - Fix UI for mobile
 [x] - Anonymous sign in at start
 [x] - The orb grows on start-up
+[x] - Shorter pauses for conversation
 [x] - Onboarding name ask, 2 questions: onboarding, How are you feeling right now? What do you want from this?
 [ ] - Color and particle speed changes with mood & vibe -> https://huggingface.co/mrm8488/t5-base-finetuned-emotion?text=I+wish+you+were+here+but+it+is+impossible
 [ ] - NSFW mode
 [ ] - UI
 [ ] - Change talking speed & volume based on time.
-[ ] - Fix bug of missing audio!
-
+[ ] - Make orb interactive, moving cursor displaces particles
 
 Build
 [ ] - Firebase analytics
 [ ] - check iPhone 15+, chrome and safari
 [ ] - Stress test!
 [ ] - Text output on screen
-[ ] - Make orb interactive, moving cursor displaces particles
-[ ] - Shorten pauses for conversation unless.
-
 
 LAUNCH!
-
 Backlogged:
 [ ] - Cooler voice recording UI based off Daesol's redesign
 [ ] - VAD chatting (not super important, but should be an option)

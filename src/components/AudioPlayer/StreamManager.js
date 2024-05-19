@@ -109,18 +109,15 @@ class StreamManager {
     }
 
     async handleUserMessage(userMessage, addMessage) {
-        console.log(userMessage);
         addMessage("user", userMessage);
     }
 
     async handleComponents(componentList, showComponent) {
         const components = JSON.parse(componentList);
-        console.log(components);
         components.forEach(component => showComponent(component));
     }
 
     async handleAssistantMessage(assistantMessage, addMessage) {
-        console.log(assistantMessage);
         addMessage("assistant", assistantMessage);
     }
 

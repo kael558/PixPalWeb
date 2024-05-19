@@ -42,7 +42,7 @@ function TokensComponent({ isVisible, onClose }) {
 
 		setPurchaseInProgress(true);
 		if (id === 0){
-			get_free_tokens();
+			get_free_tokens(accessToken);
 			return;
 		}
 	

@@ -97,7 +97,8 @@ function ChatPageComponent({ streamManager }){
             await streamManager.parseStream(response, addMessage, showComponent);
         } catch (error) {
             console.error(error);
-            toast.error("There was an error with the server");
+            const message = error.message || "There was an error with the server";
+            toast.error(message);
         }
     };
 
@@ -130,7 +131,8 @@ function ChatPageComponent({ streamManager }){
             //await getAudioStreamFromAudioInput(blob, messages, name, accessToken, audioWorkletNode, addMessage, showComponent, abortController);
         } catch (error){
             console.error(error);
-            toast.error("There was an error with the server");
+            const message = error.message || "There was an error with the server";
+            toast.error(message);
         }
     }
 
