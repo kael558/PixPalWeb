@@ -1,6 +1,6 @@
 
 import './App.css';
-import { AuthProvider } from './hooks/useAuth';
+import { AuthProvider } from '@hooks/useAuth';
 import { OpusMediaRecorder } from 'opus-media-recorder';
 import platform from "platform-detect";
 

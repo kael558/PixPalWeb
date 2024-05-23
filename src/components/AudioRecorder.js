@@ -26,7 +26,7 @@ class VoiceInput {
         }
     };
 
-    async initMediaStream() {
+    async setup() {
         const userMedia = await this.getUserMedia({ audio: true });
         if (!userMedia) {
             console.error("getUserMedia is not supported in this browser");
@@ -44,42 +44,17 @@ class VoiceInput {
             timeSlice: 1000
         });
 
-        /*this.mediaRecorder = new MediaRecorder(this.mediaStream, {
-            mimeType: "audio/webm", 
-        });
+        console.log("Media stream initialized", this.mediaStream);
 
-        this.mediaRecorder.onstart = () => {
-            console.log("Recording started");
-        };
-
-        this.mediaRecorder.onstop = async () => {
-            if (this.chunks.length === 0) {
-                console.error("No data recorded");
-                return;
-            }
-
-            await this.next(this.chunks);
-            this.chunks = []; // Clear the data chunks array after processing
-        };
-
-        this.mediaRecorder.onerror = event => {
-            console.error("MediaRecorder error:", event.error);
-        };
-
-        this.mediaRecorder.ondataavailable = event => {
-            if (event.data && event.data.size > 0) {
-                this.chunks.push(event.data);
-            }
-        };*/
     }
 
     async startRecording() {
         try {
             if (!this.mediaRecorder) {
-                await this.initMediaStream();
+                await this.setup();
             }
 
-            console.log("Starting media recorder...", this.mediaRecorder);
+            //console.log("Starting media recorder...", this.mediaRecorder);
             this.mediaRecorder.startRecording();
         } catch (error) {
             console.error("Failed to start recording:", error);
@@ -91,12 +66,16 @@ class VoiceInput {
             console.error("No media recorder found");
             return;
         }
-        this.mediaRecorder.stopRecording(() => {
-            this.next(this.mediaRecorder.getBlob());
-        });
         
-        //this.mediaStream.getTracks().forEach(track => track.stop());
-        //this.mediaRecorder = null; // Optionally reset the mediaRecorder if not reusing
+
+        this.mediaRecorder.stopRecording(() => {
+            const blob = this.mediaRecorder.getBlob();
+            
+            this.mediaRecorder.reset();
+            if (blob.size > 100) {
+                this.next(blob);
+            }
+        });
     }
 }
 

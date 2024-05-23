@@ -12,7 +12,23 @@ class StreamManager {
         await this.audioContext.audioWorklet.addModule('AudioStreamProcessor.js');
         this.audioWorkletNode = new AudioWorkletNode(this.audioContext, 'stream-audio-processor');
         this.audioWorkletNode.connect(this.gainNode).connect(this.audioContext.destination);
+
+        this.audioWorkletNode.port.onmessage = (event) => {
+            if (event.data.method === 'finishResponse') {
+                console.log("Audio context has been suspended.");
+                this.audioContext.suspend();
+            }
+        };
+
         return this.audioWorkletNode;
+    }
+
+    connectNode(node) {
+        this.gainNode.connect(node);
+    }
+
+    setVolume(volume) {
+        this.gainNode.gain.value = volume;
     }
 
     setMuted(isMuted) {
@@ -57,58 +73,9 @@ class StreamManager {
             });
         }
 
-        this.audioWorkletNode.port.postMessage({ method: "end" });
+        this.audioWorkletNode.port.postMessage({ method: "finishRequest", args: { id: 0} });
     }
 
-
-
-
-    /*async parseStream(response, addMessage, showComponent, getUserMessage = false) {
-        const reader = response.body.getReader();
-        try {
-            
-            let index = getUserMessage ? -1 : 0;
-
-            let buffer = '';
-            while (index < 2) {
-                let { done, value } = await reader.read();
-                if (done) break;
-                
-                buffer += textDecoder.decode(value);
-                const delimiterIndex = buffer.indexOf('|||');
-
-                if (delimiterIndex !== -1) {
-                    const data = buffer.slice(0, delimiterIndex);
-                    const overflow = buffer.slice(delimiterIndex + 3);
-
-                    if (index === -1) {
-                        await this.handleUserMessage(data, addMessage);
-                    } else if (index === 0) {
-                        await this.handleComponents(data, showComponent);
-                    } else if (index === 1) {
-                        await this.handleAssistantMessage(data, addMessage);
-                    } 
-
-                    if (overflow) {
-                        buffer = overflow;
-                    } else {
-                        buffer = '';
-                    }
-
-                    index++;
-                }
-            }
-
-            console.log("Overflow:", buffer);
-
-            const overflow = textEncoder.encode(buffer);
-            await this.processAudio(reader, overflow);
-        } catch (error) {
-            console.error('Stream processing error:', error);
-        } finally {
-            reader.releaseLock();
-        }
-    }*/
     findBinaryDelimiter(buffer, delimiter) {
         // Convert buffer to Uint8Array if it's not already one.
         if (!(buffer instanceof Uint8Array)) {
@@ -207,7 +174,7 @@ class StreamManager {
             let { done, value } = await reader.read();
             if (done) {
                 if (overflow) this.sendAudioChunk(overflow, true);
-                this.audioWorkletNode.port.postMessage({ method: "end" });
+                this.audioWorkletNode.port.postMessage({ method: "finishRequest", args: { id: 0} });
                 break;
             }
 

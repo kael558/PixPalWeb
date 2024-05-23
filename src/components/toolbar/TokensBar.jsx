@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
-import { useAuth } from "../../hooks/useAuth";
+import { useAuth } from "@hooks/useAuth";
 
 import styles from "./Tokens.module.css";
 
 import RainbowButton from "../RainbowButton";
 
 async function get_tokens(accessToken) {
-	//console.log("Bearer " + accessToken);
+	console.log("Bearer " + accessToken);
 	//return { tokens: 0 }; // temp
 
 	return fetch(
@@ -35,8 +35,7 @@ async function get_tokens(accessToken) {
 		});
 }
 
-
-function Tokens({showTokensPanel}) {
+function Tokens({ showTokensPanel }) {
 	const [tokens, setTokens] = useState(null);
 
 	const { isAuthenticated, getAccessToken } = useAuth();
@@ -46,41 +45,79 @@ function Tokens({showTokensPanel}) {
 			return;
 		}
 
-			getAccessToken()
+		getAccessToken()
 			.then((token) => {
 				get_tokens(token).then((data) => {
 					console.log("Data:", data);
-                    // put commas in the number
-                    let tokens = data?.tokenCount?.toString()?.replace(/\B(?=(\d{3})+(?!\d))/g, ",") || 0;
-          
-					setTokens(tokens); // Fallback to 0 if data.tokens is undefined
+					// put commas in the number
+					let tokens =
+						data?.tokenCount
+							?.toString()
+							?.replace(/\B(?=(\d{3})+(?!\d))/g, ",") || 0;
 
+	
+
+					setTokens(tokens); // Fallback to 0 if data.tokens is undefined
 				});
 			})
 			.catch((error) => {
 				console.error("Error getting ID token:", error);
 			});
-	}, [isAuthenticated, getAccessToken]);
+	}, []);
 
 	return (
-		<div>
-			{}
-
-			<div className={styles.moneyContainer}>
-				<img
-					src="/diamonds/small_bundle_diamonds.png"
-					alt="Money"
-					className={styles.moneyImage}
-				/>
-				<span className={styles.currency}>{tokens ?? 'Loading...' }</span>
-			</div>
-
-			<RainbowButton
-				text="Purchase Tokens"
-				onClick={showTokensPanel}
-	
+		<>
+			<img
+				src="/diamonds/small_bundle_diamonds.png"
+				alt="Tokens"
+				style={{
+					width: "60px", // Adjust size as needed
+					height: "60px", // Adjust size as needed
+					position: "absolute",
+					top: "4px",
+					right: "85px",
+				
+				}}
 			/>
-		</div>
+			<div
+				style={{
+					display: "flex",
+					alignItems: "center",
+					background: "rgba(0, 0, 0, 0.5)", // Semi-transparent black background
+					padding: "0px 0px 0px 25px", // Padding for the text
+					marginTop: "20px",
+					borderRadius: "25px",
+					border: "1px solid #FFA345", // Light border for contrast
+					boxShadow: "0 0 5px rgba(255,163,69,0.7)"
+				}}
+			>
+				<span
+					style={{
+						color: "#FFA345", // Lighter color for text
+						marginRight: "auto", // Pushes the button to the right
+						fontSize: "16px", // Adjust size as needed
+						letterSpacing: "0.1em", // Adds space between characters
+
+					}}
+				>
+					{tokens ?? "Loading..."}
+				</span>
+				<button
+					onClick={showTokensPanel}
+					style={{
+						background: "transparent",
+						border: "none",
+						color: "#f0f0f0",
+						cursor: "pointer",
+						fontSize: "16px",
+						display: "flex",
+						alignItems: "center",
+					}}
+				>
+					<span>+</span>
+				</button>
+			</div>
+		</>
 	);
 }
 

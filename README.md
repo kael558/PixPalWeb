@@ -22,11 +22,15 @@ Today:
 [x] - The orb grows on start-up
 [x] - Shorter pauses for conversation
 [x] - Onboarding name ask, 2 questions: onboarding, How are you feeling right now? What do you want from this?
-[ ] - Color and particle speed changes with mood & vibe -> https://huggingface.co/mrm8488/t5-base-finetuned-emotion?text=I+wish+you+were+here+but+it+is+impossible
+[x] - Fix for Iphone and safari.
+[x] - Audio visualizer for companion and user
+[x] - Base UI
+[ ] - Hook up UI to values
 [ ] - NSFW mode
-[ ] - UI
+[ ] - Color and particle speed changes with mood & vibe -> https://huggingface.co/mrm8488/t5-base-finetuned-emotion?text=I+wish+you+were+here+but+it+is+impossible
 [ ] - Change talking speed & volume based on time.
 [ ] - Make orb interactive, moving cursor displaces particles
+
 
 Build
 [ ] - Firebase analytics
@@ -43,6 +47,41 @@ Optimizations:
 [ ] - Sentence split first sentence and group rest. 
 [ ] - Whisper Jax to bring down costs of transcription
 [ ] - Send input audio in chunks to minimize content upload time
+
+
+Jeriques Session:
+Scroll is not obvious in privacy policy and  release notes.
+3s delay for first message as lambda warms up
+Microphone use is not obvious (looks like corn)
+Clicking on send after recording
+She still sounds like a formal robot
+Type here placeholder
+Responses are too vague. Needs to be specific and listen to user'srequest.
+Too politically correct.
+Intimate things, like unfiltered sex bot. 'I have a school girl fantasy'.
+Narrator mode that describes the scene.
+Narrator can also be used as companion. 
+
+
+Settings:
+- AI Settings
+-- Gender
+-- Role
+-- Voice Quality
+-- Chat Quality
+-- Reset Memory
+
+- Interaction Settings
+-- Input: Audio/Text
+-- Volume
+-- UI Hue
+-- Show chat log
+-- Log out
+-- Privacy Policy
+
+
+
+
 
 Auth flow:
 Null user:

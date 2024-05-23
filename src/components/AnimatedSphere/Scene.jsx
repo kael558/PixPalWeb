@@ -82,7 +82,7 @@ const BloomEffect = ({ streamManager }) => {
 const Scene = ({ streamManager }) => {
 	return (
 		<>
-			<Canvas camera={{ position: [1.5, 1.5, 1.5] }}>
+			<Canvas camera={{ position: [1.5, 1.5, 1.0] }}>
 				<Suspense fallback={null}>
 					<BloomEffect streamManager={streamManager} />
 					

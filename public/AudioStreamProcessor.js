@@ -144,6 +144,7 @@ class StreamAudioProcessor extends AudioWorkletProcessor {
 
 		let currentBuffer = getNextBuffer();
 		if (currentBuffer) {
+
 			if (channels.length !== currentBuffer.channels.length) {
 				throw new Error(
 					"channels.length !== currentBuffer.channels.length: " +

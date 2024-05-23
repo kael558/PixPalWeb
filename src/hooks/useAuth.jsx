@@ -9,7 +9,8 @@ import {
     signInWithEmailAndPassword,
     signOut,
     linkWithCredential,
-    EmailAuthProvider 
+    EmailAuthProvider,
+    sendPasswordResetEmail
 } from "firebase/auth";
 
 const AuthContext = createContext();
@@ -34,6 +35,18 @@ export const AuthProvider = ({ children }) => {
 
         return auth.currentUser !== null;
     };
+
+    const forgotPassword = async (data) => {
+        try {
+            await sendPasswordResetEmail(auth, data.email);
+            toast.success('Password reset email sent');
+            return true;
+        } catch (error) {
+            toast.error('Failed to send password reset email');
+            return false;
+        }
+    }
+
 
     const loginAnonymously = async () => {
         try {
@@ -141,6 +154,7 @@ export const AuthProvider = ({ children }) => {
 
     const value = {
         loginAnonymously,
+        forgotPassword,
         registerWithEmailAndPassword,
         loginWithEmailAndPassword,
         logout,
