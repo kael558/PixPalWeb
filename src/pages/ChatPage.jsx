@@ -10,7 +10,6 @@ import "react-toastify/dist/ReactToastify.css";
 import { useAuth } from "@hooks/useAuth";
 import { useLocalStorage } from "@hooks/useLocalStorage";
 
-//const audioContext = new AudioContext({ sampleRate: 48000 });
 const streamManager = new StreamManager();
 streamManager.setupAudioWorkletNode();
 

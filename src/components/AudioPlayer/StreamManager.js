@@ -31,6 +31,10 @@ class StreamManager {
         this.gainNode.gain.value = volume;
     }
 
+    getVolume() {
+        return this.gainNode.gain.value;
+    }
+
     setMuted(isMuted) {
         this.gainNode.gain.value = isMuted ? 0 : 1;
     }

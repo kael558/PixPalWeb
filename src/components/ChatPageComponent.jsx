@@ -26,8 +26,10 @@ function ChatPageComponent({ streamManager }) {
 		false
 	);
 
-	const [userMood, setUserMood] = useState("");
-	const [role, setRole] = useState("");
+	const [gender, setGender] = useLocalStorage("gender", "Female");
+	const [role, setRole] = useLocalStorage("role", "Friend");
+	const [voiceQuality, setVoiceQuality] = useLocalStorage("voiceQuality", "Low");
+	const [chatQuality, setChatQuality] = useLocalStorage("chatQuality", "Low");
 
 	const [isLoginVisible, setLoginVisible] = useState(false);
 	const [isTokensPanelVisible, setTokensPanelVisible] = useState(false);
@@ -43,7 +45,7 @@ function ChatPageComponent({ streamManager }) {
 	const [inputMode, setInputMode] = useState("text");
 	const [isRecording, setIsRecording] = useState(false);
 
-	const { getAccessToken, isAuthenticated } = useAuth();
+	const { getAccessToken } = useAuth();
 
 	const showComponent = (component) => {
 		switch (component) {
@@ -108,6 +110,8 @@ function ChatPageComponent({ streamManager }) {
 					messages: updatedMessages.slice(-5),
 					username: name,
 					role: role,
+					languageModelQuality: chatQuality,
+					gender: gender
 				}),
 			};
 
@@ -133,6 +137,9 @@ function ChatPageComponent({ streamManager }) {
 			const fd = new FormData();
 			fd.append("messages", JSON.stringify(messages.slice(-5)));
 			fd.append("username", name);
+			fd.append("role", role);
+			fd.append("languageModelQuality", chatQuality);
+			fd.append("gender", gender);
 			fd.append("file", blob, "speech.webm");
 
 			const url =
@@ -161,13 +168,8 @@ function ChatPageComponent({ streamManager }) {
 	};
 
 	useEffect(() => {
-		if (!userMood) return;
-		onMessageSend("I'm feeling " + userMood);
-	}, [userMood]);
-
-	useEffect(() => {
 		if (!role) return;
-		onMessageSend("I want you to be my " + role);
+		if (!isStartVisible) return;
 		setStartVisible(false);
 	}, [role]);
 
@@ -182,6 +184,12 @@ function ChatPageComponent({ streamManager }) {
                         setIsRecording(true)} : () => {}
 				}
 				onMouseUp={
+					inputMode === "audio" ? () => setIsRecording(false) : () => {}
+				}
+				onTouchStart={
+					inputMode === "audio" ? () => setIsRecording(true) : () => {}
+				}
+				onTouchEnd={
 					inputMode === "audio" ? () => setIsRecording(false) : () => {}
 				}
 				style={{
@@ -201,7 +209,16 @@ function ChatPageComponent({ streamManager }) {
 				showTokensPanel={() => setTokensPanelVisible(true)}
 				streamManager={streamManager}
 				setMessages={setMessages}
+				inputMode={inputMode}
 				setInputMode={setInputMode}
+				gender={gender}
+				setGender={setGender}
+				role={role}
+				setRole={setRole}
+				voiceQuality={voiceQuality}
+				setVoiceQuality={setVoiceQuality}
+				chatQuality={chatQuality}
+				setChatQuality={setChatQuality}
 			/>
 
 			<ChatInput
@@ -223,9 +240,8 @@ function ChatPageComponent({ streamManager }) {
 
 			<StartComponent
 				isVisible={isStartVisible}
-				userMood={userMood}
-				setUserMood={setUserMood}
 				setRole={setRole}
+				onMessageSend={onMessageSend}
 			/>
 			<PrivacyPolicyComponent
 				isVisible={isPrivacyPolicyVisible}

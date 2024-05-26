@@ -7,7 +7,8 @@ function getApplicableReleaseNotes(version) {
 	const totalReleaseNotes = `### Version 0.9.3 *[Beta]*
 	- Add audio visualizer
 	- Update UI
-
+	- Basic NSFW with selectable options
+	
 	### Version 0.9.2 *[Beta]*
 	- Mute and Interrupt buttons
 	- Fix UI for mobile

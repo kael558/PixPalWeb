@@ -26,7 +26,7 @@ Today:
 [x] - Audio visualizer for companion and user
 [x] - Base UI
 [ ] - Hook up UI to values
-[ ] - NSFW mode
+[ ] - NSFW mode with togetherAI API and sentence splitting. 
 [ ] - Color and particle speed changes with mood & vibe -> https://huggingface.co/mrm8488/t5-base-finetuned-emotion?text=I+wish+you+were+here+but+it+is+impossible
 [ ] - Change talking speed & volume based on time.
 [ ] - Make orb interactive, moving cursor displaces particles
@@ -76,6 +76,7 @@ Settings:
 -- Volume
 -- UI Hue
 -- Show chat log
+-- Visual quality
 -- Log out
 -- Privacy Policy
 

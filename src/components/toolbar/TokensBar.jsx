@@ -41,14 +41,9 @@ function Tokens({ showTokensPanel }) {
 	const { isAuthenticated, getAccessToken } = useAuth();
 
 	useEffect(() => {
-		if (!isAuthenticated()) {
-			return;
-		}
-
 		getAccessToken()
 			.then((token) => {
 				get_tokens(token).then((data) => {
-					console.log("Data:", data);
 					// put commas in the number
 					let tokens =
 						data?.tokenCount

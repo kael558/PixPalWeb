@@ -1,5 +1,4 @@
 import { motion, AnimatePresence } from "framer-motion";
-import './Window.module.css'; // Assuming your CSS file is named Window.css
 
 
 export function Overlay({ isVisible, children, style: customStyle }) {

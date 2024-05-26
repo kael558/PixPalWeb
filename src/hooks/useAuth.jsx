@@ -19,16 +19,19 @@ export const AuthProvider = ({ children }) => {
     const auth = getAuth();
 
 
-
     const getAccessToken = async () => {
+        await auth.authStateReady();
+
         if (!auth.currentUser) {
             return false;
         }
 
-        return (await auth.currentUser.getIdTokenResult(true)).token;
+        return (await auth.currentUser.getIdTokenResult(false)).token;
     };
 
-    const isAuthenticated = () => {
+    const isAuthenticated = async () => {
+   
+
         if (!auth.currentUser) {
             return false;
         }

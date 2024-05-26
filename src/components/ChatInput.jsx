@@ -128,6 +128,12 @@ function ChatInput({
 					autoComplete="off"
 					required
 					rows="1" // Initial number of visible rows
+					onKeyDown={(e) => {
+						if (e.key === 'Enter' && !e.shiftKey) {
+							e.preventDefault(); // Prevent the default action to stop from creating a new line
+							handleSubmit(e); // Call the handleSubmit function to submit the form
+						}
+					}}
 					style={{
 						flex: 1,
 						marginRight: "10px",
