@@ -1,8 +1,13 @@
 import { Overlay, Window } from "./OverlayComponent";
+import { useState } from "react";
 
-function StartComponent({ isVisible, userMood, onMessageSend, setRole }) {
+function StartComponent({ isVisible, onMessageSend, setRole, setStartFinished }) {
+    const [userMood, setUserMood] = useState(null);
+
+
     const setMood = (mood) => {
         console.log("User mood:", mood);
+        setUserMood(mood);
         onMessageSend(mood);
     };
 
@@ -10,6 +15,7 @@ function StartComponent({ isVisible, userMood, onMessageSend, setRole }) {
         console.log("User role:", role);
         onMessageSend("I want you to be my " + role);
         setRole(role);
+        setStartFinished(true);
     };
 
 

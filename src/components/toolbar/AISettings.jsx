@@ -148,7 +148,23 @@ function AISettings({ isVisible, setMessages,
 								style={optionStyle(chatQuality, "Medium")}
 								onClick={() => setChatQuality("Medium")}
 							>
-								Medium
+								Medium   <sup
+								style={{
+									position: 'relative',
+									top: '0.2em', // Shift up to align with text
+					
+									left: '1em', // Shift left to reduce gap
+									padding: '2px',
+									color: 'red',
+							
+									fontSize: '8px',
+									margin: '0',
+									transform: 'rotate(12deg)', // Rotate text to match 'NSFW' style,
+									display: 'inline-block',
+								}}
+								
+								
+								>NSFW</sup>
 							</span>
 							/
 							<span
@@ -158,15 +174,16 @@ function AISettings({ isVisible, setMessages,
 							>
 								High    <sup
 								style={{
-									position: 'absolute', 
-									top: '0', 
-									right: '0', 
-									transform: 'translate(50%, -50%)',
-									background: 'red', 
-									color: 'white', 
-									borderRadius: '5px' ,
-									fontSize: 'small', 
-
+									position: 'relative',
+									top: '0.3em', // Shift up to align with text
+									left: '1.5em', // Shift left to reduce gap
+									padding: '2px',
+									color: 'red',
+							
+									fontSize: '8px',
+									margin: '0',
+									transform: 'rotate(19deg)', // Rotate text to match 'NSFW' style,
+									display: 'inline-block',
 								}}
 								
 								

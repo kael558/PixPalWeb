@@ -41,6 +41,7 @@ function ChatPageComponent({ streamManager }) {
 		version !== CURRENT_VERSION
 	);
 	const [isStartVisible, setStartVisible] = useState(true);
+	const [isStartFinished, setStartFinished] = useState(false);
 
 	const [inputMode, setInputMode] = useState("text");
 	const [isRecording, setIsRecording] = useState(false);
@@ -170,6 +171,8 @@ function ChatPageComponent({ streamManager }) {
 	useEffect(() => {
 		if (!role) return;
 		if (!isStartVisible) return;
+		if (!isStartFinished) return;
+		console.log("role", role);
 		setStartVisible(false);
 	}, [role]);
 
@@ -242,6 +245,7 @@ function ChatPageComponent({ streamManager }) {
 				isVisible={isStartVisible}
 				setRole={setRole}
 				onMessageSend={onMessageSend}
+				setStartFinished={setStartFinished}
 			/>
 			<PrivacyPolicyComponent
 				isVisible={isPrivacyPolicyVisible}
