@@ -30,7 +30,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     const isAuthenticated = async () => {
-   
+        await auth.authStateReady();
 
         if (!auth.currentUser) {
             return false;
