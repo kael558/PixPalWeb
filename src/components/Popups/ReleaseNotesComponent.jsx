@@ -8,6 +8,7 @@ function getApplicableReleaseNotes(version) {
 	- Add audio visualizer
 	- Update UI
 	- Basic NSFW with selectable options
+	- Color changes based on reaction
 	
 	### Version 0.9.2 *[Beta]*
 	- Mute and Interrupt buttons

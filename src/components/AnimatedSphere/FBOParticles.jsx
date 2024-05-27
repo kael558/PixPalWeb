@@ -98,9 +98,8 @@ const FBOParticles = ({ streamManager }) => {
 
 		streamManager.onmessage = (e) => {
 			if (e.name === "change_color") {
-				baseShaderMaterialRef.current.uniforms.uCurrentColor.value.set(
-					e.data.color
-				);
+				baseShaderMaterialRef.current.uniforms.uCurrentColor.value.copy(baseShaderMaterialRef.current.uniforms.uTargetColor.value);
+				baseShaderMaterialRef.current.uniforms.uTargetColor.value.set(e.data.color);
 				baseShaderMaterialRef.current.uniforms.uTransitionFactor.value = 0.0;
 			}
 		};
@@ -133,7 +132,7 @@ const FBOParticles = ({ streamManager }) => {
 		simulationMaterialRef.current.uniforms.uTargetGrowthScale.value =
 			growthScale;
 
-		baseShaderMaterialRef.current.uniforms.uTransitionFactor.value = Math.min(1, baseShaderMaterialRef.current.uniforms.uTransitionFactor.value + 0.0008);
+		baseShaderMaterialRef.current.uniforms.uTransitionFactor.value = Math.min(1, baseShaderMaterialRef.current.uniforms.uTransitionFactor.value + 0.001);
 
 	
 	});
