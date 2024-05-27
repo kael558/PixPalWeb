@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -18,7 +18,12 @@ import { useAuth } from "@hooks/useAuth";
 import { useLocalStorage } from "@hooks/useLocalStorage";
 
 function ChatPageComponent({ streamManager }) {
+
+
+
 	const [messages, setMessages] = useLocalStorage("messages", []);
+	const messagesRef = useRef(messages);
+
 	const [name, setName] = useLocalStorage("name", "");
 	const [version, setVersion] = useLocalStorage("appVersion", "0.0.0");
 	const [isPrivacyPolicyAccepted, setPrivacyPolicyAccepted] = useLocalStorage(
@@ -95,7 +100,7 @@ function ChatPageComponent({ streamManager }) {
 
 		streamManager.stop(); // interrupt any ongoing audio playback
 
-		const updatedMessages = [...messages, { role: "user", content }];
+		const updatedMessages = [...messagesRef.current, { role: "user", content }];
 		setMessages(updatedMessages);
 
 		try {
@@ -136,7 +141,7 @@ function ChatPageComponent({ streamManager }) {
 			//const blob = new Blob(chunks, { type: 'audio/webm' });
 
 			const fd = new FormData();
-			fd.append("messages", JSON.stringify(messages.slice(-5)));
+			fd.append("messages", JSON.stringify(messagesRef.current.slice(-5)));
 			fd.append("username", name);
 			fd.append("role", role);
 			fd.append("languageModelQuality", chatQuality);
@@ -169,12 +174,15 @@ function ChatPageComponent({ streamManager }) {
 	};
 
 	useEffect(() => {
+		messagesRef.current = messages;
+	}, [messages]);
+
+	useEffect(() => {
 		if (!role) return;
-		if (!isStartVisible) return;
 		if (!isStartFinished) return;
-		console.log("role", role);
+
 		setStartVisible(false);
-	}, [role]);
+	}, [role, isStartFinished]);
 
     //console.log(isRecording);
 

@@ -1,16 +1,17 @@
 import { useFBO } from "@react-three/drei";
 import { useFrame, extend, createPortal } from "@react-three/fiber";
-import {
-	useMemo,
-	useRef,
-	useEffect} from "react";
+import { useMemo, useRef, useEffect } from "react";
 import * as THREE from "three";
 import SimulationMaterial from "./SimulationMaterialv1";
 
 const fragmentShader = `
+uniform vec3 uCurrentColor;
+uniform vec3 uTargetColor;
+uniform float uTransitionFactor;
+
 void main() {
-  vec3 color = vec3(0.34, 0.53, 0.96);
-  gl_FragColor = vec4(color, 1.0);
+    vec3 color = mix(uCurrentColor, uTargetColor, uTransitionFactor);
+  	gl_FragColor = vec4(color, 1.0);
 }
 `;
 
@@ -84,13 +85,29 @@ const FBOParticles = ({ streamManager }) => {
 			uPositions: {
 				value: null,
 			},
+			uCurrentColor: { value: new THREE.Color(0.34, 0.53, 0.96) },
+			uTargetColor: { value: new THREE.Color(0.34, 0.53, 0.96) },
+			uTransitionFactor: { value: 0.0 },
 		}),
 		[]
 	);
 
 	useEffect(() => {
-		if (!streamManager.audioWorkletNode) return;
+		if (!streamManager) return;
 		if (!baseShaderMaterialRef.current) return;
+
+		streamManager.onmessage = (e) => {
+			if (e.name === "change_color") {
+				baseShaderMaterialRef.current.uniforms.uCurrentColor.value.set(
+					e.data.color
+				);
+				baseShaderMaterialRef.current.uniforms.uTransitionFactor.value = 0.0;
+			}
+		};
+
+		return () => {
+			streamManager.onmessage = null;
+		};
 
 		/*streamManager.audioWorkletNode.port.onmessage = (e) => {
 			simulationMaterialRef.current.uniforms.uAdditionalGrowthScale.value = 1.0 + e.data.averageLevel/10;
@@ -98,8 +115,9 @@ const FBOParticles = ({ streamManager }) => {
 
 		// TODO add glow effect - https://gist.github.com/ektogamat/af6cae96681679dde817e1f313278c8b
 		//audioWorkletNode.port.onmessage = (e) => {};
-	}, [streamManager.audioWorkletNode]);
+	}, [streamManager]);
 
+	
 	useFrame((state) => {
 		const { gl, clock } = state;
 
@@ -112,7 +130,12 @@ const FBOParticles = ({ streamManager }) => {
 		simulationMaterialRef.current.uniforms.uTime.value = clock.elapsedTime;
 
 		const growthScale = Math.min(1.0, clock.elapsedTime / 10);
-		simulationMaterialRef.current.uniforms.uTargetGrowthScale.value = growthScale;
+		simulationMaterialRef.current.uniforms.uTargetGrowthScale.value =
+			growthScale;
+
+		baseShaderMaterialRef.current.uniforms.uTransitionFactor.value = Math.min(1, baseShaderMaterialRef.current.uniforms.uTransitionFactor.value + 0.0008);
+
+	
 	});
 	return (
 		<>
@@ -136,7 +159,7 @@ const FBOParticles = ({ streamManager }) => {
 				</mesh>,
 				scene
 			)}
-			<points ref={points} >
+			<points ref={points}>
 				<bufferGeometry>
 					<bufferAttribute
 						attach="attributes-position"

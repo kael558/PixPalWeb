@@ -16,7 +16,7 @@ function ChatInput({
 	inputMode,
 	setInputMode,
 	isRecording,
-	setIsRecording,
+	setIsRecording
 }) {
 	const [message, setMessage] = useState("");
 	const timeoutRef = useRef(null);

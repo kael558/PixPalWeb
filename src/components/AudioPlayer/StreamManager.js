@@ -108,7 +108,7 @@ class StreamManager {
             let index = getUserMessage ? -1 : 0;
     
             let buffer = new Uint8Array();
-            while (index < 2) {
+            while (index < 3) {
                 let { done, value } = await reader.read();
                 if (done) break;
     
@@ -131,8 +131,10 @@ class StreamManager {
                     } else if (index === 0) {
                         await this.handleComponents(textDecoder.decode(data), showComponent);
                     } else if (index === 1) {
+                        await this.handleColorMessage(textDecoder.decode(data));
+                    } else if (index === 2) {
                         await this.handleAssistantMessage(textDecoder.decode(data), addMessage);
-                    } 
+                    }
     
                     buffer = overflow;
                     index++;
@@ -148,6 +150,11 @@ class StreamManager {
         } finally {
             reader.releaseLock();
         }
+    }
+
+    async handleColorMessage(color) {
+        console.log("Color message:", color);
+        this.onmessage({ name: "change_color", data: { color } })
     }
     
 

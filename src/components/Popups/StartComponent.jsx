@@ -6,13 +6,13 @@ function StartComponent({ isVisible, onMessageSend, setRole, setStartFinished })
 
 
     const setMood = (mood) => {
-        console.log("User mood:", mood);
+        //console.log("User mood:", mood);
         setUserMood(mood);
         onMessageSend(mood);
     };
 
     const setRoleHandler = (role) => {
-        console.log("User role:", role);
+        //console.log("User role:", role);
         onMessageSend("I want you to be my " + role);
         setRole(role);
         setStartFinished(true);

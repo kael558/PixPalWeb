@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 
 function AISettings({ isVisible, setMessages, 
@@ -14,6 +14,16 @@ function AISettings({ isVisible, setMessages,
 
 
  }) {
+	const [isMobile, setIsMobile] = useState(window.innerWidth < 480);
+
+	useEffect(() => {
+        const handleResize = () => {
+            setIsMobile(window.innerWidth < 380);
+        };
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
 	const resetMessages = () => {
 		// delete messages from localstorage
 		localStorage.removeItem("messages");
@@ -28,40 +38,45 @@ function AISettings({ isVisible, setMessages,
 		padding: "0 5px",
 		margin: "0 5px",
 		position: "relative",
+		fontSize: isMobile ? "14px" : "inherit",
+        letterSpacing: isMobile ? "0.05em" : "0.1em"
 	});
 
 	const categoryStyle = {
 		color: "#FFC107",
 		fontWeight: "bold",
+		fontSize: isMobile ? "12px" : "inherit",
+        letterSpacing: isMobile ? "0.05em" : "0.1em"
 	};
 
 	const liStyle = {
 		padding: "8px 0",
 		listStyleType: "none",
 		textIndent: "-2em",
-		letterSpacing: "0.1em",
+		letterSpacing: isMobile ? "0.05em" : "0.1em"
 	};
+
+	const divStyle = {
+        position: "absolute",
+        right: "60px",
+        top: "60px",
+        background: "#000",
+        border: "1px solid #ccc",
+        borderRadius: "8px",
+        padding: "10px",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "flex-start",
+        width: "auto",
+        minWidth: isMobile ? "300px" : "400px",
+        boxShadow: "0 0 20px rgba(255,163,69,0.7)",
+    };
 
 	return (
 		<AnimatePresence>
 			{isVisible && (
 				<motion.div
-					style={{
-						position: "absolute",
-						right: "60px",
-						top: "60px",
-						background: "#000",
-						border: "1px solid #ccc",
-						borderRadius: "8px",
-						padding: "10px",
-						display: "flex",
-						flexDirection: "column",
-						alignItems: "flex-start",
-
-						width: "auto",
-						minWidth: "400px",
-						boxShadow: "0 0 20px rgba(255,163,69,0.7)",
-					}}
+					style={divStyle}
 					initial={{ opacity: 0, y: -50 }} // Start from the right, slightly hidden
 					animate={{ opacity: 1, y: 0 }} // Animate to fully visible and slide into position
 					exit={{ opacity: 0, y: -50 }} // Exit by fading out and sliding to the right

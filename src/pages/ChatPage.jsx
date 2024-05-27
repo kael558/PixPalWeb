@@ -24,7 +24,6 @@ function ChatPage() {
 		// first time user is signed in anonymously
 		(async() => {
 			if (!(await isAuthenticated()) && name === "") {
-				console.log("logging in anonymously");
 				loginAnonymously();
 			}
 		})();
