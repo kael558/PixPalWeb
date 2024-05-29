@@ -95,17 +95,36 @@ const FBOParticles = ({ streamManager }) => {
 	useEffect(() => {
 		if (!streamManager) return;
 		if (!baseShaderMaterialRef.current) return;
+		let timer;
 
 		streamManager.onmessage = (e) => {
 			if (e.name === "change_color") {
+				if (timer) clearInterval(timer);
+
 				baseShaderMaterialRef.current.uniforms.uCurrentColor.value.copy(baseShaderMaterialRef.current.uniforms.uTargetColor.value);
 				baseShaderMaterialRef.current.uniforms.uTargetColor.value.set(e.data.color);
 				baseShaderMaterialRef.current.uniforms.uTransitionFactor.value = 0.0;
+
+				timer = setInterval(() => {
+					const color = new THREE.Color(
+						Math.random(),
+						Math.random(),
+						Math.random()
+					);
+		
+					//console.log("Changing color to", color);
+					baseShaderMaterialRef.current.uniforms.uCurrentColor.value.copy(
+						baseShaderMaterialRef.current.uniforms.uTargetColor.value
+					);	
+					baseShaderMaterialRef.current.uniforms.uTargetColor.value.set(color);
+					baseShaderMaterialRef.current.uniforms.uTransitionFactor.value = 0.0;
+				}, Math.random() * 10000 + 15000);
 			}
 		};
 
 		return () => {
 			streamManager.onmessage = null;
+			clearInterval(timer);
 		};
 
 		/*streamManager.audioWorkletNode.port.onmessage = (e) => {

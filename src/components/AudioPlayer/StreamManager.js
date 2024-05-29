@@ -108,7 +108,7 @@ class StreamManager {
             let index = getUserMessage ? -1 : 0;
     
             let buffer = new Uint8Array();
-            while (index < 3) {
+            while (index < 2) {
                 let { done, value } = await reader.read();
                 if (done) break;
     
@@ -117,10 +117,7 @@ class StreamManager {
                 combinedBuffer.set(buffer);
                 combinedBuffer.set(value, buffer.length);
     
-                let delimiterIndex = this.findBinaryDelimiter(combinedBuffer, delimiter);
-
-                //const tempDecoded = textDecoder.decode(combinedBuffer);
-                //console.log("Temp decoded:", tempDecoded, "Delimiter index:", delimiterIndex);
+                const delimiterIndex = this.findBinaryDelimiter(combinedBuffer, delimiter);
 
                 if (delimiterIndex !== -1) {
                     const data = combinedBuffer.slice(0, delimiterIndex);
@@ -132,9 +129,7 @@ class StreamManager {
                         await this.handleComponents(textDecoder.decode(data), showComponent);
                     } else if (index === 1) {
                         await this.handleColorMessage(textDecoder.decode(data));
-                    } else if (index === 2) {
-                        await this.handleAssistantMessage(textDecoder.decode(data), addMessage);
-                    }
+                    } 
     
                     buffer = overflow;
                     index++;
@@ -144,7 +139,7 @@ class StreamManager {
             }
     
             //console.log("Remaining data for audio processing:", buffer);
-            await this.processAudio(reader, buffer);
+            await this.processAudioAndText(reader, buffer, addMessage);
         } catch (error) {
             console.error('Stream processing error:', error);
         } finally {
@@ -159,28 +154,34 @@ class StreamManager {
     
 
     async handleUserMessage(userMessage, addMessage) {
-        //console.log("User message:", userMessage);
+        console.log("User message:", userMessage);
         addMessage("user", userMessage);
     }
 
     async handleComponents(componentList, showComponent) {
-        //console.log("Component list:", componentList);
+        console.log("Component list:", componentList);
         const components = JSON.parse(componentList);
         components.forEach(component => showComponent(component));
     }
 
     async handleAssistantMessage(assistantMessage, addMessage) {
-        //console.log("Assistant message:", assistantMessage);
+        console.log("Assistant message:", assistantMessage);
         addMessage("assistant", assistantMessage);
     }
 
-    async processAudio(reader, overflow) {
+    async processAudioAndText(reader, overflow, addMessage) {
         // resume audio context if it's in suspended state
         if (this.audioContext.state !== "running") {
             await this.audioContext.resume();
         }
 
-        let float32Array;
+        const delimiter = textEncoder.encode('|||');
+
+        console.log("Audio processing has started. + Overflow:", overflow.length);
+
+        let isText = true;
+
+        let float32Array, _;
         while (true) {
             let { done, value } = await reader.read();
             if (done) {
@@ -193,8 +194,27 @@ class StreamManager {
                 value = new Uint8Array([...overflow, ...value]);
             }
 
-            [float32Array, overflow] = this.convertAndNormalizeToFloat32Array(value);
-            if (float32Array) this.sendAudioChunk(float32Array);
+            const delimiterIndex = this.findBinaryDelimiter(value, delimiter);
+
+            if (isText){
+                if (delimiterIndex !== -1) {
+                    const data = value.slice(0, delimiterIndex);
+                    overflow = value.slice(delimiterIndex + delimiter.length);
+                    await this.handleAssistantMessage(textDecoder.decode(data), addMessage);
+                    isText = false;
+                }
+            } else {
+                if (delimiterIndex !== -1) {
+                    const data = value.slice(0, delimiterIndex);
+                    overflow = value.slice(delimiterIndex + delimiter.length);
+                    [float32Array, _ ] = this.convertAndNormalizeToFloat32Array(data); // ignore overflow because it is switching to text
+                    if (float32Array) this.sendAudioChunk(float32Array);
+                    isText = true;
+                } else {
+                    [float32Array, overflow] = this.convertAndNormalizeToFloat32Array(value);
+                    if (float32Array) this.sendAudioChunk(float32Array);
+                }
+            }  
         }
     }
 

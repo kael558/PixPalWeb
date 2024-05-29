@@ -80,7 +80,16 @@ function ChatPageComponent({ streamManager }) {
 		if (content === "") return;
 
 		setMessages((prevMessages) => {
-			if (prevMessages.length > 100) {
+			// Check if there are any previous messages and if the last message's role matches the current role
+			if (prevMessages.length > 0 && prevMessages[prevMessages.length - 1].role === role) {
+				return prevMessages.map((msg, index) => {
+					if (index === prevMessages.length - 1) {
+						// Append content to the last message
+						return { ...msg, content: msg.content + " " + content };
+					}
+					return msg;
+				});
+			} else if (prevMessages.length > 100) {
 				// remove the 10 oldest messages
 				const sliced = prevMessages.slice(10);
 				sliced.push({ role, content });

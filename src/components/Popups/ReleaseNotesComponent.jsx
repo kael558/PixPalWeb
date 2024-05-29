@@ -1,4 +1,3 @@
-import { motion, AnimatePresence } from "framer-motion";
 import ReactMarkdown from "react-markdown";
 import style from "./ReleaseNotesComponent.module.css";
 import { Overlay, Window } from "./OverlayComponent";

@@ -68,7 +68,7 @@ function StartComponent({ isVisible, onMessageSend, setRole, setStartFinished })
                             gap: "10px",
                         }}>
                             {["Friend", "Advice", "Intimacy"].map(role => (
-                                <button key={role} onClick={() => setRoleHandler(role === "Friend" ? "Friend" : (role === "Advice" ? "Teacher" : "Intimate Partner"))} style={{
+                                <button key={role} onClick={() => setRoleHandler(role === "Friend" ? "Friend" : (role === "Advice" ? "Teacher" : "Intimate"))} style={{
                                     padding: "10px",
                                     borderRadius: "10px",
                                     backgroundColor: "rgba(255, 163, 69, 0.8)",
