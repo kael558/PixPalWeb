@@ -8,6 +8,7 @@ function getApplicableReleaseNotes(version) {
 	- Update UI
 	- Basic NSFW with selectable options
 	- Color changes based on reaction
+	- Faster responses for medium and high quality chat models
 	
 	### Version 0.9.2 *[Beta]*
 	- Mute and Interrupt buttons

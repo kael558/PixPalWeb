@@ -8,6 +8,7 @@ function AudioVisualizer({ mediaStream, streamManager, isRecording }) {
     const requestRef = useRef(null);
     const isRecordingRef = useRef(isRecording);
     const timeoutRef = useRef(null);
+    const sourceNodeRef = useRef(null);
 
     useEffect(() => {
         let sourceNode = null;
@@ -15,15 +16,15 @@ function AudioVisualizer({ mediaStream, streamManager, isRecording }) {
         async function setupAudio() {
             try {
                 // Disconnect existing connections if they exist
-                if (sourceNode) {
-                    sourceNode.disconnect();
+                if (sourceNodeRef.current) {
+                    sourceNodeRef.current.disconnect();
                 }
                 if (analyserRef.current) {
                     analyserRef.current.disconnect();
                 }
     
                 // Setup new audio connections
-                sourceNode = streamManager.audioContext.createMediaStreamSource(await mediaStream);
+                sourceNodeRef.current = streamManager.audioContext.createMediaStreamSource(await mediaStream);
                 const analyser = streamManager.audioContext.createAnalyser();
     
                 analyser.fftSize = 2048;
@@ -32,7 +33,7 @@ function AudioVisualizer({ mediaStream, streamManager, isRecording }) {
                 analyserRef.current = analyser;
                 dataArrayRef.current = dataArray;
     
-                sourceNode.connect(analyser);
+                sourceNodeRef.current.connect(analyser);
                 streamManager.connectNode(analyser);
     
                 draw();
@@ -46,8 +47,8 @@ function AudioVisualizer({ mediaStream, streamManager, isRecording }) {
                 setupAudio();
             } else {
                 cancelAnimationFrame(requestRef.current);
-                if (sourceNode) {
-                    sourceNode.disconnect();
+                if (sourceNodeRef.current) {
+                    sourceNodeRef.current.disconnect();
                 }
                 if (analyserRef.current) {
                     analyserRef.current.disconnect();
@@ -63,8 +64,8 @@ function AudioVisualizer({ mediaStream, streamManager, isRecording }) {
         return () => {
             cancelAnimationFrame(requestRef.current);
             document.removeEventListener('visibilitychange', handleVisibilityChange);
-            if (sourceNode) {
-                sourceNode.disconnect();
+            if (sourceNodeRef.current) {
+                sourceNodeRef.current.disconnect();
             }
             if (analyserRef.current) {
                 analyserRef.current.disconnect();
@@ -80,9 +81,11 @@ function AudioVisualizer({ mediaStream, streamManager, isRecording }) {
 
         if (isRecording){
             isRecordingRef.current = isRecording;
+            sourceNodeRef.current.connect(analyserRef.current);
         } else {
             timeoutRef.current = setTimeout(() => { // allows decay to be same color as recording
                 isRecordingRef.current = isRecording;
+                sourceNodeRef.current.disconnect();
             }, 600);  
         }
     }, [isRecording]);

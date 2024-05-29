@@ -41,23 +41,28 @@ function Tokens({ showTokensPanel }) {
 	const { isAuthenticated, getAccessToken } = useAuth();
 
 	useEffect(() => {
-		getAccessToken()
-			.then((token) => {
-				get_tokens(token).then((data) => {
-					// put commas in the number
-					let tokens =
-						data?.tokenCount
-							?.toString()
-							?.replace(/\B(?=(\d{3})+(?!\d))/g, ",") || 0;
+		const retrieveTokens = () => {
+			getAccessToken()
+				.then((token) => {
+					get_tokens(token).then((data) => {
+						// put commas in the number
+						let tokens =
+							data?.tokenCount
+								?.toString()
+								?.replace(/\B(?=(\d{3})+(?!\d))/g, ",") || 0;
 
-	
-
-					setTokens(tokens); // Fallback to 0 if data.tokens is undefined
+						setTokens(tokens); // Fallback to 0 if data.tokens is undefined
+					});
+				})
+				.catch((error) => {
+					console.error("Error getting ID token:", error);
 				});
-			})
-			.catch((error) => {
-				console.error("Error getting ID token:", error);
-			});
+		}
+		
+		retrieveTokens();
+		const interval = setInterval(retrieveTokens, 60000);
+	
+		return () => clearInterval(interval);
 	}, []);
 
 	return (
