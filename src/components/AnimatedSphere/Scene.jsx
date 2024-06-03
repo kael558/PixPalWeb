@@ -1,6 +1,11 @@
 import { Canvas } from "@react-three/fiber";
-import { Suspense, lazy } from "react";
-import { EffectComposer, Bloom, Noise, Vignette } from "@react-three/postprocessing";
+import { Suspense, lazy, Fragment } from "react";
+import {
+	EffectComposer,
+	Bloom,
+	Noise,
+	Vignette,
+} from "@react-three/postprocessing";
 import Stars from "./Stars";
 
 const FBOParticles = lazy(() => import("./FBOParticles"));
@@ -8,7 +13,7 @@ const FBOParticles = lazy(() => import("./FBOParticles"));
 const LAYERS = {
 	NORMAL: 0,
 	BLOOM: 1,
-  };
+};
 //https://blog.maximeheckel.com/posts/the-magical-world-of-particles-with-react-three-fiber-and-shaders/
 //https://barradeau.com/blog/?p=621
 
@@ -61,8 +66,6 @@ const BloomEffect = ({ streamManager }) => {
 		};
 	}, [streamManager.audioWorkletNode]);*/
 
-
-
 	return (
 		<EffectComposer>
 			<Bloom
@@ -79,22 +82,23 @@ const BloomEffect = ({ streamManager }) => {
 	);
 };
 
-const Scene = ({ streamManager }) => {
+const Scene = ({ streamManager, visualQuality }) => {
 	return (
-		<>
+		<Fragment>
 			<Canvas camera={{ position: [1.5, 1.5, 1.0] }}>
 				<Suspense fallback={null}>
-					<BloomEffect streamManager={streamManager} />
-					
+					{visualQuality === "Advanced" && (
+						<BloomEffect streamManager={streamManager} />
+					)}
 		
-						<Stars />
-	
-						<FBOParticles streamManager={streamManager} />
-			
-	
+					<Stars />
+					<FBOParticles
+						streamManager={streamManager}
+						visualQuality={visualQuality}
+					/>
 				</Suspense>
 			</Canvas>
-		</>
+		</Fragment>
 	);
 };
 

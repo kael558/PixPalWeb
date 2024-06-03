@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 
 import { Overlay, Window} from "./OverlayComponent";
 import { toast } from "react-toastify";
+import { useHue } from "@hooks/useHue";
 
 function AuthenticationComponent({ isVisible, onClose }) {
 	const [email, setEmail] = useState("");
@@ -11,6 +12,9 @@ function AuthenticationComponent({ isVisible, onClose }) {
 	const [isLoginView, setIsLoginView] = useState(true); // Toggle between login and register view
 
 	const { loginWithEmailAndPassword, registerWithEmailAndPassword, forgotPassword } = useAuth();
+
+    const { hue, getRGBStr } = useHue();
+	const rgbStr = getRGBStr();
 
 	const handleLogin = async (event) => {
 		event.preventDefault();
@@ -54,12 +58,12 @@ function AuthenticationComponent({ isVisible, onClose }) {
                         cursor: "pointer",
                         fontSize: "24px",
                         color: "white", // Changed to white for visibility
-                        filter: "drop-shadow(0 0 5px rgba(255,163,69,0.8))", // Adding a subtle glow effect
+                        filter: `drop-shadow(0 0 5px rgba(${rgbStr},0.8))`, // Adding a subtle glow effect
                     }}
                 >
                     ✖
                 </button>
-                <h2 style={{ color: "white", textShadow: "0 0 10px rgba(255,163,69,0.8)" }}>{isLoginView ? "Sign In" : "Register"}</h2>
+                <h2 style={{ color: "white", textShadow: `0 0 10px rgba(${rgbStr},0.8)` }}>{isLoginView ? "Sign In" : "Register"}</h2>
                 <form onSubmit={isLoginView ? handleLogin : handleRegister}>
                     <div style={{ marginBottom: "20px" }}>
                         <label
@@ -81,7 +85,7 @@ function AuthenticationComponent({ isVisible, onClose }) {
                                 width: "100%",
                                 padding: "10px 10px",
                                 borderRadius: "5px",
-                                border: "1px solid rgba(255, 163, 69, 0.5)", // Border color modified
+                                border: `1px solid rgba(${rgbStr}, 0.5)`, // Border color modified
                                 backgroundColor: "#222", // Darker input fields
                                 color: "white", // Text color changed for contrast
                             }}
@@ -106,7 +110,7 @@ function AuthenticationComponent({ isVisible, onClose }) {
                                 width: "100%",
                                 padding: "10px 10px",
                                 borderRadius: "5px",
-                                border: "1px solid rgba(255, 163, 69, 0.5)", // Consistent border styling
+                                border: `1px solid rgba(${rgbStr}, 0.5)`, // Consistent border styling
                                 backgroundColor: "#222",
                                 color: "white",
                             }}
@@ -117,7 +121,7 @@ function AuthenticationComponent({ isVisible, onClose }) {
                         style={{
                             width: "100%",
                             padding: "10px",
-                            backgroundColor: "rgba(255, 163, 69, 0.8)", // Button color changed to fit theme
+                            backgroundColor: `rgba(${rgbStr}, 0.8)`, // Button color changed to fit theme
                             color: "black",
                             borderRadius: "5px",
                             border: "none",
@@ -133,7 +137,7 @@ function AuthenticationComponent({ isVisible, onClose }) {
                         marginTop: "20px",
                         backgroundColor: "transparent",
                         border: "none",
-                        color: "rgba(255, 163, 69, 0.8)", // Color matching the theme
+                        color: `rgba(${rgbStr}, 0.8)`, // Color matching the theme
                         textDecoration: "underline",
                         cursor: "pointer",
                     }}
@@ -147,7 +151,7 @@ function AuthenticationComponent({ isVisible, onClose }) {
                            marginTop: "20px",
                            backgroundColor: "transparent",
                            border: "none",
-                           color: "rgba(255, 163, 69, 0.8)", // Color matching the theme
+                           color: `rgba(${rgbStr}, 0.8)`, // Color matching the theme
                            textDecoration: "underline",
                            cursor: "pointer",
                        }}

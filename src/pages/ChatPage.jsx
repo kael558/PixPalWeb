@@ -16,6 +16,7 @@ streamManager.setupAudioWorkletNode();
 
 function ChatPage() {
 	const [name, _] = useLocalStorage("name", "");
+	const [visualQuality, setVisualQuality] = useLocalStorage("visualQuality", "Advanced");
 
 	const { loginAnonymously, isAuthenticated } = useAuth();
 
@@ -50,8 +51,8 @@ function ChatPage() {
 				draggable
 				theme="dark"
 			/>
-			<Scene streamManager={streamManager} />
-			<ChatPageComponent streamManager={streamManager}  />
+			<Scene streamManager={streamManager} visualQuality={visualQuality} />
+			<ChatPageComponent streamManager={streamManager} visualQuality={visualQuality} setVisualQuality={setVisualQuality} />
 		</div>
 	);
 }

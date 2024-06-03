@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "@hooks/useAuth";
+import { useHue } from "@hooks/useHue";
 
 import styles from "./Tokens.module.css";
 
@@ -7,7 +8,10 @@ import RainbowButton from "../RainbowButton";
 
 async function get_tokens(accessToken) {
 	console.log("Bearer " + accessToken);
-	//return { tokens: 0 }; // temp
+	if (!accessToken) {
+		console.error("No access token provided");
+		return { tokenCount: 0 };
+	}
 
 	return fetch(
 		"https://0xlgvmu6h4.execute-api.us-east-1.amazonaws.com/tokens",
@@ -36,11 +40,14 @@ async function get_tokens(accessToken) {
 }
 
 function Tokens({ showTokensPanel }) {
-	const [tokens, setTokens] = useState(null);
+	const [tokens, setTokens] = useState("Loading...");
 
 	const { isAuthenticated, getAccessToken } = useAuth();
+	const { hue, getRGBStr } = useHue();
+	const rgbStr = getRGBStr();
 
 	useEffect(() => {
+
 		const retrieveTokens = () => {
 			getAccessToken()
 				.then((token) => {
@@ -65,42 +72,44 @@ function Tokens({ showTokensPanel }) {
 		return () => clearInterval(interval);
 	}, []);
 
+
 	return (
 		<>
 			<img
 				src="/diamonds/small_bundle_diamonds.png"
 				alt="Tokens"
 				style={{
-					width: "60px", // Adjust size as needed
-					height: "60px", // Adjust size as needed
+					width: "60px",
+					height: "60px",
 					position: "absolute",
 					top: "4px",
-					right: "85px",
-				
+					right: "90px",
 				}}
 			/>
 			<div
 				style={{
 					display: "flex",
 					alignItems: "center",
-					background: "rgba(0, 0, 0, 0.5)", // Semi-transparent black background
-					padding: "0px 0px 0px 25px", // Padding for the text
+					justifyContent: "flex-end",  // Aligns children to the right side of the container
+					background: "rgba(0, 0, 0, 0.5)",
+					padding: "0px 0px 0px 25px",
 					marginTop: "20px",
 					borderRadius: "25px",
-					border: "1px solid #FFA345", // Light border for contrast
-					boxShadow: "0 0 5px rgba(255,163,69,0.7)"
+					border: `1px solid ${hue}`,
+					boxShadow: `0 0 5px rgba(${rgbStr},0.7)`,
+					minWidth: "90px",
 				}}
 			>
 				<span
 					style={{
-						color: "#FFA345", // Lighter color for text
-						marginRight: "auto", // Pushes the button to the right
-						fontSize: "16px", // Adjust size as needed
-						letterSpacing: "0.1em", // Adds space between characters
-
+						color: `${hue}`,
+						fontSize: `${tokens.length > 7 ? "13px" : tokens.length > 6 ? "14px" : "16px"}`,
+						letterSpacing: "0.1em",
+			
+					
 					}}
 				>
-					{tokens ?? "Loading..."}
+					{tokens}
 				</span>
 				<button
 					onClick={showTokensPanel}
@@ -109,9 +118,8 @@ function Tokens({ showTokensPanel }) {
 						border: "none",
 						color: "#f0f0f0",
 						cursor: "pointer",
-						fontSize: "16px",
-						display: "flex",
-						alignItems: "center",
+						fontSize: "15px",
+				
 					}}
 				>
 					<span>+</span>
@@ -119,6 +127,7 @@ function Tokens({ showTokensPanel }) {
 			</div>
 		</>
 	);
+	
 }
 
 export default Tokens;

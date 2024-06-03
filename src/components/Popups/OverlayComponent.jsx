@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
-
+import { useHue } from "../../hooks/useHue";
 
 export function Overlay({ isVisible, children, style: customStyle }) {
         // Default styles
@@ -43,6 +43,13 @@ export function Overlay({ isVisible, children, style: customStyle }) {
 
 
 export function Window({ ref, children, style: customStyle }) {
+
+    const { hue, getRGB } = useHue();
+
+    const rgb = getRGB(hue);
+
+    const rgbStr = `${rgb.r}, ${rgb.g}, ${rgb.b}`;
+
     // Default styles
     const defaultStyle = {
         display: "flex",
@@ -52,12 +59,12 @@ export function Window({ ref, children, style: customStyle }) {
         backgroundColor: "black",
         padding: "20px",
         borderRadius: "15px",
-        boxShadow: "0 0 20px rgba(255,163,69,0.7), 0 0 40px rgba(255,163,69,0.5) inset",
+        boxShadow: `0 0 20px rgba(${rgbStr},0.7), 0 0 40px rgba(${rgbStr},0.5) inset`,
         position: "relative",
         minWidth: "300px",
         maxWidth: "90vw",
         color: "white",
-        border: "2px solid rgba(255, 163, 69, 0.8)",
+        border: `2px solid rgba(${rgbStr}, 0.8)`,
         backdropFilter: "blur(10px)",
         transition: "all 0.3s ease-in-out",
 

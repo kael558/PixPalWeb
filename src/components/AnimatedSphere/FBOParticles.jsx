@@ -37,8 +37,8 @@ void main() {
 
 extend({ SimulationMaterial: SimulationMaterial });
 
-const FBOParticles = ({ streamManager }) => {
-	const size = 256;
+const FBOParticles = ({ streamManager}) => {
+	const size =  256;
 
 	const points = useRef();
 	const simulationMaterialRef = useRef();

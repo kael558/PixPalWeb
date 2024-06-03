@@ -14,13 +14,11 @@ import StartComponent from "../components/Popups/StartComponent";
 
 import { CURRENT_VERSION } from "../Constants";
 
+import { HueProvider } from "@hooks/useHue";
 import { useAuth } from "@hooks/useAuth";
 import { useLocalStorage } from "@hooks/useLocalStorage";
 
-function ChatPageComponent({ streamManager }) {
-
-
-
+function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 	const [messages, setMessages] = useLocalStorage("messages", []);
 	const messagesRef = useRef(messages);
 
@@ -33,7 +31,10 @@ function ChatPageComponent({ streamManager }) {
 
 	const [gender, setGender] = useLocalStorage("gender", "Female");
 	const [role, setRole] = useLocalStorage("role", "Friend");
-	const [voiceQuality, setVoiceQuality] = useLocalStorage("voiceQuality", "Low");
+	const [voiceQuality, setVoiceQuality] = useLocalStorage(
+		"voiceQuality",
+		"Low"
+	);
 	const [chatQuality, setChatQuality] = useLocalStorage("chatQuality", "Low");
 
 	const [isLoginVisible, setLoginVisible] = useState(false);
@@ -81,7 +82,10 @@ function ChatPageComponent({ streamManager }) {
 
 		setMessages((prevMessages) => {
 			// Check if there are any previous messages and if the last message's role matches the current role
-			if (prevMessages.length > 0 && prevMessages[prevMessages.length - 1].role === role) {
+			if (
+				prevMessages.length > 0 &&
+				prevMessages[prevMessages.length - 1].role === role
+			) {
 				return prevMessages.map((msg, index) => {
 					if (index === prevMessages.length - 1) {
 						// Append content to the last message
@@ -95,8 +99,8 @@ function ChatPageComponent({ streamManager }) {
 				sliced.push({ role, content });
 				return sliced;
 			}
-			
-			return [...prevMessages, { role, content }]
+
+			return [...prevMessages, { role, content }];
 		});
 	};
 
@@ -126,7 +130,7 @@ function ChatPageComponent({ streamManager }) {
 					username: name,
 					role: role,
 					languageModelQuality: chatQuality,
-					gender: gender
+					gender: gender,
 				}),
 			};
 
@@ -193,94 +197,101 @@ function ChatPageComponent({ streamManager }) {
 		setStartVisible(false);
 	}, [role, isStartFinished]);
 
-    //console.log(isRecording);
+	//console.log(isRecording);
 
 	return (
-		<div>
-			<div
-				onMouseDown={
-					inputMode === "audio" ? () => {
-                        //console.log("mouseDown");
-                        setIsRecording(true)} : () => {}
-				}
-				onMouseUp={
-					inputMode === "audio" ? () => setIsRecording(false) : () => {}
-				}
-				onTouchStart={
-					inputMode === "audio" ? () => setIsRecording(true) : () => {}
-				}
-				onTouchEnd={
-					inputMode === "audio" ? () => setIsRecording(false) : () => {}
-				}
-				style={{
-					position: "absolute", // Correct property for positioning
-					top: 0, // Position at the top of the parent
-					left: 0, // Position at the left of the parent
-					width: "100vw", // Full viewport width
-					height: "100vh", // Full viewport height (corrected from 100vw)
-					boxShadow: isRecording
-						? "inset 0 0 40px rgba(255,40,69,0.8)"
-						: "none",
-				}}
-			/>
+		<HueProvider>
+			<div>
+				<div
+					onMouseDown={
+						inputMode === "audio"
+							? () => {
+									//console.log("mouseDown");
+									setIsRecording(true);
+							  }
+							: () => {}
+					}
+					onMouseUp={
+						inputMode === "audio" ? () => setIsRecording(false) : () => {}
+					}
+					onTouchStart={
+						inputMode === "audio" ? () => setIsRecording(true) : () => {}
+					}
+					onTouchEnd={
+						inputMode === "audio" ? () => setIsRecording(false) : () => {}
+					}
+					style={{
+						position: "absolute", // Correct property for positioning
+						top: 0, // Position at the top of the parent
+						left: 0, // Position at the left of the parent
+						width: "100vw", // Full viewport width
+						height: "100vh", // Full viewport height (corrected from 100vw)
+						boxShadow: isRecording
+							? "inset 0 0 40px rgba(255,40,69,0.8)"
+							: "none",
+					}}
+				/>
 
-			<Toolbar
-				showLoginUI={() => setLoginVisible(true)}
-				showTokensPanel={() => setTokensPanelVisible(true)}
-				streamManager={streamManager}
-				setMessages={setMessages}
-				inputMode={inputMode}
-				setInputMode={setInputMode}
-				gender={gender}
-				setGender={setGender}
-				role={role}
-				setRole={setRole}
-				voiceQuality={voiceQuality}
-				setVoiceQuality={setVoiceQuality}
-				chatQuality={chatQuality}
-				setChatQuality={setChatQuality}
-			/>
+				<Toolbar
+					showLoginUI={() => setLoginVisible(true)}
+					showTokensPanel={() => setTokensPanelVisible(true)}
+					streamManager={streamManager}
+					setMessages={setMessages}
+					inputMode={inputMode}
+					setInputMode={setInputMode}
+					gender={gender}
+					setGender={setGender}
+					role={role}
+					setRole={setRole}
+					voiceQuality={voiceQuality}
+					setVoiceQuality={setVoiceQuality}
+					chatQuality={chatQuality}
+					setChatQuality={setChatQuality}
+					visualQuality={visualQuality}
+					setVisualQuality={setVisualQuality}
+				/>
 
-			<ChatInput
-				onSend={onMessageSend}
-				onAudio={onAudioSend}
-				streamManager={streamManager}
-				inputMode={inputMode}
-				setIsRecording={setIsRecording}
-				isRecording={isRecording}
-			/>
-			<AuthenticationComponent
-				isVisible={isLoginVisible}
-				onClose={() => setLoginVisible(false)}
-			/>
-			<TokensComponent
-				isVisible={isTokensPanelVisible}
-				onClose={() => setTokensPanelVisible(false)}
-			/>
+				<ChatInput
+					onSend={onMessageSend}
+					onAudio={onAudioSend}
+					streamManager={streamManager}
+					inputMode={inputMode}
+					setIsRecording={setIsRecording}
+					isRecording={isRecording}
+				/>
+				<AuthenticationComponent
+					isVisible={isLoginVisible}
+					onClose={() => setLoginVisible(false)}
+				/>
+				<TokensComponent
+					isVisible={isTokensPanelVisible}
+					onClose={() => setTokensPanelVisible(false)}
+				/>
 
-			<StartComponent
-				isVisible={isStartVisible}
-				setRole={setRole}
-				onMessageSend={onMessageSend}
-				setStartFinished={setStartFinished}
-			/>
-			<PrivacyPolicyComponent
-				isVisible={isPrivacyPolicyVisible}
-				onClose={acceptPrivacyPolicy}
-			/>
-			<ReleaseNotesComponent
-				isVisible={isReleaseNotesVisible}
-				onClose={acceptNewVersion}
-				version={version}
-			/>
-			<OnboardingComponent
-				isVisible={isOnboardingVisible}
-				onClose={() => setOnboardingVisible(false)}
-				streamManager={streamManager}
-				name={name}
-				setName={setName}
-			/>
-		</div>
+				<StartComponent
+					isVisible={isStartVisible}
+					setRole={setRole}
+					onMessageSend={onMessageSend}
+					setStartFinished={setStartFinished}
+				/>
+				<PrivacyPolicyComponent
+					isVisible={isPrivacyPolicyVisible}
+					onClose={acceptPrivacyPolicy}
+				/>
+				<ReleaseNotesComponent
+					isVisible={isReleaseNotesVisible}
+					onClose={acceptNewVersion}
+					version={version}
+				/>
+				<OnboardingComponent
+					isVisible={isOnboardingVisible}
+					onClose={() => setOnboardingVisible(false)}
+					streamManager={streamManager}
+					name={name}
+					setName={setName}
+				/>
+			</div>
+		</HueProvider>
 	);
 }
 

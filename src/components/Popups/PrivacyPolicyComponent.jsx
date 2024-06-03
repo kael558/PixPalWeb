@@ -1,6 +1,7 @@
 import ReactMarkdown from "react-markdown";
 import { Overlay, Window } from "./OverlayComponent";
 import { useRef } from "react";
+import { useHue } from "@hooks/useHue";
 
 // down arrow icon
 import { FaArrowDown } from "react-icons/fa";
@@ -50,6 +51,9 @@ const sectionsData = [
 const PrivacyPolicyComponent = ({ isVisible, onClose }) => {
     const containerRef = useRef(null);
 
+	const { hue, getRGBStr } = useHue();
+	const rgbStr = getRGBStr();
+
     return (
         <Overlay isVisible={isVisible}>
             <Window
@@ -62,15 +66,15 @@ const PrivacyPolicyComponent = ({ isVisible, onClose }) => {
                     backgroundColor: "#222",
                     color: "white",
                     borderRadius: "20px",
-                    border: "2px solid rgba(255, 163, 69, 0.8)",
-                    boxShadow: "0 0 20px rgba(255,163,69,0.7), 0 0 40px rgba(255,163,69,0.5) inset",
+                    border: `2px solid rgba(${rgbStr}, 0.8)`,
+                    boxShadow: `0 0 20px rgba(${rgbStr},0.7), 0 0 40px rgba(${rgbStr},0.5) inset`,
                     padding: "20px",
                     backdropFilter: "blur(10px)",
                     maxHeight: "90vh",
                 }}
             >
                 <h1 style={{
-                    color: "rgba(255, 163, 69, 0.8)", 
+                    color: `rgba(${rgbStr}, 0.8)`, 
                     alignSelf: "center",
                     margin: "0",
                 }}>
@@ -79,20 +83,20 @@ const PrivacyPolicyComponent = ({ isVisible, onClose }) => {
                 <div ref={containerRef} style={{
                     overflow: "auto",
         
-                    scrollbarColor: "rgba(255, 163, 69, 0.4) #0002",
+                    scrollbarColor: `rgba(${rgbStr}, 0.4) #0002`,
                     flex: 1,  // Take up remaining space
                 }}>
                     {sectionsData.map((section, index) => (
                         <div
                             key={index}
                             style={{
-                                borderBottom: "2px solid rgba(255, 163, 69, 0.3)",
+                                borderBottom: `2px solid rgba(${rgbStr}, 0.3)`,
                             }}
                         >
                             <h2 style={{
-                                color: "rgba(255, 163, 69, 0.8)",
+                                color: `rgba(${rgbStr}, 0.8)`,
                                 fontSize: "20px",
-                                textShadow: "0 0 10px rgba(255,163,69,0.5)",
+                                textShadow: `0 0 10px rgba(${rgbStr},0.5)`,
                             }}>
                                 {section.title}
                             </h2>
@@ -113,7 +117,7 @@ const PrivacyPolicyComponent = ({ isVisible, onClose }) => {
                         borderRadius: "5px",
                         border: "none",
                         cursor: "pointer",
-                        backgroundColor: "rgba(255, 163, 69, 0.8)",
+                        backgroundColor: `rgba(${rgbStr}, 0.8)`,
                         color: "black",
                         marginTop: "10px",
                         width: "100%",

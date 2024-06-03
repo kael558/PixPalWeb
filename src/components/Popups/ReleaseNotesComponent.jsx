@@ -1,6 +1,7 @@
 import ReactMarkdown from "react-markdown";
 import style from "./ReleaseNotesComponent.module.css";
 import { Overlay, Window } from "./OverlayComponent";
+import { useHue } from "@hooks/useHue";
 
 function getApplicableReleaseNotes(version) {
 	const totalReleaseNotes = `### Version 0.9.3 *[Beta]*
@@ -61,6 +62,9 @@ function getApplicableReleaseNotes(version) {
 const ReleaseNotesComponent = ({ isVisible, onClose, version }) => {
 	let applicableReleaseNotes = getApplicableReleaseNotes(version);
 
+	const { hue, getRGBStr } = useHue();
+	const rgbStr = getRGBStr();
+
 	return (
 		<Overlay isVisible={isVisible}>
 			<Window
@@ -81,13 +85,14 @@ const ReleaseNotesComponent = ({ isVisible, onClose, version }) => {
 
 					alignItems: "flex-start",
 					justifyContent: "flex-start",
+					scrollbarColor: `rgba(${rgbStr}, 0.4) #0002`,
 				}}
 			>
 				<h1
 					style={{
-						color: "rgba(255, 163, 69, 0.8)", // Glowing text color
+						color: `rgba((${rgbStr}, 0.8)`, // Glowing text color
 						textAlign: "center",
-						textShadow: "0 0 20px rgba(255,163,69,0.7)", // Text shadow for glow effect
+						textShadow: `0 0 20px rgba((${rgbStr},0.7)`, // Text shadow for glow effect
 						marginBottom: "20px", // Space below the header
 					}}
 				>
@@ -105,7 +110,7 @@ const ReleaseNotesComponent = ({ isVisible, onClose, version }) => {
 						borderRadius: "5px",
 						border: "none", // Removing border for a cleaner look
 						cursor: "pointer",
-						backgroundColor: "rgba(255, 163, 69, 0.8)", // Glowing button background
+						backgroundColor: `rgba((${rgbStr}, 0.8)`, // Glowing button background
 						color: "black", // Text color for visibility
 						marginTop: "10px",
 						width: "100%", // Full-width button for better alignment and impact

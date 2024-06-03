@@ -1,6 +1,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
+import { useHue } from "@hooks/useHue";
 
 function AISettings({ isVisible, setMessages, 
 	gender,
@@ -15,10 +16,14 @@ function AISettings({ isVisible, setMessages,
 
  }) {
 	const [isMobile, setIsMobile] = useState(window.innerWidth < 480);
+	
+	const { hue, getRGBStr } = useHue();
+	const rgbStr = getRGBStr();
+
 
 	useEffect(() => {
         const handleResize = () => {
-            setIsMobile(window.innerWidth < 380);
+            setIsMobile(window.innerWidth < 480);
         };
         window.addEventListener('resize', handleResize);
         return () => window.removeEventListener('resize', handleResize);
@@ -31,10 +36,11 @@ function AISettings({ isVisible, setMessages,
 		toast.success("Memory reset successfully!");
 	};
 
+
 	const optionStyle = (current, value) => ({
 		cursor: "pointer",
-		color: current === value ? "#FFC107" : "white",
-		border: current === value ? "1px solid #FFC107" : "none",
+		color: current === value ? hue : "white",
+		border: current === value ? `1px solid ${hue}` : "none",
 		padding: "0 5px",
 		margin: "0 5px",
 		position: "relative",
@@ -43,7 +49,7 @@ function AISettings({ isVisible, setMessages,
 	});
 
 	const categoryStyle = {
-		color: "#FFC107",
+		color: hue,
 		fontWeight: "bold",
 		fontSize: isMobile ? "12px" : "inherit",
         letterSpacing: isMobile ? "0.05em" : "0.1em"
@@ -61,7 +67,7 @@ function AISettings({ isVisible, setMessages,
         right: "60px",
         top: "60px",
         background: "#000",
-        border: "1px solid #ccc",
+        border: `1px solid ${hue}`,
         borderRadius: "8px",
         padding: "10px",
         display: "flex",
@@ -69,7 +75,7 @@ function AISettings({ isVisible, setMessages,
         alignItems: "flex-start",
         width: "auto",
         minWidth: isMobile ? "300px" : "400px",
-        boxShadow: "0 0 20px rgba(255,163,69,0.7)",
+        boxShadow: `0 0 20px rgba(${rgbStr},0.7)`,
     };
 
 	return (
@@ -222,7 +228,7 @@ function AISettings({ isVisible, setMessages,
 								marginTop: "10px",
 								padding: "8px 20px",
 								borderRadius: "5px",
-								backgroundColor: "#DDC107",
+								backgroundColor: hue,
 								color: "black",
 								border: "1px solid white",
 								cursor: "pointer",
@@ -233,10 +239,10 @@ function AISettings({ isVisible, setMessages,
 							}}
 							onMouseEnter={(e) => {
 								e.target.style.backgroundColor = "white";
-								e.target.style.color = "#FFC107";
+								e.target.style.color = hue;
 							}}
 							onMouseLeave={(e) => {
-								e.target.style.backgroundColor = "#FFC107";
+								e.target.style.backgroundColor = hue;
 								e.target.style.color = "black";
 							}}
 						>
@@ -250,7 +256,7 @@ function AISettings({ isVisible, setMessages,
 								marginTop: "10px",
 								padding: "8px 20px",
 								borderRadius: "5px",
-								backgroundColor: "#DDC107",
+								backgroundColor: hue,
 								color: "black",
 								border: "1px solid white",
 								cursor: "pointer",
@@ -261,10 +267,10 @@ function AISettings({ isVisible, setMessages,
 							}}
 							onMouseEnter={(e) => {
 								e.target.style.backgroundColor = "white";
-								e.target.style.color = "#FFC107";
+								e.target.style.color = hue;
 							}}
 							onMouseLeave={(e) => {
-								e.target.style.backgroundColor = "#FFC107";
+								e.target.style.backgroundColor = hue;
 								e.target.style.color = "black";
 							}}
 						>

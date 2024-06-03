@@ -5,6 +5,7 @@ import AudioVisualizer from "./AudioVisualizer";
 import { toast } from "react-toastify";
 
 import { useAuth } from "@hooks/useAuth";
+import { useHue } from "@hooks/useHue";
 
 const voiceInput = new VoiceInput();
 voiceInput.setup();
@@ -20,6 +21,10 @@ function ChatInput({
 }) {
 	const [message, setMessage] = useState("");
 	const timeoutRef = useRef(null);
+
+	const { hue, getRGBStr } = useHue();
+	const rgbStr = getRGBStr();
+
 
 	//const voiceInputRef = useRef(null);
 
@@ -152,7 +157,7 @@ function ChatInput({
 				<button
 					type="submit"
 					style={{
-						background: "rgba(200, 100, 69, 1)", // Solid orange to match boxShadow
+						background: `rgba(${rgbStr}, 1)`, // Solid orange to match boxShadow
 						color: "white",
 						border: "none",
 						borderRadius: "20px",
@@ -160,15 +165,15 @@ function ChatInput({
 						fontSize: "16px",
 						cursor: "pointer",
 						transition: "transform 0.3s, box-shadow 0.3s", // Smooth transitions for hover effects
-						boxShadow: "0 0 5px rgba(255, 163, 69, 0.7)", // Consistent orange glow
+						boxShadow: `0 0 5px rgba(${rgbStr}, 0.7)`, // Consistent orange glow
 					}}
 					onMouseOver={({ target }) => {
 						target.style.transform = "scale(1.1)";
-						target.style.boxShadow = "0 0 30px rgba(255, 163, 69, 0.9)"; // Enhanced glow on hover
+						target.style.boxShadow = `0 0 30px rgba(${rgbStr}, 0.9)`; // Enhanced glow on hover
 					}}
 					onMouseOut={({ target }) => {
 						target.style.transform = "scale(1)";
-						target.style.boxShadow = "0 0 20px rgba(255, 163, 69, 0.7)";
+						target.style.boxShadow = `0 0 20px rgba(${rgbStr}, 0.7)`;
 					}}
 				>
 					Send

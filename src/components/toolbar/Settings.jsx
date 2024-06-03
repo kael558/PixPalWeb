@@ -3,6 +3,79 @@ import { useState, useEffect } from "react";
 import { useAuth } from "@hooks/useAuth";
 import { FaVolumeUp } from "react-icons/fa";
 import { toast } from "react-toastify";
+import { useHue } from "@hooks/useHue";
+
+function hueToRGB(hue) {
+	const saturation = 1; // 100% saturation
+	const lightness = 0.5; // 50% lightness
+
+	// C is the chroma
+	const C = (1 - Math.abs(2 * lightness - 1)) * saturation;
+	const X = C * (1 - Math.abs(((hue / 60) % 2) - 1));
+	const m = lightness - C / 2;
+
+	let r = 0,
+		g = 0,
+		b = 0;
+
+	if (hue >= 0 && hue < 60) {
+		r = C;
+		g = X;
+		b = 0;
+	} else if (hue >= 60 && hue < 120) {
+		r = X;
+		g = C;
+		b = 0;
+	} else if (hue >= 120 && hue < 180) {
+		r = 0;
+		g = C;
+		b = X;
+	} else if (hue >= 180 && hue < 240) {
+		r = 0;
+		g = X;
+		b = C;
+	} else if (hue >= 240 && hue < 300) {
+		r = X;
+		g = 0;
+		b = C;
+	} else if (hue >= 300 && hue < 360) {
+		r = C;
+		g = 0;
+		b = X;
+	}
+
+	// Convert the RGB components to values that are in the range 0-255
+	r = Math.round((r + m) * 255);
+	g = Math.round((g + m) * 255);
+	b = Math.round((b + m) * 255);
+
+	// convert to hex
+	const rHex = r.toString(16).padStart(2, "0");
+	const gHex = g.toString(16).padStart(2, "0");
+	const bHex = b.toString(16).padStart(2, "0");
+
+	return `#${rHex}${gHex}${bHex}`;
+}
+
+function rgbToHue(rgb) {
+	const [r, g, b] = rgb.match(/\w\w/g).map((x) => parseInt(x, 16));
+	const max = Math.max(r, g, b);
+	const min = Math.min(r, g, b);
+	if (max === min) return 0; // achromatic case (grey)
+
+	let hue = 0;
+	const delta = max - min;
+	if (max === r) {
+		hue = (g - b) / delta + (g < b ? 6 : 0);
+	} else if (max === g) {
+		hue = (b - r) / delta + 2;
+	} else {
+		hue = (r - g) / delta + 4;
+	}
+	hue = Math.round(hue * 60);
+	if (hue < 0) hue += 360;
+	return hue;
+}
 
 function Settings({
 	isVisible,
@@ -12,12 +85,36 @@ function Settings({
 	streamManager,
 	doLogout,
 	setShowDialog,
+	visualQuality,
+	setVisualQuality,
 }) {
+	const [isMobile, setIsMobile] = useState(window.innerWidth < 480);
+	const [rerender, setRerender] = useState(false);
+
+	useEffect(() => {
+		const handleResize = () => {
+			setIsMobile(window.innerWidth < 480);
+		};
+		window.addEventListener("resize", handleResize);
+		return () => window.removeEventListener("resize", handleResize);
+	}, []);
+
 	const [volume, setVolume] = useState(streamManager.getVolume());
-	const [uiHue, setUiHue] = useState("#FFC107"); // Default color
+
+	const { hue, getRGBStr, setHue } = useHue();
+	const rgbStr = getRGBStr();
+
+	// convert rgb hue to int
+	const hueValue = rgbToHue(hue);
+
+	//const [uiHue, setUiHue] = useState("#FFC107"); // Default color
 	const [showChatLog, setShowChatLog] = useState(false);
 
 	const { isAuthenticated, isAnonymous } = useAuth();
+
+	console.log(isAuthenticated(), isAnonymous());
+
+
 
 	const handleLogout = () => {
 		if (isAuthenticated() && isAnonymous()) {
@@ -25,6 +122,7 @@ function Settings({
 			return;
 		}
 
+		setRerender(true);
 		doLogout();
 	};
 
@@ -34,22 +132,26 @@ function Settings({
 
 	const optionStyle = (current, value) => ({
 		cursor: "pointer",
-		color: current === value ? "#FFC107" : "white",
-		border: current === value ? "1px solid #FFC107" : "none",
+		color: current === value ? hue : "white",
+		border: current === value ? `1px solid ${hue}` : "none",
 		padding: "0 5px",
 		margin: "0 5px",
+		fontSize: isMobile ? "14px" : "inherit",
+		letterSpacing: isMobile ? "0.05em" : "0.1em",
 	});
 
 	const categoryStyle = {
-		color: "#FFC107",
+		color: hue,
 		fontWeight: "bold",
+		fontSize: isMobile ? "12px" : "inherit",
+		letterSpacing: isMobile ? "0.05em" : "0.1em",
 	};
 
 	const liStyle = {
 		padding: "8px 0",
 		listStyleType: "none",
 		textIndent: "-2em",
-		letterSpacing: "0.1em",
+		letterSpacing: isMobile ? "0.05em" : "0.1em",
 	};
 
 	useEffect(() => {
@@ -65,15 +167,15 @@ function Settings({
 						right: "60px",
 						top: "60px", // Adjust this value based on the actual layout
 						background: "#000",
-						border: "1px solid #ccc",
+						border: `1px solid ${hue}`,
 						borderRadius: "8px",
 						padding: "10px",
 						display: "flex",
 						flexDirection: "column",
 						alignItems: "flex-start",
-						boxShadow: "0 0 20px rgba(255,163,69,0.7)",
+						boxShadow: `0 0 20px rgba(${rgbStr},0.7)`,
 						width: "auto",
-						minWidth: "300px",
+						minWidth: isMobile ? "300px" : "325px",
 					}}
 					initial={{ opacity: 0, y: -50 }} // Start from the right, slightly hidden
 					animate={{ opacity: 1, y: 0 }} // Animate to fully visible and slide into position
@@ -97,13 +199,12 @@ function Settings({
 							<span style={categoryStyle}>
 								<FaVolumeUp
 									style={{
-										color: "#FFC107",
+										color: hue,
 										margin: "0px",
 										padding: "0px",
 										marginRight: "5px",
 										fontSize: "1.2em",
 										verticalAlign: "middle",
-									
 									}}
 								/>
 							</span>
@@ -117,7 +218,6 @@ function Settings({
 									value={volume}
 									onChange={(e) => setVolume(e.target.value)}
 									style={{
-
 										appearance: "none",
 										width: "80%",
 										marginLeft: "10px",
@@ -125,11 +225,13 @@ function Settings({
 										padding: "0px",
 										height: "8px",
 										borderRadius: "4px",
-				
-										backgroundImage: `linear-gradient(to right, #FFC107 ${volume * 100}%, #CCC ${volume * 100}%)`,
+
+										backgroundImage: `linear-gradient(to right, ${hue} ${
+											volume * 100
+										}%, #CCC ${volume * 100}%)`,
 										outline: "none",
 										transition: "opacity .2s",
-										accentColor: "purple",
+										accentColor: "white",
 										"&::WebkitSliderThumb": {
 											appearance: "none",
 											width: "20px",
@@ -152,9 +254,6 @@ function Settings({
 							</span>
 						</li>
 
-						{/*
-						
-				
 						<li style={liStyle}>
 							<span style={categoryStyle}>HUE:</span>
 							<span>
@@ -163,8 +262,12 @@ function Settings({
 									min="0"
 									max="360"
 									step="1"
-									value={uiHue}
-									onChange={(e) => toast.error("Hue coming soon!")}
+									value={hueValue}
+									onChange={(e) => {
+										const hueValue = parseInt(e.target.value);
+										const rgbColor = hueToRGB(hueValue);
+										setHue(rgbColor);
+									}}
 									style={{
 										marginLeft: "10px",
 										appearance: "none",
@@ -184,8 +287,6 @@ function Settings({
 											backgroundColor: "#FFF",
 											cursor: "pointer",
 											boxShadow: "0 0 2px #555",
-								
-							
 										},
 										"&::-moz-range-thumb": {
 											width: "20px",
@@ -194,13 +295,12 @@ function Settings({
 											backgroundColor: "#FFF",
 											cursor: "pointer",
 											border: "none",
-				
 										},
 									}}
 								/>
 							</span>
 						</li>
-						*/}
+
 						<li style={liStyle}>
 							<span style={categoryStyle}>Chat Log:</span>
 							<span
@@ -233,6 +333,22 @@ function Settings({
 								Audio
 							</span>
 						</li>
+						<li style={liStyle}>
+							<span style={categoryStyle}>Visual Quality:</span>
+							<span
+								style={optionStyle(visualQuality, "Basic")}
+								onClick={() => setVisualQuality("Basic")}
+							>
+								Basic
+							</span>
+							/
+							<span
+								style={optionStyle(visualQuality, "Advanced")}
+								onClick={() => setVisualQuality("Advanced")}
+							>
+								Advanced
+							</span>
+						</li>
 					</ul>
 
 					<span
@@ -244,67 +360,64 @@ function Settings({
 							width: "100%",
 						}}
 					>
-							{isAuthenticated() && (
-						<button
-							onClick={handleLogout}
-							style={{
-								marginTop: "10px",
-								padding: "8px 20px",
-								borderRadius: "5px",
-								backgroundColor: "#DDC107",
-								color: "black",
-								border: "1px solid white",
-								cursor: "pointer",
-								fontWeight: "bold",
-								letterSpacing: "0.1em",
-								transition: "background-color 0.3s, color 0.3s",
-                                fontSize: "13px",
-							}}
-							onMouseEnter={(e) => {
-								e.target.style.backgroundColor = "white";
-								e.target.style.color = "#FFC107";
-							}}
-							onMouseLeave={(e) => {
-								e.target.style.backgroundColor = "#FFC107";
-								e.target.style.color = "black";
-							}}
-						>
-							Logout
-						</button>
-					)}
+						{(isAuthenticated() && !isAnonymous()) && (
+							<button
+								onClick={handleLogout}
+								style={{
+									marginTop: "10px",
+									padding: "8px 20px",
+									borderRadius: "5px",
+									backgroundColor: hue,
+									color: "black",
+									border: "1px solid white",
+									cursor: "pointer",
+									fontWeight: "bold",
+									letterSpacing: "0.1em",
+									transition: "background-color 0.3s, color 0.3s",
+									fontSize: "13px",
+								}}
+								onMouseEnter={(e) => {
+									e.target.style.backgroundColor = "white";
+									e.target.style.color = hue;
+								}}
+								onMouseLeave={(e) => {
+									e.target.style.backgroundColor = hue;
+									e.target.style.color = "black";
+								}}
+							>
+								Logout
+							</button>
+						)}
 
-					{(!isAuthenticated() || isAnonymous()) && (
-						<button
-							onClick={showLoginUI}
-							style={{
-								marginTop: "10px",
-								padding: "8px 20px",
-								borderRadius: "5px",
-								backgroundColor: "#DDC107",
-								color: "black",
-								border: "1px solid white",
-								cursor: "pointer",
-								fontWeight: "bold",
-								letterSpacing: "0.1em",
-								transition: "background-color 0.3s, color 0.3s",
-                                fontSize: "13px",
-							}}
-							onMouseEnter={(e) => {
-								e.target.style.backgroundColor = "white";
-								e.target.style.color = "#FFC107";
-							}}
-							onMouseLeave={(e) => {
-								e.target.style.backgroundColor = "#FFC107";
-								e.target.style.color = "black";
-							}}
-						>
-							Login
-						</button>
-					)}
-
-</span>
-
-				
+						{(!isAuthenticated() || isAnonymous()) && (
+							<button
+								onClick={showLoginUI}
+								style={{
+									marginTop: "10px",
+									padding: "8px 20px",
+									borderRadius: "5px",
+									backgroundColor: hue,
+									color: "black",
+									border: "1px solid white",
+									cursor: "pointer",
+									fontWeight: "bold",
+									letterSpacing: "0.1em",
+									transition: "background-color 0.3s, color 0.3s",
+									fontSize: "13px",
+								}}
+								onMouseEnter={(e) => {
+									e.target.style.backgroundColor = "white";
+									e.target.style.color = hue;
+								}}
+								onMouseLeave={(e) => {
+									e.target.style.backgroundColor = hue;
+									e.target.style.color = "black";
+								}}
+							>
+								Login
+							</button>
+						)}
+					</span>
 				</motion.div>
 			)}
 		</AnimatePresence>

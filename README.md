@@ -28,6 +28,17 @@ Today:
 [x] - Hook up UI to values
 [x] - NSFW mode with togetherAI API and sentence splitting. 
 [x] - Color and particle speed changes with mood & vibe -> https://huggingface.co/mrm8488/t5-base-finetuned-emotion?text=I+wish+you+were+here+but+it+is+impossible
+
+[x] - Add horny and skips to how am i feeling
+[x] - Change UI to purple hue not orange
+[x] - Add visual quality slider
+[x] - Change UI to fit phone screen
+
+[ ] - Change name to Ela
+[ ] - Onboarding should have initial settings choice of audio or text input
+[ ] - Do narration voice
+[ ] - Add speaking styles to prompts so "<whisper> Hey there" *lina leans forward* "How are you doing today?"
+
 [ ] - Change talking speed & volume based on time.
 [ ] - Make orb interactive, moving cursor displaces particles
 

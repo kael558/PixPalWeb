@@ -6,6 +6,7 @@ import Settings from "./Settings";
 import { motion, AnimatePresence } from "framer-motion";
 
 import { useAuth } from "@hooks/useAuth";
+import { useHue } from "@hooks/useHue";
 import { Button, Dialog, DialogDismiss, DialogHeading } from "@ariakit/react";
 import { FaSlidersH, FaCog } from "react-icons/fa";
 
@@ -23,13 +24,16 @@ function Toolbar({
 	voiceQuality,
 	setVoiceQuality,
 	chatQuality,
-	setChatQuality
+	setChatQuality,
+	visualQuality,
+	setVisualQuality,
 }) {
 	const [showDialog, setShowDialog] = useState(false);
 	const [AIMenuOpen, setAIMenuOpen] = useState(false);
 	const [settingsMenuOpen, setSettingsMenuOpen] = useState(false);
 
 	const { logout } = useAuth();
+	const { hue, getRGBStr } = useHue();
 
 	const doLogout = () => {
 		logout();
@@ -82,6 +86,8 @@ function Toolbar({
 					streamManager={streamManager}
 					doLogout={doLogout}
 					setShowDialog={setShowDialog}
+					visualQuality={visualQuality}
+					setVisualQuality={setVisualQuality}
 				/>
 
 				<AISettings 
@@ -104,7 +110,7 @@ function Toolbar({
 						margin: "10px",
 						cursor: "pointer",
 						fontSize: "32px",
-						color: AIMenuOpen ? "#FFC107" : "white", // Correct syntax
+						color: AIMenuOpen ? hue : "white", // Correct syntax
 					}}
 					onClick={() => setAIMenuOpen(!AIMenuOpen)}
 				/>
@@ -114,7 +120,7 @@ function Toolbar({
 						margin: "10px",
 						cursor: "pointer",
 						fontSize: "32px",
-						color: settingsMenuOpen ? "#FFC107" : "white",
+						color: settingsMenuOpen ? hue : "white",
 					}}
 					onClick={() => setSettingsMenuOpen(!settingsMenuOpen)}
 				/>

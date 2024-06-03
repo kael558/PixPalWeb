@@ -29,9 +29,7 @@ export const AuthProvider = ({ children }) => {
         return (await auth.currentUser.getIdTokenResult(false)).token;
     };
 
-    const isAuthenticated = async () => {
-        await auth.authStateReady();
-
+    const isAuthenticated = () => {
         if (!auth.currentUser) {
             return false;
         }
@@ -116,11 +114,11 @@ export const AuthProvider = ({ children }) => {
 
     const loginWithEmailAndPassword = async (data) => {
         if (auth.currentUser && auth.currentUser.isAnonymous) {
-            toast.error('You must first register an account to link your anonymous account');
-            return false;
+            // sign out the anonymous user
+            await signOut(auth);
         }
 
-        if (auth.currentUser){
+        if (auth.currentUser && !auth.currentUser.isAnonymous){
             toast.error('You are already logged in');
             return false;
         }
