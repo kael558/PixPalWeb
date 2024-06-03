@@ -105,7 +105,7 @@ function AISettings({ isVisible, setMessages,
 							<span style={categoryStyle}>Gender:</span>
 							<span
 								style={optionStyle(gender, "Male")}
-								onClick={() => setGender("Male")}
+								onClick={() => toast.warning("Male voices coming soon!")}
 							>
 								Male
 							</span>
