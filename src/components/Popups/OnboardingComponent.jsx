@@ -2,6 +2,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "react-toastify";
 
 import { Overlay, Window } from "./OverlayComponent";
+import { useHue } from "@hooks/useHue";
 
 function OnboardingComponent({
 	isVisible,
@@ -9,7 +10,11 @@ function OnboardingComponent({
 	streamManager,
 	name,
 	setName,
+	setInputMode,
 }) {
+	const { hue, getRGBStr } = useHue();
+	const rgbStr = getRGBStr();
+
 	const play_onboarding = async () => {
 		if (name === "") {
 			toast.error("Please enter a name");
@@ -23,12 +28,20 @@ function OnboardingComponent({
 	return (
 		<Overlay
 			isVisible={isVisible}
-			style={{ backgroundColor: 'rgba(0, 0, 0, 0.85)' }} // Semi-transparent dark overlay
+			style={{ backgroundColor: "rgba(0, 0, 0, 0.85)" }} // Semi-transparent dark overlay
 			children={
 				<Window
 					children={
 						<div>
-							<h1 style={{ color: "white", textShadow: "0 0 10px rgba(255,163,69,0.8)", textAlign: "center" }}>Welcome to PixPal!</h1>
+							<h1
+								style={{
+									color: "white",
+									textShadow: `0 0 10px rgba(${rgbStr},0.8)`,
+									textAlign: "center",
+								}}
+							>
+								Welcome to PixPal!
+							</h1>
 							<p style={{ color: "white" }}>What do you want to be called?</p>
 							<input
 								type="text"
@@ -38,7 +51,7 @@ function OnboardingComponent({
 								style={{
 									padding: "10px",
 									borderRadius: "5px",
-									border: "1px solid rgba(255, 163, 69, 0.5)",
+									border: `1px solid rgba(${rgbStr}, 0.5)`,
 									marginBottom: "10px",
 									backgroundColor: "#222",
 									color: "white",
@@ -46,28 +59,74 @@ function OnboardingComponent({
 									boxSizing: "border-box", // Ensure padding is included in width
 								}}
 							/>
-							<p style={{ color: "rgba(255, 163, 69, 0.8)" }}>*Note clicking continue will play audio.</p>
-							<button
-								onClick={play_onboarding}
-								style={{
-									padding: "10px",
-									borderRadius: "5px",
-									border: "none",
-									cursor: "pointer",
-									backgroundColor: "rgba(255, 163, 69, 0.8)",
-									color: "black",
-									width: "100%", // Match the width of the input field
-								}}
-							>
-								Continue
-							</button>
+
+							<p style={{ color: "white" }}>
+								Do you prefer to chat with voice input or text input?
+							</p>
+							<div style={{ display: "flex", justifyContent: "space-around" }}>
+								<button
+									onClick={() => {
+										setInputMode("audio");
+
+										play_onboarding();
+									}}
+									style={{
+										padding: "10px",
+										borderRadius: "5px",
+										border: "none",
+										cursor: "pointer",
+										backgroundColor: `rgba(${rgbStr}, 0.8)`,
+										color: "white",
+										width: "48%", // Match the width of the input field
+										fontSize: "14px",
+										letterSpacing: "0.1em",
+							
+									}}
+									onMouseEnter={(e) => {
+										e.target.style.backgroundColor = "white";
+										e.target.style.color = hue;
+									}}
+									onMouseLeave={(e) => {
+										e.target.style.backgroundColor = hue;
+										e.target.style.color = "black";
+									}}
+								>
+									Voice
+								</button>
+								<button
+									onClick={() => {
+										setInputMode("text");
+										play_onboarding();
+									}}
+									style={{
+										padding: "10px",
+										borderRadius: "5px",
+										border: "none",
+										cursor: "pointer",
+										backgroundColor: `rgba(${rgbStr}, 0.8)`,
+										color: "white",
+										width: "48%", // Match the width of the input field
+										fontSize: "14px",
+										letterSpacing: "0.1em",
+									}}
+									onMouseEnter={(e) => {
+										e.target.style.backgroundColor = "white";
+										e.target.style.color = hue;
+									}}
+									onMouseLeave={(e) => {
+										e.target.style.backgroundColor = hue;
+										e.target.style.color = "black";
+									}}
+								>
+									Text
+								</button>
+							</div>
 						</div>
 					}
 				/>
 			}
 		/>
 	);
-	
 }
 
 export default OnboardingComponent;

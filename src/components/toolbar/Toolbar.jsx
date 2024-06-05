@@ -27,6 +27,7 @@ function Toolbar({
 	setChatQuality,
 	visualQuality,
 	setVisualQuality,
+	tokens
 }) {
 	const [showDialog, setShowDialog] = useState(false);
 	const [AIMenuOpen, setAIMenuOpen] = useState(false);
@@ -60,7 +61,7 @@ function Toolbar({
 					right: "100px",
 				}}
 			>
-				<Tokens showTokensPanel={showTokensPanel} />
+				<Tokens showTokensPanel={showTokensPanel} tokens={tokens} />
 			</div>
 
 			<div

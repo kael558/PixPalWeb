@@ -18,6 +18,39 @@ import { HueProvider } from "@hooks/useHue";
 import { useAuth } from "@hooks/useAuth";
 import { useLocalStorage } from "@hooks/useLocalStorage";
 
+async function get_tokens(accessToken) {
+	console.log("Bearer " + accessToken);
+	if (!accessToken) {
+		console.error("No access token provided");
+		return { tokenCount: 0 };
+	}
+
+	return fetch(
+		"https://0xlgvmu6h4.execute-api.us-east-1.amazonaws.com/tokens",
+		{
+			method: "GET",
+			headers: {
+				Authorization: `Bearer ${accessToken}`,
+			},
+		}
+	)
+		.then((response) => {
+			if (response.ok) {
+				return response.json(); // Return the promise to be handled by the next .then()
+			} else {
+				throw new Error("Failed to fetch tokens");
+			}
+		})
+		.then((data) => {
+			console.log("Data:", data);
+			return data; // Return data for subsequent handling
+		})
+		.catch((error) => {
+			console.error("Error:", error);
+			return { tokenCount: 0 }; // Return default object in case of error
+		});
+}
+
 function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 	const [messages, setMessages] = useLocalStorage("messages", []);
 	const messagesRef = useRef(messages);
@@ -51,6 +84,10 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 
 	const [inputMode, setInputMode] = useState("text");
 	const [isRecording, setIsRecording] = useState(false);
+
+	const [tokens, setTokens] = useState("Loading...");
+	const intervalRef = useRef(null);
+	const timeoutRef = useRef(null);
 
 	const { getAccessToken } = useAuth();
 
@@ -102,7 +139,59 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 
 			return [...prevMessages, { role, content }];
 		});
+
+		if (role == "assistant") {
+			// trigger the interval to get the token count if not already running
+			if (!intervalRef.current) {
+				intervalRef.current = setInterval(() => {
+					getAccessToken()
+						.then((token) => {
+							get_tokens(token).then((data) => {
+								let tokens =
+									data?.tokenCount
+										?.toString()
+										?.replace(/\B(?=(\d{3})+(?!\d))/g, ",") || 0;
+
+								setTokens(tokens);
+							});
+						})
+						.catch((error) => {
+							console.error("Error getting ID token:", error);
+						});
+				}, 60000);
+
+				// also set a timeout to clear the interval after 2 minutes
+				timeoutRef.current = setTimeout(() => {
+					clearInterval(intervalRef.current);
+					intervalRef.current = null;
+				}, 120000);
+			} else {
+				// if the interval is already running, reset the timeout
+				clearTimeout(timeoutRef.current);
+				timeoutRef.current = setTimeout(() => {
+					clearInterval(intervalRef.current);
+					intervalRef.current = null;
+				}, 120000);
+			}
+		}
 	};
+
+	useEffect(() => {
+		getAccessToken()
+			.then((token) => {
+				get_tokens(token).then((data) => {
+					let tokens =
+						data?.tokenCount
+							?.toString()
+							?.replace(/\B(?=(\d{3})+(?!\d))/g, ",") || 0;
+
+					setTokens(tokens);
+				});
+			})
+			.catch((error) => {
+				console.error("Error getting ID token:", error);
+			});
+	}, []);
 
 	const onMessageSend = async (content) => {
 		const accessToken = await getAccessToken();
@@ -117,6 +206,8 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 		setMessages(updatedMessages);
 
 		try {
+
+			const voice = gender == "Female" ? "female2" : "male1";
 			const url =
 				"https://lg5m7pmkstz3ims7qkmh7u4xfi0gjebf.lambda-url.us-east-1.on.aws/";
 			const options = {
@@ -130,7 +221,7 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 					username: name,
 					role: role,
 					languageModelQuality: chatQuality,
-					gender: gender,
+					voice
 				}),
 			};
 
@@ -152,13 +243,14 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 
 		try {
 			//const blob = new Blob(chunks, { type: 'audio/webm' });
+			const voice = gender == "Female" ? "female1" : "male1";
 
 			const fd = new FormData();
 			fd.append("messages", JSON.stringify(messagesRef.current.slice(-5)));
 			fd.append("username", name);
 			fd.append("role", role);
 			fd.append("languageModelQuality", chatQuality);
-			fd.append("gender", gender);
+			fd.append("voice", voice);
 			fd.append("file", blob, "speech.webm");
 
 			const url =
@@ -249,6 +341,7 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 					setChatQuality={setChatQuality}
 					visualQuality={visualQuality}
 					setVisualQuality={setVisualQuality}
+					tokens={tokens}
 				/>
 
 				<ChatInput
@@ -289,6 +382,7 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 					streamManager={streamManager}
 					name={name}
 					setName={setName}
+					setInputMode={setInputMode}
 				/>
 			</div>
 		</HueProvider>

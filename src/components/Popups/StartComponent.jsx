@@ -22,7 +22,7 @@ function StartComponent({
 
 		//console.log("User mood:", mood);
 		setUserMood(mood);
-		onMessageSend(mood);
+		onMessageSend("I'm feeling " + mood);
 	};
 
 	const setRoleHandler = (role) => {
@@ -82,7 +82,7 @@ function StartComponent({
 							].map((mood) => (
 								<button
 									key={mood}
-									onClick={() => setMood(mood)}
+									onClick={() => setMood(mood.split(" ")[0])}
 									style={{
 										padding: "10px",
 										borderRadius: "10px",

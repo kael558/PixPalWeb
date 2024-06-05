@@ -4,7 +4,14 @@ import { Overlay, Window } from "./OverlayComponent";
 import { useHue } from "@hooks/useHue";
 
 function getApplicableReleaseNotes(version) {
-	const totalReleaseNotes = `### Version 0.9.3 *[Beta]*
+	const totalReleaseNotes = `### Version 0.9.4 *[Beta]*
+	- Add hue slider for UI color customization
+	- Add visual quality options to support lower grade devices
+	- Make voice more sensual with narration
+	- Change character name to Ela
+	- Onboarding now asks for input options (either voice or chat)
+
+	### Version 0.9.3 *[Beta]*
 	- Add audio visualizer
 	- Update UI
 	- Basic NSFW with selectable options

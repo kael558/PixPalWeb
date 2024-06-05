@@ -34,10 +34,13 @@ Today:
 [x] - Add visual quality slider
 [x] - Change UI to fit phone screen
 
-[ ] - Change name to Ela
-[ ] - Onboarding should have initial settings choice of audio or text input
-[ ] - Do narration voice
-[ ] - Add speaking styles to prompts so "<whisper> Hey there" *lina leans forward* "How are you doing today?"
+[x] - Change name to Ela
+[x] - Onboarding should have initial settings choice of audio or text input
+[x] - Do narration voice
+[x] - Add speaking styles to prompts so "<whisper> Hey there" *lina leans forward* "How are you doing today?"
+[x] If user selects horny and the model qualtiy is low, then it should tell the user to switch models.
+[ ] Fix orb color while chatting
+[x] Trigger interval of getting tokens when active, clear interval after minute of inactivity. 
 
 [ ] - Change talking speed & volume based on time.
 [ ] - Make orb interactive, moving cursor displaces particles

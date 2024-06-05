@@ -112,10 +112,6 @@ function Settings({
 
 	const { isAuthenticated, isAnonymous } = useAuth();
 
-	console.log(isAuthenticated(), isAnonymous());
-
-
-
 	const handleLogout = () => {
 		if (isAuthenticated() && isAnonymous()) {
 			setShowDialog(true);

@@ -6,72 +6,11 @@ import styles from "./Tokens.module.css";
 
 import RainbowButton from "../RainbowButton";
 
-async function get_tokens(accessToken) {
-	console.log("Bearer " + accessToken);
-	if (!accessToken) {
-		console.error("No access token provided");
-		return { tokenCount: 0 };
-	}
 
-	return fetch(
-		"https://0xlgvmu6h4.execute-api.us-east-1.amazonaws.com/tokens",
-		{
-			method: "GET",
-			headers: {
-				Authorization: `Bearer ${accessToken}`,
-			},
-		}
-	)
-		.then((response) => {
-			if (response.ok) {
-				return response.json(); // Return the promise to be handled by the next .then()
-			} else {
-				throw new Error("Failed to fetch tokens");
-			}
-		})
-		.then((data) => {
-			console.log("Data:", data);
-			return data; // Return data for subsequent handling
-		})
-		.catch((error) => {
-			console.error("Error:", error);
-			return { tokenCount: 0 }; // Return default object in case of error
-		});
-}
 
-function Tokens({ showTokensPanel }) {
-	const [tokens, setTokens] = useState("Loading...");
-
-	const { isAuthenticated, getAccessToken } = useAuth();
+function Tokens({ showTokensPanel, tokens }) {
 	const { hue, getRGBStr } = useHue();
 	const rgbStr = getRGBStr();
-
-	useEffect(() => {
-
-		const retrieveTokens = () => {
-			getAccessToken()
-				.then((token) => {
-					get_tokens(token).then((data) => {
-						// put commas in the number
-						let tokens =
-							data?.tokenCount
-								?.toString()
-								?.replace(/\B(?=(\d{3})+(?!\d))/g, ",") || 0;
-
-						setTokens(tokens); // Fallback to 0 if data.tokens is undefined
-					});
-				})
-				.catch((error) => {
-					console.error("Error getting ID token:", error);
-				});
-		}
-		
-		retrieveTokens();
-		const interval = setInterval(retrieveTokens, 60000);
-	
-		return () => clearInterval(interval);
-	}, []);
-
 
 	return (
 		<>
