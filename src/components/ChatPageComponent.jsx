@@ -207,7 +207,7 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 
 		try {
 
-			const voice = gender == "Female" ? "female2" : "male1";
+			const voice = gender == "Female" ? "female3" : "male1";
 			const url =
 				"https://lg5m7pmkstz3ims7qkmh7u4xfi0gjebf.lambda-url.us-east-1.on.aws/";
 			const options = {
