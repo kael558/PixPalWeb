@@ -15,13 +15,13 @@ function OnboardingComponent({
 	const { hue, getRGBStr } = useHue();
 	const rgbStr = getRGBStr();
 
-	const play_onboarding = async () => {
+	const play_onboarding = async (input_mode) => {
 		if (name === "") {
 			toast.error("Please enter a name");
 			return;
 		}
 
-		streamManager.playAudioFile("onboarding.wav").catch(console.error);
+		streamManager.playAudioFile(`hello_${input_mode}.wav`).catch(console.error);
 		onClose();
 	};
 
@@ -68,7 +68,7 @@ function OnboardingComponent({
 									onClick={() => {
 										setInputMode("audio");
 
-										play_onboarding();
+										play_onboarding("audio");
 									}}
 									style={{
 										padding: "10px",
@@ -96,7 +96,7 @@ function OnboardingComponent({
 								<button
 									onClick={() => {
 										setInputMode("text");
-										play_onboarding();
+										play_onboarding("text");
 									}}
 									style={{
 										padding: "10px",
