@@ -321,6 +321,7 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 						boxShadow: isRecording
 							? "inset 0 0 40px rgba(255,40,69,0.8)"
 							: "none",
+						userSelect: "none", // Prevent text selection
 					}}
 				/>
 
