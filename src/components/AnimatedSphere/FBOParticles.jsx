@@ -37,8 +37,8 @@ void main() {
 
 extend({ SimulationMaterial: SimulationMaterial });
 
-const FBOParticles = ({ streamManager}) => {
-	const size =  256;
+const FBOParticles = ({ streamManager }) => {
+	const size = 256;
 
 	const points = useRef();
 	const simulationMaterialRef = useRef();
@@ -97,12 +97,69 @@ const FBOParticles = ({ streamManager}) => {
 		if (!baseShaderMaterialRef.current) return;
 		let timer;
 
+		const changeColor = () => {
+			const color = new THREE.Color(
+				Math.random(),
+				Math.random(),
+				Math.random()
+			);
+			//console.log("Changing color to", color);
+			baseShaderMaterialRef.current.uniforms.uCurrentColor.value.copy(
+				baseShaderMaterialRef.current.uniforms.uTargetColor.value
+			);
+			baseShaderMaterialRef.current.uniforms.uTargetColor.value.set(color);
+			baseShaderMaterialRef.current.uniforms.uTransitionFactor.value = 0.0;
+		};
+
+		const startInterval = () => {
+			if (timer) clearInterval(timer);
+			timer = setInterval(changeColor, Math.random() * 10000 + 15000);
+		};
+
 		streamManager.onmessage = (e) => {
 			if (e.name === "change_color") {
 				if (timer) clearInterval(timer);
+				baseShaderMaterialRef.current.uniforms.uCurrentColor.value.copy(
+					baseShaderMaterialRef.current.uniforms.uTargetColor.value
+				);
+				baseShaderMaterialRef.current.uniforms.uTargetColor.value.set(
+					e.data.color
+				);
+				baseShaderMaterialRef.current.uniforms.uTransitionFactor.value = 0.0;
+				startInterval();
+			}
+		};
 
-				baseShaderMaterialRef.current.uniforms.uCurrentColor.value.copy(baseShaderMaterialRef.current.uniforms.uTargetColor.value);
-				baseShaderMaterialRef.current.uniforms.uTargetColor.value.set(e.data.color);
+		startInterval(); // Start the interval initially.
+
+		const handleBlur = () => {
+			clearInterval(timer); // Pause the interval when window loses focus.
+		};
+
+		const handleFocus = () => {
+			startInterval(); // Resume the interval when window gains focus.
+		};
+
+		window.addEventListener("blur", handleBlur);
+		window.addEventListener("focus", handleFocus);
+
+		return () => {
+			streamManager.onmessage = null;
+			clearInterval(timer);
+			window.removeEventListener("blur", handleBlur);
+			window.removeEventListener("focus", handleFocus);
+		};
+
+		/*streamManager.onmessage = (e) => {
+			if (e.name === "change_color") {
+				if (timer) clearInterval(timer);
+
+				baseShaderMaterialRef.current.uniforms.uCurrentColor.value.copy(
+					baseShaderMaterialRef.current.uniforms.uTargetColor.value
+				);
+				baseShaderMaterialRef.current.uniforms.uTargetColor.value.set(
+					e.data.color
+				);
 				baseShaderMaterialRef.current.uniforms.uTransitionFactor.value = 0.0;
 
 				timer = setInterval(() => {
@@ -111,11 +168,11 @@ const FBOParticles = ({ streamManager}) => {
 						Math.random(),
 						Math.random()
 					);
-		
+
 					//console.log("Changing color to", color);
 					baseShaderMaterialRef.current.uniforms.uCurrentColor.value.copy(
 						baseShaderMaterialRef.current.uniforms.uTargetColor.value
-					);	
+					);
 					baseShaderMaterialRef.current.uniforms.uTargetColor.value.set(color);
 					baseShaderMaterialRef.current.uniforms.uTransitionFactor.value = 0.0;
 				}, Math.random() * 10000 + 15000);
@@ -135,7 +192,6 @@ const FBOParticles = ({ streamManager}) => {
 		//audioWorkletNode.port.onmessage = (e) => {};
 	}, [streamManager]);
 
-	
 	useFrame((state) => {
 		const { gl, clock } = state;
 
@@ -151,9 +207,10 @@ const FBOParticles = ({ streamManager}) => {
 		simulationMaterialRef.current.uniforms.uTargetGrowthScale.value =
 			growthScale;
 
-		baseShaderMaterialRef.current.uniforms.uTransitionFactor.value = Math.min(1, baseShaderMaterialRef.current.uniforms.uTransitionFactor.value + 0.001);
-
-	
+		baseShaderMaterialRef.current.uniforms.uTransitionFactor.value = Math.min(
+			1,
+			baseShaderMaterialRef.current.uniforms.uTransitionFactor.value + 0.001
+		);
 	});
 	return (
 		<>

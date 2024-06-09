@@ -39,13 +39,17 @@ Today:
 [x] - Do narration voice
 [x] - Add speaking styles to prompts so "<whisper> Hey there" *lina leans forward* "How are you doing today?"
 [x] If user selects horny and the model qualtiy is low, then it should tell the user to switch models.
-[ ] Fix orb color while chatting
+[x] Fix orb color while chatting
 [x] Trigger interval of getting tokens when active, clear interval after minute of inactivity. 
 
 [ ] - Change talking speed & volume based on time.
 [ ] - Make orb interactive, moving cursor displaces particles
 
 // horny 
+
+[ ] - Add scene memory
+[ ] - Chat log
+[ ] - Generation of image in scene with girl
 
 Build
 [ ] - Firebase analytics
