@@ -19,7 +19,7 @@ import { useAuth } from "@hooks/useAuth";
 import { useLocalStorage } from "@hooks/useLocalStorage";
 
 async function get_tokens(accessToken) {
-	console.log("Bearer " + accessToken);
+	//console.log("Bearer " + accessToken);
 	if (!accessToken) {
 		console.error("No access token provided");
 		return { tokenCount: 0 };
@@ -42,7 +42,7 @@ async function get_tokens(accessToken) {
 			}
 		})
 		.then((data) => {
-			console.log("Data:", data);
+			//console.log("Data:", data);
 			return data; // Return data for subsequent handling
 		})
 		.catch((error) => {
