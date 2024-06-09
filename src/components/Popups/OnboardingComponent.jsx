@@ -88,7 +88,8 @@ function OnboardingComponent({
 									}}
 									onMouseLeave={(e) => {
 										e.target.style.backgroundColor = hue;
-										e.target.style.color = "black";
+										e.target.style.color = "white";
+							
 									}}
 								>
 									Voice
@@ -115,7 +116,7 @@ function OnboardingComponent({
 									}}
 									onMouseLeave={(e) => {
 										e.target.style.backgroundColor = hue;
-										e.target.style.color = "black";
+										e.target.style.color = "white";
 									}}
 								>
 									Text

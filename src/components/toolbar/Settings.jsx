@@ -89,7 +89,6 @@ function Settings({
 	setVisualQuality,
 }) {
 	const [isMobile, setIsMobile] = useState(window.innerWidth < 480);
-	const [rerender, setRerender] = useState(false);
 
 	useEffect(() => {
 		const handleResize = () => {
@@ -110,7 +109,10 @@ function Settings({
 	//const [uiHue, setUiHue] = useState("#FFC107"); // Default color
 	const [showChatLog, setShowChatLog] = useState(false);
 
-	const { isAuthenticated, isAnonymous } = useAuth();
+
+	const { isAuthenticated, isAnonymous, auth } = useAuth();
+
+	const [isLoggedIn, setIsLoggedIn] = useState(false);
 
 	const handleLogout = () => {
 		if (isAuthenticated() && isAnonymous()) {
@@ -118,9 +120,18 @@ function Settings({
 			return;
 		}
 
-		setRerender(true);
 		doLogout();
 	};
+
+	useEffect(() => {
+		auth.onAuthStateChanged((user) => {
+			if (user) {
+				setIsLoggedIn(true);
+			} else {
+				setIsLoggedIn(false);
+			}
+		});
+	}, [auth]);
 
 	useEffect(() => {
 		streamManager.setVolume(volume);
@@ -356,7 +367,7 @@ function Settings({
 							width: "100%",
 						}}
 					>
-						{(isAuthenticated() && !isAnonymous()) && (
+						{(isLoggedIn && !isAnonymous()) && (
 							<button
 								onClick={handleLogout}
 								style={{
@@ -385,7 +396,7 @@ function Settings({
 							</button>
 						)}
 
-						{(!isAuthenticated() || isAnonymous()) && (
+						{(!isLoggedIn || isAnonymous()) && (
 							<button
 								onClick={showLoginUI}
 								style={{

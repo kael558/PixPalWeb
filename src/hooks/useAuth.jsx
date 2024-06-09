@@ -99,14 +99,16 @@ export const AuthProvider = ({ children }) => {
             const userCredential = await linkWithCredential(auth.currentUser, credential);
 
             if (!userCredential) {
-                toast.error('Failed to link anonymous user');
+                toast.error('Account already exists with this email');
                 return false;
             }
 
-            toast.success('Successfully linked anonymous user');
+            await loginWithEmailAndPassword(data);
+
+            toast.success('Successfully registered user');
             return true;
         } catch (error) {
-            toast.error('Failed to link anonymous user');
+            toast.error('Account already exists with this email');
             return false;
         }
     };
@@ -131,6 +133,7 @@ export const AuthProvider = ({ children }) => {
             }
 
             toast.success('Logged in user');
+            console.log(auth.currentUser);
             return true;
         } catch (error) {
             toast.error('Failed to log in user');
@@ -139,15 +142,21 @@ export const AuthProvider = ({ children }) => {
     };
 
     // call this function to sign out logged in user
-    const logout = () => {
+    const logout = async () => {
         if (!auth.currentUser) {
             toast.error('No user logged in');
             return;
         }
-
-        toast.success('You have been logged out.');
-        signOut(auth);
+    
+        try {
+            await signOut(auth);
+            toast.success('You have been logged out.');
+        } catch (error) {
+            console.error('Error signing out:', error);
+            toast.error('Failed to log out.');
+        }
     };
+    
 
     const isAnonymous = () => {
         return auth?.currentUser?.isAnonymous;
@@ -161,7 +170,8 @@ export const AuthProvider = ({ children }) => {
         logout,
         getAccessToken,
         isAuthenticated,
-        isAnonymous
+        isAnonymous, 
+        auth
     };
     
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

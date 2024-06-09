@@ -68,7 +68,7 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 		"voiceQuality",
 		"Low"
 	);
-	const [chatQuality, setChatQuality] = useLocalStorage("chatQuality", "Low");
+	const [chatQuality, setChatQuality] = useLocalStorage("chatQuality", "Medium");
 
 	const [isLoginVisible, setLoginVisible] = useState(false);
 	const [isTokensPanelVisible, setTokensPanelVisible] = useState(false);
@@ -89,7 +89,7 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 	const intervalRef = useRef(null);
 	const timeoutRef = useRef(null);
 
-	const { getAccessToken } = useAuth();
+	const { getAccessToken, auth } = useAuth();
 
 	const showComponent = (component) => {
 		switch (component) {
@@ -177,20 +177,26 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 	};
 
 	useEffect(() => {
-		getAccessToken()
-			.then((token) => {
-				get_tokens(token).then((data) => {
-					let tokens =
-						data?.tokenCount
-							?.toString()
-							?.replace(/\B(?=(\d{3})+(?!\d))/g, ",") || 0;
+		auth.onAuthStateChanged((user) => {
+			if (user) {
+			getAccessToken()
+				.then((token) => {
+					get_tokens(token).then((data) => {
+						let tokens =
+							data?.tokenCount
+								?.toString()
+								?.replace(/\B(?=(\d{3})+(?!\d))/g, ",") || 0;
 
-					setTokens(tokens);
+						setTokens(tokens);
+					});
+				})
+				.catch((error) => {
+					console.error("Error getting ID token:", error);
 				});
-			})
-			.catch((error) => {
-				console.error("Error getting ID token:", error);
-			});
+			} else {
+				setTokens(0);
+			}
+		});
 	}, []);
 
 	const onMessageSend = async (content) => {

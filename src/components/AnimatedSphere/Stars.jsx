@@ -51,7 +51,7 @@ const Stars = (props) => {
 	);
 
 	useFrame((state, delta) => {
-		ref.current.rotation.x -= delta * 0.1;
+		ref.current.rotation.x -= delta * 0.01;
 		ref.current.rotation.y -= delta * 0.06;
 	});
 

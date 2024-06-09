@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Overlay, Window} from "./OverlayComponent";
 import { toast } from "react-toastify";
 import { useHue } from "@hooks/useHue";
+import { TailSpin } from "react-loader-spinner";
 
 function AuthenticationComponent({ isVisible, onClose }) {
 	const [email, setEmail] = useState("");
@@ -12,24 +13,33 @@ function AuthenticationComponent({ isVisible, onClose }) {
 	const [isLoginView, setIsLoginView] = useState(true); // Toggle between login and register view
 
 	const { loginWithEmailAndPassword, registerWithEmailAndPassword, forgotPassword } = useAuth();
+    const [loading, setLoading] = useState(false);
 
     const { hue, getRGBStr } = useHue();
 	const rgbStr = getRGBStr();
 
 	const handleLogin = async (event) => {
 		event.preventDefault();
+        setLoading(true);
 		//console.log("Login Details:", { email, password });
 		if (await loginWithEmailAndPassword({ email, password })) {
-			onClose();
+            setEmail("");
+            setPassword("");
+            onClose();
 		}
+        setLoading(false);
 	};
 
 	const handleRegister = async (event) => {
 		event.preventDefault();
+        setLoading(true);
 
 		if (await registerWithEmailAndPassword({ email, password })) {
+            setEmail("");
+            setPassword("");
 			onClose();
 		}
+        setLoading(false);
 	};
 
     const handleForgotPassword = async (event) => {
@@ -39,13 +49,42 @@ function AuthenticationComponent({ isVisible, onClose }) {
             return;
         }
 
+        setLoading(true);
+
         if (await forgotPassword({ email })) {
             onClose();
         }
+        setLoading(false);
     }
 
 	return (
         <Overlay isVisible={isVisible} style={{ backgroundColor: 'rgba(0, 0, 0, 0.85)' }}>
+            {loading&& (
+					<div
+						style={{
+							position: "absolute",
+							top: 0,
+							left: 0,
+							width: "100%",
+							height: "100%",
+							backgroundColor: "rgba(0, 0, 0, 0.5)",
+							display: "flex",
+							alignItems: "center",
+							justifyContent: "center",
+							borderRadius: "12px",
+							zIndex: 2, // Make sure this is on top of other content
+						}}
+					>
+						<TailSpin
+							height="80"
+							width="80"
+							color="white"
+							ariaLabel="loading"
+						/>
+					</div>
+				)}
+
+
             <Window>
                 <button
                     onClick={onClose}
@@ -58,7 +97,7 @@ function AuthenticationComponent({ isVisible, onClose }) {
                         cursor: "pointer",
                         fontSize: "24px",
                         color: "white", // Changed to white for visibility
-                        filter: `drop-shadow(0 0 5px rgba(${rgbStr},0.8))`, // Adding a subtle glow effect
+                        filter: `drop-shadow(0 0 5px rgba(${rgbStr},0.8)) ${loading ? "blur(5px)" : ""}`, // Adding a subtle glow effect
                     }}
                 >
                     ✖

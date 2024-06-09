@@ -5,12 +5,13 @@ import { useHue } from "@hooks/useHue";
 
 import { toast } from "react-toastify";
 import { Overlay, Window } from "./OverlayComponent";
+import { TailSpin } from "react-loader-spinner";
 
 function TokensComponent({ isVisible, onClose }) {
 	const [purchaseInProgress, setPurchaseInProgress] = useState(false);
 	const { getAccessToken } = useAuth();
-    const { getRGBStr } = useHue();
-    const rgbStr = getRGBStr();
+	const { getRGBStr } = useHue();
+	const rgbStr = getRGBStr();
 	const [freeTokensClaimed, setFreeTokensClaimed] = useLocalStorage(
 		"freeTokensClaimed",
 		false
@@ -28,7 +29,7 @@ function TokensComponent({ isVisible, onClose }) {
 			}
 		);
 
-        setFreeTokensClaimed(true);
+		setFreeTokensClaimed(true);
 
 		if (!response.ok) {
 			console.error(response);
@@ -141,6 +142,53 @@ function TokensComponent({ isVisible, onClose }) {
 
 	return (
 		<Overlay isVisible={isVisible}>
+				{purchaseInProgress && (
+					<div
+						style={{
+							position: "absolute",
+							top: 0,
+							left: 0,
+							width: "100%",
+							height: "100%",
+							backgroundColor: "rgba(0, 0, 0, 0.5)",
+							display: "flex",
+							alignItems: "center",
+							flexDirection: "column", // Set direction of flex items to column
+							justifyContent: "center",
+							borderRadius: "12px",
+							zIndex: 2, // Make sure this is on top of other content
+						}}
+					>
+						<TailSpin
+							height="80"
+							width="80"
+							color="white"
+							ariaLabel="loading"
+						/>
+						<button
+			onClick={() => setPurchaseInProgress(false)}
+			style={{
+				marginTop: "20px", // Add some space between the spinner and the button
+				padding: "10px 20px",
+				backgroundColor: "#073B4C",
+				color: "white",
+				borderRadius: "20px",
+				border: "none",
+				cursor: "pointer",
+				fontSize: "16px",
+				fontWeight: "bold",
+				boxShadow: "0 2px 4px rgba(0, 0, 0, 0.3)",
+				filter: "drop-shadow(0 0 2px rgba(255,163,69,0.4))", // Adding a subtle glow effect
+			}}
+		>
+			Cancel
+		</button>
+
+
+					</div>
+				)}
+
+
 			<Window
 				style={{
 					display: "flex",
@@ -153,13 +201,15 @@ function TokensComponent({ isVisible, onClose }) {
 					borderRadius: "12px",
 					position: "relative",
 					maxHeight: "90vh",
+					filter: purchaseInProgress ? "blur(2px)" : "none",
 				}}
 			>
+			
 				{options.map((option) => (
 					<div
 						key={option.id}
 						style={{
-                            position: 'relative',
+							position: "relative",
 							textAlign: "center",
 							padding: "20px",
 							backgroundColor: "#1A1A2E",
@@ -169,7 +219,7 @@ function TokensComponent({ isVisible, onClose }) {
 							flexDirection: "column",
 							alignItems: "center",
 							gap: "10px",
-                            border: `1px solid rgba(${rgbStr},0.7)`,
+							border: `1px solid rgba(${rgbStr},0.3)`,
 						}}
 						onClick={() => initiate_purchase(option.id)}
 					>
@@ -182,7 +232,6 @@ function TokensComponent({ isVisible, onClose }) {
 									width: "100%",
 									height: "102%",
 									top: "-3px", // Adjust position as needed
-							
 								}}
 							/>
 						)}
@@ -228,6 +277,7 @@ function TokensComponent({ isVisible, onClose }) {
 						</button>
 					</div>
 				))}
+
 				<button
 					onClick={onClose}
 					style={{
@@ -240,6 +290,7 @@ function TokensComponent({ isVisible, onClose }) {
 						fontSize: "24px",
 						color: "gray", // Changed to white for visibility
 						filter: "drop-shadow(0 0 2px rgba(255,163,69,0.4))", // Adding a subtle glow effect
+						zIndex: 3, // Make sure this is on top of other content
 					}}
 				>
 					✖

@@ -72,6 +72,8 @@ const ReleaseNotesComponent = ({ isVisible, onClose, version }) => {
 	const { hue, getRGBStr } = useHue();
 	const rgbStr = getRGBStr();
 
+	console.log(rgbStr);
+
 	return (
 		<Overlay isVisible={isVisible}>
 			<Window
@@ -117,11 +119,18 @@ const ReleaseNotesComponent = ({ isVisible, onClose, version }) => {
 						borderRadius: "5px",
 						border: "none", // Removing border for a cleaner look
 						cursor: "pointer",
-						backgroundColor: `rgba((${rgbStr}, 0.8)`, // Glowing button background
-						color: "black", // Text color for visibility
+						backgroundColor: `rgba(${rgbStr}, 0.8)`, // Glowing button background
+						color: "white", // Text color for visibility
 						marginTop: "10px",
 						width: "100%", // Full-width button for better alignment and impact
 						textShadow: "0 0 2px rgba(0,0,0,0.5)", // Subtle text shadow for depth
+						fontSize: "16px"
+					}}
+					onMouseEnter={(event) => {
+						event.target.style.backgroundColor = `rgba(${rgbStr}, 1)`; // Brighten the button on hover
+					}}
+					onMouseLeave={(event) => {
+						event.target.style.backgroundColor = `rgba(${rgbStr}, 0.8)`; // Restore the original color on exit
 					}}
 				>
 					Continue

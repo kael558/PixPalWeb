@@ -118,10 +118,20 @@ const PrivacyPolicyComponent = ({ isVisible, onClose }) => {
                         border: "none",
                         cursor: "pointer",
                         backgroundColor: `rgba(${rgbStr}, 0.8)`,
-                        color: "black",
+                        color: "white",
                         marginTop: "10px",
                         width: "100%",
+                        fontSize: "16px",
+                        textShadow: "0 0 2px rgba(0,0,0,0.5)",
+    
                     }}
+                    onMouseEnter={(event) => {
+						event.target.style.backgroundColor = `rgba(${rgbStr}, 1)`; // Brighten the button on hover
+					}}
+					onMouseLeave={(event) => {
+						event.target.style.backgroundColor = `rgba(${rgbStr}, 0.8)`; // Restore the original color on exit
+					}}
+
                 >
                     Close
                 </button>
