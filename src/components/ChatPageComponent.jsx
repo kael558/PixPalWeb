@@ -68,7 +68,10 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 		"voiceQuality",
 		"Low"
 	);
-	const [chatQuality, setChatQuality] = useLocalStorage("chatQuality", "Medium");
+	const [chatQuality, setChatQuality] = useLocalStorage(
+		"chatQuality",
+		"Medium"
+	);
 
 	const [isLoginVisible, setLoginVisible] = useState(false);
 	const [isTokensPanelVisible, setTokensPanelVisible] = useState(false);
@@ -179,20 +182,20 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 	useEffect(() => {
 		auth.onAuthStateChanged((user) => {
 			if (user) {
-			getAccessToken()
-				.then((token) => {
-					get_tokens(token).then((data) => {
-						let tokens =
-							data?.tokenCount
-								?.toString()
-								?.replace(/\B(?=(\d{3})+(?!\d))/g, ",") || 0;
+				getAccessToken()
+					.then((token) => {
+						get_tokens(token).then((data) => {
+							let tokens =
+								data?.tokenCount
+									?.toString()
+									?.replace(/\B(?=(\d{3})+(?!\d))/g, ",") || 0;
 
-						setTokens(tokens);
+							setTokens(tokens);
+						});
+					})
+					.catch((error) => {
+						console.error("Error getting ID token:", error);
 					});
-				})
-				.catch((error) => {
-					console.error("Error getting ID token:", error);
-				});
 			} else {
 				setTokens(0);
 			}
@@ -212,7 +215,6 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 		setMessages(updatedMessages);
 
 		try {
-
 			const voice = gender == "Female" ? "female3" : "male1";
 			const url =
 				"https://lg5m7pmkstz3ims7qkmh7u4xfi0gjebf.lambda-url.us-east-1.on.aws/";
@@ -227,7 +229,7 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 					username: name,
 					role: role,
 					languageModelQuality: chatQuality,
-					voice
+					voice,
 				}),
 			};
 
@@ -303,20 +305,35 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 				<div
 					onMouseDown={
 						inputMode === "audio"
-							? () => {
-									//console.log("mouseDown");
+							? (e) => {
+									e.preventDefault();
 									setIsRecording(true);
 							  }
 							: () => {}
 					}
 					onMouseUp={
-						inputMode === "audio" ? () => setIsRecording(false) : () => {}
+						inputMode === "audio"
+							? (e) => {
+									e.preventDefault();
+									setIsRecording(false);
+							  }
+							: () => {}
 					}
 					onTouchStart={
-						inputMode === "audio" ? () => setIsRecording(true) : () => {}
+						inputMode === "audio"
+							? (e) => {
+									e.preventDefault();
+									setIsRecording(true);
+							  }
+							: () => {}
 					}
 					onTouchEnd={
-						inputMode === "audio" ? () => setIsRecording(false) : () => {}
+						inputMode === "audio"
+							? (e) => {
+									e.preventDefault();
+									setIsRecording(false);
+							  }
+							: () => {}
 					}
 					style={{
 						position: "absolute", // Correct property for positioning
