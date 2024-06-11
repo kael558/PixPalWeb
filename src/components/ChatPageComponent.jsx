@@ -299,6 +299,7 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 
 	//console.log(isRecording);
 
+	
 	return (
 		<HueProvider>
 			<div>
