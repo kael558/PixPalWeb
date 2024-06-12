@@ -304,38 +304,14 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 		<HueProvider>
 			<div>
 				<div
-					onMouseDown={
+					onClick={
 						inputMode === "audio"
 							? (e) => {
 									e.preventDefault();
-									setIsRecording(true);
+									setIsRecording(!isRecording);
 							  }
 							: () => {}
-					}
-					onMouseUp={
-						inputMode === "audio"
-							? (e) => {
-									e.preventDefault();
-									setIsRecording(false);
-							  }
-							: () => {}
-					}
-					onTouchStart={
-						inputMode === "audio"
-							? (e) => {
-									e.preventDefault();
-									setIsRecording(true);
-							  }
-							: () => {}
-					}
-					onTouchEnd={
-						inputMode === "audio"
-							? (e) => {
-									e.preventDefault();
-									setIsRecording(false);
-							  }
-							: () => {}
-					}
+					}	
 					style={{
 						position: "absolute", // Correct property for positioning
 						top: 0, // Position at the top of the parent

@@ -93,7 +93,7 @@ function ChatInput({
 						marginTop: "10px",
 					}}
 				>
-					HOLD ANYWHERE TO RECORD
+					{isRecording ? "TAP ANYWHERE TO FINISH" : "TAP ANYWHERE TO RECORD"}
 				</p>
 			</div>
 		);
