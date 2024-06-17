@@ -11,23 +11,14 @@ function AISettings({ isVisible, setMessages,
 	voiceQuality,
 	setVoiceQuality,
 	chatQuality,
-	setChatQuality
+	setChatQuality,
+	isMobile
 
 
  }) {
-	const [isMobile, setIsMobile] = useState(window.innerWidth < 480);
 	
 	const { hue, getRGBStr } = useHue();
 	const rgbStr = getRGBStr();
-
-
-	useEffect(() => {
-        const handleResize = () => {
-            setIsMobile(window.innerWidth < 480);
-        };
-        window.addEventListener('resize', handleResize);
-        return () => window.removeEventListener('resize', handleResize);
-    }, []);
 
 	const resetMessages = () => {
 		// delete messages from localstorage
@@ -230,7 +221,7 @@ function AISettings({ isVisible, setMessages,
 								borderRadius: "5px",
 								backgroundColor: hue,
 								color: "black",
-								border: "1px solid white",
+							
 								cursor: "pointer",
 								fontWeight: "bold",
 								letterSpacing: "0.1em",
@@ -258,7 +249,7 @@ function AISettings({ isVisible, setMessages,
 								borderRadius: "5px",
 								backgroundColor: hue,
 								color: "black",
-								border: "1px solid white",
+					
 								cursor: "pointer",
 								fontWeight: "bold",
 								letterSpacing: "0.1em",

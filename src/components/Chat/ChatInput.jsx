@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
-import VoiceInput from "./AudioRecorder";
-import AudioVisualizer from "./AudioVisualizer";
+import VoiceInput from "../AudioRecorder";
+import AudioVisualizer from "../AudioVisualizer";
 
 import { toast } from "react-toastify";
 
@@ -17,7 +17,8 @@ function ChatInput({
 	inputMode,
 	setInputMode,
 	isRecording,
-	setIsRecording
+	setIsRecording,
+	isMobile
 }) {
 	const [message, setMessage] = useState("");
 	const timeoutRef = useRef(null);
@@ -70,13 +71,14 @@ function ChatInput({
 			<div
 				style={{
 					position: "fixed",
-					bottom: "10px",
+					bottom: isMobile ? "0px": "10px",
 					width: "100%",
 					alignItems: "center",
 					justifyContent: "space-between",
 					display: "flex",
 					flexDirection: "column",
 					alignItems: "center",
+				
 				}}
 			>
 				<AudioVisualizer
@@ -102,17 +104,18 @@ function ChatInput({
 		<div
 			style={{
 				position: "fixed",
-				bottom: "10px",
+				bottom: isMobile ? "0px": "10px",
 				left: "50%",
 				transform: "translateX(-50%)",
-				width: "100%",
+				width: "95%",
 				maxWidth: "600px",
 				display: "flex",
-				backdropFilter: "blur(12px)", // Blur effect for glassmorphism
+
 				padding: "10px 20px",
 
 				alignItems: "center",
 				justifyContent: "space-between",
+		
 	
 			}}
 		>
@@ -145,13 +148,14 @@ function ChatInput({
 						padding: "10px",
 						border: "1px solid rgba(255, 255, 255, 0.3)", // Light white border
 						borderRadius: "20px", // Rounded corners
-						fontSize: "16px",
+						fontSize: isMobile ? "14px" : "16px", // Smaller font size on mobile
 						background: "rgba(0, 0, 0, 0.4)", // Black with more transparency
 						color: "#FFF", // White text for contrast
 					
 						resize: "none", // Disable resizing
 						boxSizing: "border-box", // Include padding and border in width and height
 						scrollbarColor: "rgba(255, 255, 255, 0.3) rgba(0, 0, 0, 0.3)", // Custom scrollbar colors
+						fontFamily: "Menlo, monospace", // Monospace font for consistent spacing
 					}}
 				/>
 				<button
@@ -162,6 +166,7 @@ function ChatInput({
 						border: "none",
 						borderRadius: "20px",
 						padding: "10px 20px",
+				
 						fontSize: "16px",
 						cursor: "pointer",
 						transition: "transform 0.3s, box-shadow 0.3s", // Smooth transitions for hover effects
@@ -176,7 +181,7 @@ function ChatInput({
 						target.style.boxShadow = `0 0 20px rgba(${rgbStr}, 0.7)`;
 					}}
 				>
-					Send
+					{isMobile ? ">" : "Send"}
 				</button>
 			</form>
 		</div>

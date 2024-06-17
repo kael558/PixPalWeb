@@ -42,11 +42,16 @@ Today:
 [x] Fix orb color while chatting
 [x] Trigger interval of getting tokens when active, clear interval after minute of inactivity. 
 
+[x] - Chat log
+[ ] - Add sound effects
+
+[ ] - Add scene memory
+[ ] - Fix pricing for transcription
+[ ] - Generation of image in scene with girl
 [ ] - Reput change talking speed & volume based on time.
 [ ] - Make orb interactive, moving cursor displaces particles
-[ ] - Add scene memory
-[ ] - Chat log
-[ ] - Generation of image in scene with girl
+
+
 
 Build
 [ ] - Firebase analytics
