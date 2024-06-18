@@ -23,11 +23,18 @@ function ChatPage() {
 
 	useEffect(() => {
 		// first time user is signed in anonymously
+<<<<<<< HEAD
 		(async() => {
 			if (!(await isAuthenticated()) && name === "") {
 				loginAnonymously();
 			}
 		})();
+=======
+		if (!isAuthenticated() && name === "") {
+			//
+			loginAnonymously();
+		}
+>>>>>>> parent of 6f745e2... sign in anon
 	}, []);
 
 	return (
