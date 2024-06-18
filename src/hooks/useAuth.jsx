@@ -29,13 +29,7 @@ export const AuthProvider = ({ children }) => {
         return (await auth.currentUser.getIdTokenResult(false)).token;
     };
 
-<<<<<<< HEAD
     const isAuthenticated = () => {
-=======
-    const isAuthenticated = async () => {
-   
-
->>>>>>> parent of 6f745e2... sign in anon
         if (!auth.currentUser) {
             return false;
         }
