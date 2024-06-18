@@ -87,12 +87,16 @@ function Settings({
 	setShowDialog,
 	visualQuality,
 	setVisualQuality,
-	isMobile,
-	showChatLog,
-	setShowChatLog,
 }) {
+	const [isMobile, setIsMobile] = useState(window.innerWidth < 480);
 
-
+	useEffect(() => {
+		const handleResize = () => {
+			setIsMobile(window.innerWidth < 480);
+		};
+		window.addEventListener("resize", handleResize);
+		return () => window.removeEventListener("resize", handleResize);
+	}, []);
 
 	const [volume, setVolume] = useState(streamManager.getVolume());
 
@@ -103,6 +107,8 @@ function Settings({
 	const hueValue = rgbToHue(hue);
 
 	//const [uiHue, setUiHue] = useState("#FFC107"); // Default color
+	const [showChatLog, setShowChatLog] = useState(false);
+
 
 	const { isAuthenticated, isAnonymous, auth } = useAuth();
 
@@ -306,14 +312,14 @@ function Settings({
 							<span style={categoryStyle}>Chat Log:</span>
 							<span
 								style={optionStyle(showChatLog, true)}
-								onClick={() => setShowChatLog(true)}
+								onClick={() => toast.error("Chat log coming soon!")}
 							>
 								ON
 							</span>
 							/
 							<span
 								style={optionStyle(showChatLog, false)}
-								onClick={() => setShowChatLog(false)}
+								onClick={() => setShowChatLog(!showChatLog)}
 							>
 								OFF
 							</span>
@@ -370,7 +376,7 @@ function Settings({
 									borderRadius: "5px",
 									backgroundColor: hue,
 									color: "black",
-				
+									border: "1px solid white",
 									cursor: "pointer",
 									fontWeight: "bold",
 									letterSpacing: "0.1em",

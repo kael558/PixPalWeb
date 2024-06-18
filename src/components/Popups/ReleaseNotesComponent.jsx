@@ -4,11 +4,7 @@ import { Overlay, Window } from "./OverlayComponent";
 import { useHue } from "@hooks/useHue";
 
 function getApplicableReleaseNotes(version) {
-	const totalReleaseNotes = `### Version 0.9.5 *[Beta]*
-	- Add chat log
-	- Base scene memory and sound effects
-	
-	### Version 0.9.4 *[Beta]*
+	const totalReleaseNotes = `### Version 0.9.4 *[Beta]*
 	- Add hue slider for UI color customization
 	- Add visual quality options to support lower grade devices
 	- Make voice more sensual with narration
@@ -75,6 +71,8 @@ const ReleaseNotesComponent = ({ isVisible, onClose, version }) => {
 
 	const { hue, getRGBStr } = useHue();
 	const rgbStr = getRGBStr();
+
+	console.log(rgbStr);
 
 	return (
 		<Overlay isVisible={isVisible}>

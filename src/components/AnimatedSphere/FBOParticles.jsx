@@ -22,7 +22,6 @@ uniform float uTargetGrowthScale;
 
 void main() {
   vec3 pos = texture2D(uPositions, position.xy).xyz;
-  pos.y += 0.7;
 
   vec4 modelPosition = modelMatrix * vec4(pos, 1.0);
   vec4 viewPosition = viewMatrix * modelPosition;
@@ -40,7 +39,6 @@ extend({ SimulationMaterial: SimulationMaterial });
 
 const FBOParticles = ({ streamManager}) => {
 	const size =  256;
-
 
 	const points = useRef();
 	const simulationMaterialRef = useRef();
@@ -69,7 +67,7 @@ const FBOParticles = ({ streamManager}) => {
 	});
 
 	const particlesPosition = useMemo(() => {
-		const val = 256;
+		const val = 300;
 		const length = size * size;
 		const particles = new Float32Array(length * 3);
 		for (let i = 0; i < length; i++) {

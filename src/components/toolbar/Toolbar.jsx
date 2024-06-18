@@ -27,16 +27,11 @@ function Toolbar({
 	setChatQuality,
 	visualQuality,
 	setVisualQuality,
-	tokens,
-	isMobile,
-	showChatLog,
-	setShowChatLog,
+	tokens
 }) {
 	const [showDialog, setShowDialog] = useState(false);
 	const [AIMenuOpen, setAIMenuOpen] = useState(false);
 	const [settingsMenuOpen, setSettingsMenuOpen] = useState(false);
-
-
 
 	const { logout } = useAuth();
 	const { hue, getRGBStr } = useHue();
@@ -44,7 +39,6 @@ function Toolbar({
 	const doLogout = () => {
 		logout();
 	};
-
 
 	useEffect(() => {
 		if (AIMenuOpen) {
@@ -81,7 +75,7 @@ function Toolbar({
 					justifyContent: "flex-start", // Align children to the top of the container
 					padding: "10px",
 					height: "100%", // Stretch along the full height of the viewport
-				
+					backgroundColor: "rgba(0,0,0,0.5)", // Semi-transparent black background
 					color: "white", // White text color for icons
 				}}
 			>
@@ -95,30 +89,28 @@ function Toolbar({
 					setShowDialog={setShowDialog}
 					visualQuality={visualQuality}
 					setVisualQuality={setVisualQuality}
-					isMobile={isMobile}
-					showChatLog={showChatLog}
-					setShowChatLog={setShowChatLog}
 				/>
 
 				<AISettings 
-					isVisible={AIMenuOpen} 
-					setMessages={setMessages} 
-					gender={gender}
-					setGender={setGender}
-					role={role}
-					setRole={setRole}
-					voiceQuality={voiceQuality}
-					setVoiceQuality={setVoiceQuality}
-					chatQuality={chatQuality}
-					setChatQuality={setChatQuality}
-					isMobile={isMobile}
+				isVisible={AIMenuOpen} 
+				setMessages={setMessages} 
+				gender={gender}
+				setGender={setGender}
+				role={role}
+				setRole={setRole}
+				voiceQuality={voiceQuality}
+				setVoiceQuality={setVoiceQuality}
+				chatQuality={chatQuality}
+				setChatQuality={setChatQuality}
+				
+				
 				/>
 
 				<FaSlidersH
 					style={{
 						margin: "10px",
 						cursor: "pointer",
-						fontSize: isMobile? "26px" : "32px",
+						fontSize: "32px",
 						color: AIMenuOpen ? hue : "white", // Correct syntax
 					}}
 					onClick={() => setAIMenuOpen(!AIMenuOpen)}
@@ -128,7 +120,7 @@ function Toolbar({
 					style={{
 						margin: "10px",
 						cursor: "pointer",
-						fontSize: isMobile? "26px" : "32px",
+						fontSize: "32px",
 						color: settingsMenuOpen ? hue : "white",
 					}}
 					onClick={() => setSettingsMenuOpen(!settingsMenuOpen)}
