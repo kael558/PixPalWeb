@@ -3,7 +3,7 @@ import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 import Toolbar from "../components/toolbar/Toolbar";
-import ChatInput from "../components/ChatInput";
+import Chat from "../components/Chat/Chat";
 
 import AuthenticationComponent from "../components/Popups/AuthComponent";
 import TokensComponent from "../components/Popups/TokensComponent";
@@ -32,20 +32,16 @@ async function get_tokens(accessToken) {
 			headers: {
 				Authorization: `Bearer ${accessToken}`,
 			},
-		}
-	)
-		.then((response) => {
+		}).then((response) => {
 			if (response.ok) {
 				return response.json(); // Return the promise to be handled by the next .then()
 			} else {
 				throw new Error("Failed to fetch tokens");
 			}
-		})
-		.then((data) => {
+		}).then((data) => {
 			//console.log("Data:", data);
 			return data; // Return data for subsequent handling
-		})
-		.catch((error) => {
+		}).catch((error) => {
 			console.error("Error:", error);
 			return { tokenCount: 0 }; // Return default object in case of error
 		});
@@ -62,6 +58,7 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 		false
 	);
 
+	const [showChatLog, setShowChatLog] = useLocalStorage("showChatLog", false);
 	const [gender, setGender] = useLocalStorage("gender", "Female");
 	const [role, setRole] = useLocalStorage("role", "Friend");
 	const [voiceQuality, setVoiceQuality] = useLocalStorage(
@@ -72,6 +69,7 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 		"chatQuality",
 		"Medium"
 	);
+	const [characterName, setCharacterName] = useState("Ela");
 
 	const [isLoginVisible, setLoginVisible] = useState(false);
 	const [isTokensPanelVisible, setTokensPanelVisible] = useState(false);
@@ -82,17 +80,35 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 	const [isReleaseNotesVisible, setReleaseNotesVisible] = useState(
 		version !== CURRENT_VERSION
 	);
-	const [isStartVisible, setStartVisible] = useState(true);
+	const [isStartVisible, setStartVisible] = useState(false);
 	const [isStartFinished, setStartFinished] = useState(false);
 
 	const [inputMode, setInputMode] = useState("text");
 	const [isRecording, setIsRecording] = useState(false);
+
+	const [isMobile, setIsMobile] = useState(window.innerWidth < 800);
 
 	const [tokens, setTokens] = useState("Loading...");
 	const intervalRef = useRef(null);
 	const timeoutRef = useRef(null);
 
 	const { getAccessToken, auth } = useAuth();
+
+	useEffect(() => {
+		if (gender == "Female") {
+			setCharacterName("Ela");
+		} else {
+			setCharacterName("Blake");
+		}
+	}, [gender]);
+
+	useEffect(() => {
+		const handleResize = () => {
+			setIsMobile(window.innerWidth < 800);
+		};
+		window.addEventListener("resize", handleResize);
+		return () => window.removeEventListener("resize", handleResize);
+	}, []);
 
 	const showComponent = (component) => {
 		switch (component) {
@@ -299,7 +315,6 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 
 	//console.log(isRecording);
 
-	
 	return (
 		<HueProvider>
 			<div>
@@ -311,7 +326,7 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 									setIsRecording(!isRecording);
 							  }
 							: () => {}
-					}	
+					}
 					style={{
 						position: "absolute", // Correct property for positioning
 						top: 0, // Position at the top of the parent
@@ -322,7 +337,23 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 							? "inset 0 0 40px rgba(255,40,69,0.8)"
 							: "none",
 						userSelect: "none", // Prevent text selection
+				
 					}}
+				/>
+
+				<Chat
+					name={name}
+					messages={messages}
+					characterName={characterName}
+					isMobile={isMobile}
+					onSend={onMessageSend}
+					onAudio={onAudioSend}
+					streamManager={streamManager}
+					inputMode={inputMode}
+					setIsRecording={setIsRecording}
+					isRecording={isRecording}
+					showChatLog={showChatLog}
+
 				/>
 
 				<Toolbar
@@ -343,16 +374,11 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 					visualQuality={visualQuality}
 					setVisualQuality={setVisualQuality}
 					tokens={tokens}
+					isMobile={isMobile}
+					setShowChatLog={setShowChatLog}
+					showChatLog={showChatLog}
 				/>
 
-				<ChatInput
-					onSend={onMessageSend}
-					onAudio={onAudioSend}
-					streamManager={streamManager}
-					inputMode={inputMode}
-					setIsRecording={setIsRecording}
-					isRecording={isRecording}
-				/>
 				<AuthenticationComponent
 					isVisible={isLoginVisible}
 					onClose={() => setLoginVisible(false)}
