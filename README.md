@@ -57,7 +57,6 @@ Today:
 [ ] - Chat log
 [ ] - Generation of image in scene with girl
 
-ge pause
 Build
 [ ] - Firebase analytics
 [x] - check iPhone 15+, chrome and safari
