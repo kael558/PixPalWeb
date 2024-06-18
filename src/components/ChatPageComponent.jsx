@@ -84,10 +84,10 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 	const [isReleaseNotesVisible, setReleaseNotesVisible] = useState(
 		version !== CURRENT_VERSION
 	);
-	const [isStartVisible, setStartVisible] = useState(false);
+	const [isStartVisible, setStartVisible] = useState(true);
 	const [isStartFinished, setStartFinished] = useState(false);
 
-	const [inputMode, setInputMode] = useState("text");
+	const [inputMode, setInputMode] = useLocalStorage("inputMode", "text");
 	const [isRecording, setIsRecording] = useState(false);
 
 	const [isMobile, setIsMobile] = useState(window.innerWidth < 800);
@@ -323,14 +323,7 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 		<HueProvider>
 			<div>
 				<div
-					onClick={
-						inputMode === "audio"
-							? (e) => {
-									e.preventDefault();
-									setIsRecording(!isRecording);
-							  }
-							: () => {}
-					}
+			
 					style={{
 						position: "absolute", // Correct property for positioning
 						top: 0, // Position at the top of the parent

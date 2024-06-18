@@ -4,6 +4,7 @@ import { useAuth } from "@hooks/useAuth";
 import { FaVolumeUp } from "react-icons/fa";
 import { toast } from "react-toastify";
 import { useHue } from "@hooks/useHue";
+import { useLocalStorage } from "@hooks/useLocalStorage";
 
 function hueToRGB(hue) {
 	const saturation = 1; // 100% saturation
@@ -91,11 +92,9 @@ function Settings({
 	showChatLog,
 	setShowChatLog,
 }) {
-
-
-
-	const [volume, setVolume] = useState(streamManager.getVolume());
-
+	const [volume, setVolume] = useLocalStorage("volume", streamManager.getVolume());
+	streamManager.setVolume(volume);
+	
 	const { hue, getRGBStr, setHue } = useHue();
 	const rgbStr = getRGBStr();
 
@@ -376,6 +375,8 @@ function Settings({
 									letterSpacing: "0.1em",
 									transition: "background-color 0.3s, color 0.3s",
 									fontSize: "13px",
+									border: "1px solid black",
+								
 								}}
 								onMouseEnter={(e) => {
 									e.target.style.backgroundColor = "white";
@@ -398,8 +399,9 @@ function Settings({
 									padding: "8px 20px",
 									borderRadius: "5px",
 									backgroundColor: hue,
+									border: "1px solid black",
 									color: "black",
-									border: "1px solid white",
+					
 									cursor: "pointer",
 									fontWeight: "bold",
 									letterSpacing: "0.1em",

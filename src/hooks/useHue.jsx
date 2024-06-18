@@ -1,12 +1,13 @@
 import { createContext, useContext } from "react";
 import { useState } from "react";
 
+import { useLocalStorage } from "@hooks/useLocalStorage";
+
 const HueContext = createContext();
 
 export const HueProvider = ({ children }) => {
-    const [hue, setHue] = useState("#871F78"); 
+    const [hue, setHue] = useLocalStorage("hue", "#871F78"); 
    
-
     // #FFA345 - orange
 
     const getRGB = () => {

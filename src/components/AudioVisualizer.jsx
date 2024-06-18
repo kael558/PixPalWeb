@@ -1,7 +1,12 @@
 import React, { useRef, useEffect } from 'react';
+import { useHue } from '@hooks/useHue';
 
 function AudioVisualizer({ mediaStream, streamManager, isRecording }) {
     const canvasRef = useRef(null);
+
+    const { hue, getRGBStr } = useHue();
+    const rgbStr = getRGBStr();
+
 
     const analyserRef = useRef(null);
     const dataArrayRef = useRef(null);
@@ -113,7 +118,8 @@ function AudioVisualizer({ mediaStream, streamManager, isRecording }) {
 
             //console.log(JSON.stringify(dataArray));
 
-            ctx.fillStyle = 'rgb(0, 0, 0, 1)';
+     
+            ctx.fillStyle = isRecording ? 'rgb(0, 0, 0, 1)' : 'rgb(0, 0, 0, 0.2)';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
             const barWidth = (canvas.width / dataArray.length) * 2.5;
@@ -122,6 +128,12 @@ function AudioVisualizer({ mediaStream, streamManager, isRecording }) {
 
             for (let i = 0; i < dataArray.length; i++) {
                 barHeight = dataArray[i];
+
+                //console.log(barHeight);
+
+                // use rgbStr in fillStyle
+                //ctx.fillStyle = `rgb(${rgbStr
+
                 ctx.fillStyle = isRecording ? `rgb(${barHeight + 100}, 50, 50)` : `rgb(50, 50, ${(barHeight + 100)})`;
                 ctx.fillRect(x, canvas.height - barHeight / 2, barWidth, barHeight / 2);
 

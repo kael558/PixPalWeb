@@ -7,6 +7,8 @@ import { toast } from "react-toastify";
 import { useAuth } from "@hooks/useAuth";
 import { useHue } from "@hooks/useHue";
 
+import { FaMicrophoneAlt } from "react-icons/fa";
+
 const voiceInput = new VoiceInput();
 voiceInput.setup();
 
@@ -18,14 +20,13 @@ function ChatInput({
 	setInputMode,
 	isRecording,
 	setIsRecording,
-	isMobile
+	isMobile,
 }) {
 	const [message, setMessage] = useState("");
 	const timeoutRef = useRef(null);
 
 	const { hue, getRGBStr } = useHue();
 	const rgbStr = getRGBStr();
-
 
 	//const voiceInputRef = useRef(null);
 
@@ -66,19 +67,19 @@ function ChatInput({
 
 	//console.log("inputMode", inputMode);
 
-	if (inputMode === "audio") {
+	if (inputMode === "audio" && voiceInput.mediaStream) {
 		return (
 			<div
 				style={{
 					position: "fixed",
-					bottom: isMobile ? "0px": "10px",
+					bottom: isMobile ? "0px" : "10px",
 					width: "100%",
 					alignItems: "center",
 					justifyContent: "space-between",
 					display: "flex",
 					flexDirection: "column",
 					alignItems: "center",
-				
+					height: "160px",
 				}}
 			>
 				<AudioVisualizer
@@ -87,16 +88,25 @@ function ChatInput({
 					isRecording={isRecording}
 				/>
 
-				<p
-					style={{
-						color: "white",
-						fontSize: "16px",
-						textAlign: "center",
-						marginTop: "10px",
+				<FaMicrophoneAlt
+					onClick={() => {
+						setIsRecording((prev) => !prev);
 					}}
-				>
-					{isRecording ? "TAP ANYWHERE TO FINISH" : "TAP ANYWHERE TO RECORD"}
-				</p>
+					style={{
+						position: "absolute",
+						bottom: "10px",
+						fontSize: "40px",
+						color: isRecording ? "red" : hue,
+						cursor: "pointer",
+						transition: "all 0.3s ease", // Broadened to include all properties
+						background: isRecording ? "rgba(255, 0, 0, 0.4)" : "transparent", // Increased opacity
+						borderRadius: "50%",
+						padding: "10px",
+						border: isRecording ? "2px solid red" : `2px solid ${hue}`, // Conditional border color
+						boxShadow: isRecording ? "0 0 15px rgba(255, 0, 0, 0.5)" : "none", // Conditional shadow
+						transform: isRecording ? "scale(1.1)" : "scale(1)", // Scaling effect
+					}}
+				/>
 			</div>
 		);
 	}
@@ -104,7 +114,7 @@ function ChatInput({
 		<div
 			style={{
 				position: "fixed",
-				bottom: isMobile ? "0px": "10px",
+				bottom: isMobile ? "0px" : "10px",
 				left: "50%",
 				transform: "translateX(-50%)",
 				width: "95%",
@@ -115,8 +125,6 @@ function ChatInput({
 
 				alignItems: "center",
 				justifyContent: "space-between",
-		
-	
 			}}
 		>
 			<form
@@ -137,7 +145,7 @@ function ChatInput({
 					required
 					rows="1" // Initial number of visible rows
 					onKeyDown={(e) => {
-						if (e.key === 'Enter' && !e.shiftKey) {
+						if (e.key === "Enter" && !e.shiftKey) {
 							e.preventDefault(); // Prevent the default action to stop from creating a new line
 							handleSubmit(e); // Call the handleSubmit function to submit the form
 						}
@@ -151,7 +159,7 @@ function ChatInput({
 						fontSize: isMobile ? "14px" : "16px", // Smaller font size on mobile
 						background: "rgba(0, 0, 0, 0.4)", // Black with more transparency
 						color: "#FFF", // White text for contrast
-					
+
 						resize: "none", // Disable resizing
 						boxSizing: "border-box", // Include padding and border in width and height
 						scrollbarColor: "rgba(255, 255, 255, 0.3) rgba(0, 0, 0, 0.3)", // Custom scrollbar colors
@@ -166,7 +174,7 @@ function ChatInput({
 						border: "none",
 						borderRadius: "20px",
 						padding: "10px 20px",
-				
+
 						fontSize: "16px",
 						cursor: "pointer",
 						transition: "transform 0.3s, box-shadow 0.3s", // Smooth transitions for hover effects
@@ -186,7 +194,6 @@ function ChatInput({
 			</form>
 		</div>
 	);
-	
 }
 
 export default ChatInput;
