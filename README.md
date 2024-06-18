@@ -8,6 +8,7 @@ Today:
 [x] - Tap to record/ tap to end with recording
 [x] - Host on pixpal.ca
 
+
 [x] - Toast system -> displays errors & success messages
 [x] - Record audio -> send to backend -> get response 
 [x] - CHeck memory -> memory is fixed to local storage
