@@ -39,12 +39,13 @@ Today:
 [x] - Do narration voice
 [x] - Add speaking styles to prompts so "<whisper> Hey there" *lina leans forward* "How are you doing today?"
 [x] If user selects horny and the model qualtiy is low, then it should tell the user to switch models.
-[x] Fix orb color while chatting
+[ ] Fix orb color while chatting
 [x] Trigger interval of getting tokens when active, clear interval after minute of inactivity. 
 
 [x] - Chat log
 [ ] - Add sound effects
 
+<<<<<<< HEAD
 [ ] - Add scene memory
 [ ] - Fix pricing for transcription
 [ ] - Generation of image in scene with girl
@@ -53,6 +54,8 @@ Today:
 
 
 
+=======
+>>>>>>> parent of dc43f9b... color change pause
 Build
 [ ] - Firebase analytics
 [x] - check iPhone 15+, chrome and safari
