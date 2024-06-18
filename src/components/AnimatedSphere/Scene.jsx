@@ -85,7 +85,7 @@ const BloomEffect = ({ streamManager }) => {
 const Scene = ({ streamManager, visualQuality }) => {
 	return (
 		<Fragment>
-			<Canvas camera={{ position: [1.5, 1.5, 1.0] }}>
+			<Canvas camera={{ position: [1.5, 1.5, 2.0] }}>
 				<Suspense fallback={null}>
 					{visualQuality === "Advanced" && (
 						<BloomEffect streamManager={streamManager} />

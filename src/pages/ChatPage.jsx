@@ -23,10 +23,11 @@ function ChatPage() {
 
 	useEffect(() => {
 		// first time user is signed in anonymously
-		if (!isAuthenticated() && name === "") {
-			//
-			loginAnonymously();
-		}
+		(async() => {
+			if (!(await isAuthenticated()) && name === "") {
+				loginAnonymously();
+			}
+		})();
 	}, []);
 
 	return (

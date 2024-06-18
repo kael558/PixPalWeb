@@ -32,16 +32,20 @@ async function get_tokens(accessToken) {
 			headers: {
 				Authorization: `Bearer ${accessToken}`,
 			},
-		}).then((response) => {
+		}
+	)
+		.then((response) => {
 			if (response.ok) {
 				return response.json(); // Return the promise to be handled by the next .then()
 			} else {
 				throw new Error("Failed to fetch tokens");
 			}
-		}).then((data) => {
+		})
+		.then((data) => {
 			//console.log("Data:", data);
 			return data; // Return data for subsequent handling
-		}).catch((error) => {
+		})
+		.catch((error) => {
 			console.error("Error:", error);
 			return { tokenCount: 0 }; // Return default object in case of error
 		});
