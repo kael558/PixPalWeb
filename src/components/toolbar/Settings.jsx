@@ -1,7 +1,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useState, useEffect } from "react";
 import { useAuth } from "@hooks/useAuth";
-import { FaVolumeUp } from "react-icons/fa";
+import { FaVolumeUp, FaInstagram, FaTiktok, FaDiscord } from "react-icons/fa";
 import { toast } from "react-toastify";
 import { useHue } from "@hooks/useHue";
 import { useLocalStorage } from "@hooks/useLocalStorage";
@@ -92,9 +92,12 @@ function Settings({
 	showChatLog,
 	setShowChatLog,
 }) {
-	const [volume, setVolume] = useLocalStorage("volume", streamManager.getVolume());
+	const [volume, setVolume] = useLocalStorage(
+		"volume",
+		streamManager.getVolume()
+	);
 	streamManager.setVolume(volume);
-	
+
 	const { hue, getRGBStr, setHue } = useHue();
 	const rgbStr = getRGBStr();
 
@@ -351,6 +354,49 @@ function Settings({
 						</li>
 					</ul>
 
+					<div
+						style={{
+							display: "flex",
+							justifyContent: "center", // Centers the icons horizontally
+							alignItems: "center", // Centers the icons vertically
+							height: "100%", // Use an appropriate height as needed
+							padding: "0", // Adds vertical padding for better spacing
+							width: "100%", // Use an appropriate width as needed
+						}}
+					>
+						<FaDiscord
+							style={{
+								color: hue,
+								fontSize: "1.5em", // Slightly larger icons for better visibility
+								cursor: "pointer", // Indicates that the icon is clickable
+							}}
+							onClick={() => {
+								window.open("https://discord.gg/8bB5VpAHHT");
+							}}
+						/>
+						<FaInstagram
+							style={{
+								color: hue,
+								fontSize: "1.5em",
+								cursor: "pointer",
+								margin: "0 20px", // Adds horizontal margin between icons
+							}}
+							onClick={() => {
+								window.open("https://www.instagram.com/elagonai/");
+							}}
+						/>
+						<FaTiktok
+							style={{
+								color: hue,
+								fontSize: "1.5em",
+								cursor: "pointer",
+							}}
+							onClick={() => {
+								window.open("https://www.tiktok.com/@elagonai");
+							}}
+						/>
+					</div>
+
 					<span
 						style={{
 							display: "flex",
@@ -360,7 +406,7 @@ function Settings({
 							width: "100%",
 						}}
 					>
-						{(isLoggedIn && !isAnonymous()) && (
+						{isLoggedIn && !isAnonymous() && (
 							<button
 								onClick={handleLogout}
 								style={{
@@ -369,14 +415,13 @@ function Settings({
 									borderRadius: "5px",
 									backgroundColor: hue,
 									color: "black",
-				
+
 									cursor: "pointer",
 									fontWeight: "bold",
 									letterSpacing: "0.1em",
 									transition: "background-color 0.3s, color 0.3s",
 									fontSize: "13px",
 									border: "1px solid black",
-								
 								}}
 								onMouseEnter={(e) => {
 									e.target.style.backgroundColor = "white";
@@ -401,7 +446,7 @@ function Settings({
 									backgroundColor: hue,
 									border: "1px solid black",
 									color: "black",
-					
+
 									cursor: "pointer",
 									fontWeight: "bold",
 									letterSpacing: "0.1em",

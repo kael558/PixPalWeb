@@ -97,10 +97,10 @@ function ChatLog({ name, characterName, messages, isMobile, inputMode }) {
 	return (
 		<div
 			style={{
-				height: isMobile ? "50vh" : (inputMode === "audio" ? "75%": "80%" ),
+				height: isMobile ? "50vh" : (inputMode === "audio" ? "80%": "80%" ),
 				position: isMobile ? "fixed" : "absolute",
 				top: isMobile ? "" : "0px",
-				bottom: isMobile ? (inputMode == "audio" ? "150px" : "50px") : (inputMode === "audio" ? "175px": "80px" ),
+				bottom: isMobile ? (inputMode == "audio" ? "100px" : "100px") : (inputMode === "audio" ? "175px": "175px" ),
 				left: isMobile ? "50%" : "10px",
 				transform: isMobile ? "translateX(-50%)" : "none",
 				width: isMobile ? "95%" : "40%",

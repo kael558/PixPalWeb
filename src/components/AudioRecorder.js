@@ -27,13 +27,12 @@ class VoiceInput {
     };
 
     async setup() {
-        const userMedia = await this.getUserMedia({ audio: true });
-        if (!userMedia) {
+        this.mediaStream = await this.getUserMedia({ audio: true });
+         
+        if (!this.mediaStream) {
             console.error("getUserMedia is not supported in this browser");
             throw new Error("Browser does not support getUserMedia");
         }
-
-        this.mediaStream = userMedia;
         this.mediaRecorder = new RecordRTC(this.mediaStream, {
             type: "audio",
             mimeType: "audio/webm",

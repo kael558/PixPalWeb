@@ -7,6 +7,9 @@ function getApplicableReleaseNotes(version) {
 	const totalReleaseNotes = `### Version 0.9.5 *[Beta]*
 	- Add chat log
 	- Base scene memory and sound effects
+	- Added socials
+	- Show audio visualizer on text input
+	- Use microphone button instead of tap anywhere
 	
 	### Version 0.9.4 *[Beta]*
 	- Add hue slider for UI color customization

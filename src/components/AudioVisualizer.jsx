@@ -27,9 +27,15 @@ function AudioVisualizer({ mediaStream, streamManager, isRecording }) {
                 if (analyserRef.current) {
                     analyserRef.current.disconnect();
                 }
+
+                if (!mediaStream) {
+                    console.error('No media stream available');
+                    return;
+                }
     
                 // Setup new audio connections
-                sourceNodeRef.current = streamManager.audioContext.createMediaStreamSource(await mediaStream);
+                console.log(mediaStream);
+                sourceNodeRef.current = await streamManager.audioContext.createMediaStreamSource(await mediaStream);
                 const analyser = streamManager.audioContext.createAnalyser();
     
                 analyser.fftSize = 2048;
@@ -119,7 +125,7 @@ function AudioVisualizer({ mediaStream, streamManager, isRecording }) {
             //console.log(JSON.stringify(dataArray));
 
      
-            ctx.fillStyle = isRecording ? 'rgb(0, 0, 0, 1)' : 'rgb(0, 0, 0, 0.2)';
+            ctx.fillStyle = isRecording ? 'rgba(0, 0, 0, 1)' : 'rgba(0, 0, 0, 0.2)';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
             const barWidth = (canvas.width / dataArray.length) * 2.5;
@@ -142,7 +148,15 @@ function AudioVisualizer({ mediaStream, streamManager, isRecording }) {
         }
     };
 
-    return <canvas ref={canvasRef} width="640" height="120" style={{ maxWidth: "100%", height: "auto" }}/>;
+    return <canvas ref={canvasRef} width="640" height="90" style={{ 
+        maxWidth: "96%", 
+        height: "auto",
+        alignSelf: "center",
+
+
+
+
+     }}/>;
 }
 
 export default AudioVisualizer;
