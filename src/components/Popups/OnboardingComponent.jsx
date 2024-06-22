@@ -21,11 +21,11 @@ function OnboardingComponent({
 			return;
 		}
 
-		streamManager.playAudioFile(`hello_${input_mode}_24.wav`).catch(console.error);
+		streamManager.playAudioFile(`hello_${input_mode}_48.wav`).catch(console.error);
 		onClose();
 	};
 
-	play_onboarding("audio");
+	//play_onboarding("audio");
 
 	return (
 		<Overlay
