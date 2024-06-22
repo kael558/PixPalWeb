@@ -148,7 +148,7 @@ function AudioVisualizer({ mediaStream, streamManager, isRecording }) {
         }
     };
 
-    return <canvas ref={canvasRef} width="640" height="90" style={{ 
+    return <canvas ref={canvasRef} width="640" height="120" style={{ 
         maxWidth: "96%", 
         height: "auto",
         alignSelf: "center",

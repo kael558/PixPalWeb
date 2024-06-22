@@ -350,7 +350,6 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 					setIsRecording={setIsRecording}
 					isRecording={isRecording}
 					showChatLog={showChatLog}
-
 				/>
 
 				<Toolbar

@@ -80,8 +80,7 @@ function Toolbar({
 					alignItems: "center", // Center children horizontally
 					justifyContent: "flex-start", // Align children to the top of the container
 					padding: "10px",
-					height: "100%", // Stretch along the full height of the viewport
-				
+
 					color: "white", // White text color for icons
 				}}
 			>
