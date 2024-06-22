@@ -172,18 +172,7 @@ class StreamAudioProcessor extends AudioWorkletProcessor {
 			}
 		}
 
-		//console.log("process2", this.buffers.length);
 
-		/*if (outputs[0].length > 0) {
-			const output = outputs[0][0]; // Assuming mono input
-			let sum = 0;
-			for (let i = 0; i < output.length; i++) {
-				sum += Math.abs(output[i]);
-			}
-			let averageLevel = sum / output.length;
-			let isTalking = averageLevel > 0.01;
-			this.port.postMessage({ isTalking, averageLevel });
-		}*/
 
 		return true;
 	}

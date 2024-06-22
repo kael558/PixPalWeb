@@ -113,8 +113,13 @@ function ChatInput({
 				height: "160px",
 			}}
 		>
-			
-
+			{voiceInput.mediaStream && (
+				<AudioVisualizer
+					mediaStream={voiceInput.mediaStream}
+					streamManager={streamManager}
+					isRecording={isRecording}
+				/>
+			)}
 			<AnimatePresence>
 				
 					{inputMode === "text" ? (
