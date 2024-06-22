@@ -57,6 +57,7 @@ function OnboardingComponent({
 									color: "white",
 									width: "100%", // Ensure full width for alignment
 									boxSizing: "border-box", // Ensure padding is included in width
+									fontSize: "16px",
 								}}
 							/>
 

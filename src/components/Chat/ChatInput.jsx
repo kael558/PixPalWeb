@@ -168,7 +168,7 @@ function ChatInput({
 									padding: "10px",
 									border: "1px solid rgba(255, 255, 255, 0.3)",
 									borderRadius: "20px",
-									fontSize: isMobile ? "14px" : "16px",
+									fontSize: isMobile ? "16px" : "16px",
 									background: "rgba(0, 0, 0, 0.4)",
 									color: "#FFF",
 									resize: "none",
