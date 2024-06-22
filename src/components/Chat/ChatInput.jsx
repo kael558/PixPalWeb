@@ -113,13 +113,7 @@ function ChatInput({
 				height: "160px",
 			}}
 		>
-			{voiceInput.mediaStream && (
-				<AudioVisualizer
-					mediaStream={voiceInput.mediaStream}
-					streamManager={streamManager}
-					isRecording={isRecording}
-				/>
-			)}
+			
 
 			<AnimatePresence>
 				
@@ -141,9 +135,9 @@ function ChatInput({
 								width: "95%", // Taking the full width with some margin
 								maxWidth: "600px", // Maximum width
 								display: "flex",
-								padding: "10px 20px",
+								padding: "1px 20px",
 								alignItems: "center",
-								justifyContent: "space-between",
+								justifyContent: "center",
 								borderRadius: "20px", // Rounded corners
 								transition: "all 0.3s ease-in-out",
 							}}
@@ -164,7 +158,7 @@ function ChatInput({
 								}}
 								style={{
 									flex: 1,
-									marginRight: "10px",
+								
 									padding: "10px",
 									border: "1px solid rgba(255, 255, 255, 0.3)",
 									borderRadius: "20px",
@@ -196,7 +190,7 @@ function ChatInput({
 								}}
 								onMouseOut={({ target }) => {
 									target.style.transform = "scale(1)";
-									target.style.boxShadow = `0 0 20px rgba(${rgbStr}, 0.7)`;
+									target.style.boxShadow = `0 0 5px rgba(${rgbStr}, 0.7)`;
 								}}
 							>
 								{isMobile ? ">" : "Send"}
