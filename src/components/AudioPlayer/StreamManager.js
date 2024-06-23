@@ -3,7 +3,7 @@ const textEncoder = new TextEncoder("utf-8");
 
 class StreamManager {
     constructor() {
-        this.audioContext = new AudioContext({ sampleRate: 24000 });
+        this.audioContext = new AudioContext({ sampleRate: 48000 });
         this.abortController = new AbortController();
         this.gainNode = this.audioContext.createGain();
     }
