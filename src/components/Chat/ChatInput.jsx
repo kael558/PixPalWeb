@@ -96,6 +96,7 @@ function ChatInput({
 						mediaStream={voiceInput.mediaStream}
 						streamManager={streamManager}
 						isRecording={isRecording}
+						inputMode={inputMode}
 					/>
 				</div>
 			)}

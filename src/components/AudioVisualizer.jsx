@@ -1,6 +1,6 @@
 import React, { useRef, useEffect } from 'react';
 
-function AudioVisualizer({ mediaStream, streamManager, isRecording }) {
+function AudioVisualizer({ mediaStream, streamManager, isRecording, inputMode }) {
     const canvasRef = useRef(null);
 
     const analyserRef = useRef(null);
@@ -21,13 +21,7 @@ function AudioVisualizer({ mediaStream, streamManager, isRecording }) {
                     analyserRef.current.disconnect();
                 }
 
-                if (!mediaStream) {
-                    console.error('No media stream available');
-                    return;
-                }
-    
                 // Setup new audio connections
-                sourceNodeRef.current = await streamManager.audioContext.createMediaStreamSource(await mediaStream);
                 const analyser = streamManager.audioContext.createAnalyser();
     
                 analyser.fftSize = 2048;
@@ -35,8 +29,14 @@ function AudioVisualizer({ mediaStream, streamManager, isRecording }) {
             
                 analyserRef.current = analyser;
                 dataArrayRef.current = dataArray;
+
+                if (mediaStream && inputMode === 'audio') {
+                    sourceNodeRef.current = await streamManager.audioContext.createMediaStreamSource(await mediaStream);
+                    sourceNodeRef.current.connect(analyser);
+                } else {
+                    sourceNodeRef.current = null;
+                }
     
-                sourceNodeRef.current.connect(analyser);
                 streamManager.connectNode(analyser);
     
                 draw();
@@ -74,7 +74,7 @@ function AudioVisualizer({ mediaStream, streamManager, isRecording }) {
                 analyserRef.current.disconnect();
             }
         };
-    }, []);
+    }, [inputMode]);
     
 
     useEffect(() => {
@@ -88,7 +88,7 @@ function AudioVisualizer({ mediaStream, streamManager, isRecording }) {
         } else {
             timeoutRef.current = setTimeout(() => { // allows decay to be same color as recording
                 isRecordingRef.current = isRecording;
-                sourceNodeRef.current.disconnect();
+                if (sourceNodeRef.current) sourceNodeRef.current.disconnect();
             }, 600);  
         }
     }, [isRecording]);

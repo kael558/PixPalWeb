@@ -145,14 +145,14 @@ class StreamManager {
             await this.processAudioAndText(reader, buffer, addMessage);
         } catch (error) {
             console.error('Stream processing error:', error);
-        } finally {
             this.audioWorkletNode.port.postMessage({ method: "finishRequest", args: { id: 0} });
+        } finally {
             reader.releaseLock();
         }
     }
 
     async handleColorMessage(color) {
-        console.log("Color message:", color);
+        //console.log("Color message:", color);
         this.onmessage({ name: "change_color", data: { color } })
     }
     
