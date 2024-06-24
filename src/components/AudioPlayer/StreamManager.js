@@ -110,7 +110,10 @@ class StreamManager {
             let buffer = new Uint8Array();
             while (index < 2) {
                 let { done, value } = await reader.read();
-                if (done) return; // Exit if stream has ended
+                if (done) {
+                    this.audioWorkletNode.port.postMessage({ method: "finishRequest", args: { id: 0} });
+                    return; // Exit if stream has ended
+                }
 
                 // Combine the new value with any existing overflow
                 let combinedBuffer = new Uint8Array(buffer.length + value.length);
@@ -121,8 +124,8 @@ class StreamManager {
 
                 if (delimiterIndex !== -1) {
                     const data = combinedBuffer.slice(0, delimiterIndex);
-                    const overflow = combinedBuffer.slice(delimiterIndex + delimiter.length);
-    
+                    const overflow = combinedBuffer.slice(delimiterIndex + delimiter.length + 1);
+
                     if (index === -1) {
                         await this.handleUserMessage(textDecoder.decode(data), addMessage);
                     } else if (index === 0) {
@@ -143,6 +146,7 @@ class StreamManager {
         } catch (error) {
             console.error('Stream processing error:', error);
         } finally {
+            this.audioWorkletNode.port.postMessage({ method: "finishRequest", args: { id: 0} });
             reader.releaseLock();
         }
     }
@@ -154,18 +158,18 @@ class StreamManager {
     
 
     async handleUserMessage(userMessage, addMessage) {
-        console.log("User message:", userMessage);
+        //console.log("User message:", userMessage);
         addMessage("user", userMessage);
     }
 
     async handleComponents(componentList, showComponent) {
-        console.log("Component list:", componentList);
+        //console.log("Component list:", componentList);
         const components = JSON.parse(componentList);
         components.forEach(component => showComponent(component));
     }
 
     async handleAssistantMessage(assistantMessage, addMessage) {
-        console.log("Assistant message:", assistantMessage);
+        //console.log("Assistant message:", assistantMessage);
         addMessage("assistant", assistantMessage);
     }
 
@@ -177,7 +181,7 @@ class StreamManager {
 
         const delimiter = textEncoder.encode('|||');
 
-        console.log("Audio processing has started. + Overflow:", overflow.length);
+        //console.log("Audio processing has started. + Overflow:", overflow.length);
 
         let isText = true;
 
