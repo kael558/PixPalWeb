@@ -1,12 +1,10 @@
 import "./App.css";
-import { useFirebase } from "@hooks/useFirebase";
 import { AuthProvider } from "@hooks/useAuth";
 import { OpusMediaRecorder } from "opus-media-recorder";
 import platform from "platform-detect";
 
 import { initializeApp } from "firebase/app";
-import { getAnalytics, logEvent, setUserId } from "firebase/analytics";
-//import { firebaseConfig } from "./config";
+import { firebaseConfig } from "./config";
 
 // Pages
 import ChatPage from "./pages/ChatPage";
@@ -38,32 +36,14 @@ function detectBrowser(env) {
     return "Unknown Browser";
 }
 
-
-
-const firebaseConfig = {
-    apiKey: "AIzaSyDi6kPY5HbcwH6KKJzV2MOfjsEWDymG_q4",
-    authDomain: "pixpal-1707752767387.firebaseapp.com",
-    projectId: "pixpal-1707752767387",
-    storageBucket: "pixpal-1707752767387.appspot.com",
-    messagingSenderId: "42814286164",
-    appId: "1:42814286164:web:2a6e4a0bca587a9b6780c1",
-    measurementId: "G-TCVKJK942W"
-  };
-  
-  // Initialize Firebase
-  const app = initializeApp(firebaseConfig);
-  const analytics = getAnalytics(app);
-
-
-logEvent(analytics, "login");
+// Initialize Firebase
+initializeApp(firebaseConfig);
 
 function App() {
-	const { logEvent } = useFirebase();
-
-	logEvent("device_details", {
-		os: detectOS(platform),
-		browser: detectBrowser(platform)
-	});
+    window.gtag("event", "device_details", {
+        os: detectOS(platform),
+        browser: detectBrowser(platform)
+    });
 
 	return (
 		<AuthProvider>

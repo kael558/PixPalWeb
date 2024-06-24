@@ -17,7 +17,6 @@ import { CURRENT_VERSION } from "../Constants";
 import { HueProvider } from "@hooks/useHue";
 import { useAuth } from "@hooks/useAuth";
 import { useLocalStorage } from "@hooks/useLocalStorage";
-import { useFirebase } from "@hooks/useFirebase";
 
 
 async function get_tokens(accessToken) {
@@ -96,7 +95,6 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 	const timeoutRef = useRef(null);
 
 	const { getAccessToken, auth } = useAuth();
-	const { logEvent } = useFirebase();
 
 	useEffect(() => {
 		if (gender == "Female") {
@@ -234,8 +232,7 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 		const updatedMessages = [...messagesRef.current, { role: "user", content }];
 		setMessages(updatedMessages);
 
-
-		logEvent("text_sent", { 
+		window.gtag("event", "text_sent", {
 			length: content.length,
 			gender, 
 			chatQuality, 
@@ -279,7 +276,7 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 		}
 
 		try {
-			logEvent("audio_sent", { 
+			window.gtag("event", "audio_sent", {
 				length: duration,
 				gender, 
 				chatQuality, 
