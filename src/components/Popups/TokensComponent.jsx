@@ -7,7 +7,7 @@ import { toast } from "react-toastify";
 import { Overlay, Window } from "./OverlayComponent";
 import { TailSpin } from "react-loader-spinner";
 
-function TokensComponent({ isVisible, onClose }) {
+function TokensComponent({ isVisible, onClose, updateTokens, isMobile }) {
 	const [purchaseInProgress, setPurchaseInProgress] = useState(false);
 	const { getAccessToken } = useAuth();
 	const { getRGBStr } = useHue();
@@ -41,6 +41,13 @@ function TokensComponent({ isVisible, onClose }) {
 		setPurchaseInProgress(false);
 
 		toast.success("Free tokens added to your account");
+
+		window.gtag("event", "purchase", {
+			currency: "USD",
+			value: 0,
+			transaction_id: "free",
+			items: [{ item_id: 0, item_name: "Bundle" }],
+		});
 	};
 
 	const initiate_purchase = async (id) => {
@@ -82,7 +89,7 @@ function TokensComponent({ isVisible, onClose }) {
 		const { sessionId, url } = await response.json();
 		window.open(url, "_blank");
 
-		while (true) {
+		for (let i = 0; i < 100; i++) {
 			const status_response = await fetch(
 				`https://0xlgvmu6h4.execute-api.us-east-1.amazonaws.com/session?sessionId=${sessionId}`,
 				{
@@ -100,14 +107,24 @@ function TokensComponent({ isVisible, onClose }) {
 				break;
 			}
 
-			const { status } = await status_response.json();
+			const { session } = await status_response.json();
+
+			const status = session.status;
 
 			if (status === "complete") {
-				toast.success("Purchase complete");
+				window.gtag("event", "purchase", {
+					currency: "USD",
+					value: id === 0 ? 0 : id === 1 ? 1.99 : id === 2 ? 9.45 : 17.99,
+					transaction_id: sessionId,
+					items: [{ item_id: id, item_name: options[id].title }],
+				});
+
+				updateTokens();
+				toast.success("Thank you for your purchase!");
 				break;
 			}
 
-			await new Promise((resolve) => setTimeout(resolve, 1000));
+			await new Promise((resolve) => setTimeout(resolve, 5000));
 		}
 
 		setPurchaseInProgress(false);
@@ -142,52 +159,44 @@ function TokensComponent({ isVisible, onClose }) {
 
 	return (
 		<Overlay isVisible={isVisible}>
-				{purchaseInProgress && (
-					<div
+			{purchaseInProgress && (
+				<div
+					style={{
+						position: "absolute",
+						top: 0,
+						left: 0,
+						width: "100%",
+						height: "100%",
+						backgroundColor: "rgba(0, 0, 0, 0.5)",
+						display: "flex",
+						alignItems: "center",
+						flexDirection: "column", // Set direction of flex items to column
+						justifyContent: "center",
+						borderRadius: "12px",
+						zIndex: 2, // Make sure this is on top of other content
+					}}
+				>
+					<TailSpin height="80" width="80" color="white" ariaLabel="loading" />
+					<button
+						onClick={() => setPurchaseInProgress(false)}
 						style={{
-							position: "absolute",
-							top: 0,
-							left: 0,
-							width: "100%",
-							height: "100%",
-							backgroundColor: "rgba(0, 0, 0, 0.5)",
-							display: "flex",
-							alignItems: "center",
-							flexDirection: "column", // Set direction of flex items to column
-							justifyContent: "center",
-							borderRadius: "12px",
-							zIndex: 2, // Make sure this is on top of other content
+							marginTop: "20px", // Add some space between the spinner and the button
+							padding: "10px 20px",
+							backgroundColor: "#073B4C",
+							color: "white",
+							borderRadius: "20px",
+							border: "none",
+							cursor: "pointer",
+							fontSize: "16px",
+							fontWeight: "bold",
+							boxShadow: "0 2px 4px rgba(0, 0, 0, 0.3)",
+							filter: "drop-shadow(0 0 2px rgba(255,163,69,0.4))", // Adding a subtle glow effect
 						}}
 					>
-						<TailSpin
-							height="80"
-							width="80"
-							color="white"
-							ariaLabel="loading"
-						/>
-						<button
-			onClick={() => setPurchaseInProgress(false)}
-			style={{
-				marginTop: "20px", // Add some space between the spinner and the button
-				padding: "10px 20px",
-				backgroundColor: "#073B4C",
-				color: "white",
-				borderRadius: "20px",
-				border: "none",
-				cursor: "pointer",
-				fontSize: "16px",
-				fontWeight: "bold",
-				boxShadow: "0 2px 4px rgba(0, 0, 0, 0.3)",
-				filter: "drop-shadow(0 0 2px rgba(255,163,69,0.4))", // Adding a subtle glow effect
-			}}
-		>
-			Cancel
-		</button>
-
-
-					</div>
-				)}
-
+						Cancel
+					</button>
+				</div>
+			)}
 
 			<Window
 				style={{
@@ -204,14 +213,13 @@ function TokensComponent({ isVisible, onClose }) {
 					filter: purchaseInProgress ? "blur(2px)" : "none",
 				}}
 			>
-			
 				{options.map((option) => (
 					<div
 						key={option.id}
 						style={{
 							position: "relative",
 							textAlign: "center",
-							padding: "20px",
+							padding: isMobile ? "10px": "20px",
 							backgroundColor: "#1A1A2E",
 							boxShadow: "0 8px 16px rgba(0, 0, 0, 0.2)",
 							borderRadius: "12px",
@@ -220,6 +228,19 @@ function TokensComponent({ isVisible, onClose }) {
 							alignItems: "center",
 							gap: "10px",
 							border: `1px solid rgba(${rgbStr},0.3)`,
+							transition: "all 0.3s",
+							// set cursor to pointer
+							cursor: "pointer",
+						}}
+						onMouseEnter={(e) => {
+							if (option.id !== 0 || !freeTokensClaimed) {
+								e.currentTarget.style.border = `2px solid rgba(${rgbStr},0.6)`;
+								e.currentTarget.style.scale = "1.05";
+							}
+						}}
+						onMouseLeave={(e) => {
+							e.currentTarget.style.border = `1px solid rgba(${rgbStr},0.3)`;
+							e.currentTarget.style.scale = "1";
 						}}
 						onClick={() => initiate_purchase(option.id)}
 					>
@@ -232,6 +253,7 @@ function TokensComponent({ isVisible, onClose }) {
 									width: "100%",
 									height: "102%",
 									top: "-3px", // Adjust position as needed
+									
 								}}
 							/>
 						)}
@@ -245,6 +267,8 @@ function TokensComponent({ isVisible, onClose }) {
 								borderRadius: "50%",
 								objectFit: "cover",
 								boxShadow: "0 4px 8px rgba(0, 0, 0, 0.25)",
+								border: `1px solid rgba(${rgbStr}, 0.4)`,
+								padding: "5px",
 							}}
 						/>
 						<h3

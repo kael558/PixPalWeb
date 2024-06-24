@@ -3,9 +3,6 @@ import { Overlay, Window } from "./OverlayComponent";
 import { useRef } from "react";
 import { useHue } from "@hooks/useHue";
 
-// down arrow icon
-import { FaArrowDown } from "react-icons/fa";
-
 const sectionsData = [
 	{
 		title: "Information Collection",
@@ -17,7 +14,7 @@ const sectionsData = [
 	{
 		title: "Usage of Information",
 		content:
-			"The information we collect is used to personalize and improve your experience within the app. This allows us to enhance gameplay features and offer a more customized interaction.",
+			"The information we collect is used to personalize and improve your experience within the app. This allows us to enhance features and offer a more customized interaction.",
 	},
 	{
 		title: "Data Sharing",
@@ -51,7 +48,7 @@ const sectionsData = [
 const PrivacyPolicyComponent = ({ isVisible, onClose }) => {
     const containerRef = useRef(null);
 
-	const { hue, getRGBStr } = useHue();
+	const { getRGBStr } = useHue();
 	const rgbStr = getRGBStr();
 
     return (

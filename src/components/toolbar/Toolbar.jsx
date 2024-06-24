@@ -1,9 +1,7 @@
-import { useState, useEffect, Fragment } from "react";
+import { useState, useEffect, Fragment, useRef } from "react";
 import Tokens from "./TokensBar";
 import AISettings from "./AISettings";
 import Settings from "./Settings";
-
-import { motion, AnimatePresence } from "framer-motion";
 
 import { useAuth } from "@hooks/useAuth";
 import { useHue } from "@hooks/useHue";
@@ -36,15 +34,12 @@ function Toolbar({
 	const [AIMenuOpen, setAIMenuOpen] = useState(false);
 	const [settingsMenuOpen, setSettingsMenuOpen] = useState(false);
 
-
-
 	const { logout } = useAuth();
-	const { hue, getRGBStr } = useHue();
+	const { hue } = useHue();
 
 	const doLogout = () => {
 		logout();
 	};
-
 
 	useEffect(() => {
 		if (AIMenuOpen) {
@@ -99,9 +94,9 @@ function Toolbar({
 					setShowChatLog={setShowChatLog}
 				/>
 
-				<AISettings 
-					isVisible={AIMenuOpen} 
-					setMessages={setMessages} 
+				<AISettings
+					isVisible={AIMenuOpen}
+					setMessages={setMessages}
 					gender={gender}
 					setGender={setGender}
 					role={role}
@@ -117,20 +112,34 @@ function Toolbar({
 					style={{
 						margin: "10px",
 						cursor: "pointer",
-						fontSize: isMobile? "26px" : "32px",
+						fontSize: isMobile ? "26px" : "32px",
 						color: AIMenuOpen ? hue : "white", // Correct syntax
+						transition: "transform 0.4s",
 					}}
 					onClick={() => setAIMenuOpen(!AIMenuOpen)}
+					onMouseEnter={(e) => {
+						e.currentTarget.style.transform = "scale(1.1)"; // Use currentTarget for consistency
+					}}
+					onMouseLeave={(e) => {
+						e.currentTarget.style.transform = "scale(1)";
+					}}
 				/>
 
 				<FaCog
 					style={{
 						margin: "10px",
 						cursor: "pointer",
-						fontSize: isMobile? "26px" : "32px",
+						fontSize: isMobile ? "26px" : "32px",
 						color: settingsMenuOpen ? hue : "white",
+						transition: "transform 0.4s",
 					}}
 					onClick={() => setSettingsMenuOpen(!settingsMenuOpen)}
+					onMouseEnter={(e) => {
+						e.currentTarget.style.transform = "scale(1.1)";
+					}}
+					onMouseLeave={(e) => {
+						e.currentTarget.style.transform = "scale(1)";
+					}}
 				/>
 
 				<Dialog

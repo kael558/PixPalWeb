@@ -2,7 +2,6 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useState, useEffect } from "react";
 import { useAuth } from "@hooks/useAuth";
 import { FaVolumeUp, FaInstagram, FaTiktok, FaDiscord } from "react-icons/fa";
-import { toast } from "react-toastify";
 import { useHue } from "@hooks/useHue";
 import { useLocalStorage } from "@hooks/useLocalStorage";
 

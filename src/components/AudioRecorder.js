@@ -1,7 +1,7 @@
 
 //https://developer.mozilla.org/en-US/docs/Web/Media/Formats/Audio_codecs
 import RecordRTC from "recordrtc";
-const browserIsSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+//const browserIsSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
 
 class VoiceInput {
     constructor(next) {

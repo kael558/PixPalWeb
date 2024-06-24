@@ -4,28 +4,33 @@ import { Overlay, Window } from "./OverlayComponent";
 import { useHue } from "@hooks/useHue";
 
 function getApplicableReleaseNotes(version) {
-	const totalReleaseNotes = `### Version 0.9.5 *[Beta]*
+	const totalReleaseNotes = `### Version 0.9.6 *[Beta Launch]*
+	- Update layouts
+	- Fix pricing on backend
+	- Analytics
+
+	### Version 0.9.5 *[Alpha]*
 	- Add chat log
 	- Base scene memory and sound effects
 	- Added socials
 	- Show audio visualizer on text input
 	- Use microphone button instead of tap anywhere
 	
-	### Version 0.9.4 *[Beta]*
+	### Version 0.9.4 *[Alpha]*
 	- Add hue slider for UI color customization
 	- Add visual quality options to support lower grade devices
 	- Make voice more sensual with narration
 	- Change character name to Ela
 	- Onboarding now asks for input options (either voice or chat)
 
-	### Version 0.9.3 *[Beta]*
+	### Version 0.9.3 *[Alpha]*
 	- Add audio visualizer
 	- Update UI
 	- Basic NSFW with selectable options
 	- Color changes based on reaction
 	- Faster responses for medium and high quality chat models
 	
-	### Version 0.9.2 *[Beta]*
+	### Version 0.9.2 *[Alpha]*
 	- Mute and Interrupt buttons
 	- Fix UI for mobile
 	- Anonymous sign-in at start
@@ -34,20 +39,20 @@ function getApplicableReleaseNotes(version) {
 	- Improved conversation quality
 	- Added improved FX to visuals
 	
-	### Version 0.9.1 *[Beta]*
+	### Version 0.9.1 *[Alpha]*
 	- Change audio input to tap instead of hold
 	- Now interrupts companion on new message
 	- Fix Asterisk spam
 	- Fix mobile UI
 	- Add mute button
 	
-	### Version 0.9.0 *[Beta]*
+	### Version 0.9.0 *[Alpha]*
     - Added support for chat messages
     - Improved audio quality
     - Conversation style chat
     - Privacy policy update
     
-    ### Version 0.8.0 *[Beta]*
+    ### Version 0.8.0 *[Alpha]*
     - Token purchase options
     - Toast system
     - Voice input
@@ -76,7 +81,7 @@ function getApplicableReleaseNotes(version) {
 const ReleaseNotesComponent = ({ isVisible, onClose, version }) => {
 	let applicableReleaseNotes = getApplicableReleaseNotes(version);
 
-	const { hue, getRGBStr } = useHue();
+	const { getRGBStr } = useHue();
 	const rgbStr = getRGBStr();
 
 	return (

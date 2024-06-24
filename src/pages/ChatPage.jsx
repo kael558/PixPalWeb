@@ -3,7 +3,7 @@ import Scene from "../components/AnimatedSphere/Scene";
 import ChatPageComponent from "../components/ChatPageComponent";
 import StreamManager from "../components/AudioPlayer/StreamManager";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 

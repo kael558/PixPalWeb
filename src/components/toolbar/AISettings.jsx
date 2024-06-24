@@ -1,5 +1,4 @@
 import { AnimatePresence, motion } from "framer-motion";
-import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import { useHue } from "@hooks/useHue";
 
@@ -13,8 +12,6 @@ function AISettings({ isVisible, setMessages,
 	chatQuality,
 	setChatQuality,
 	isMobile
-
-
  }) {
 	
 	const { hue, getRGBStr } = useHue();

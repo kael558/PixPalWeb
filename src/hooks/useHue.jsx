@@ -1,6 +1,4 @@
 import { createContext, useContext } from "react";
-import { useState } from "react";
-
 import { useLocalStorage } from "@hooks/useLocalStorage";
 
 const HueContext = createContext();

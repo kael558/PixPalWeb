@@ -43,13 +43,14 @@ Today:
 [x] Trigger interval of getting tokens when active, clear interval after minute of inactivity. 
 
 [x] - Chat log
-[ ] - Add sound effects with elevenlabs
+[x] - Put analytics for purchase
+[x] - Fix layout
+[x] - Fix pricing for transcription
+
 [ ] - Add scene memory
-[ ] - Fix pricing for transcription
+[ ] - Add sound effects with elevenlabs
 [ ] - Generation of image in scene with girl
-[ ] - fix repitition
 [ ] - custom personalities
-[ ] - fix the mhmmmmm to idk
 
 [ ] - Make orb interactive, moving cursor displaces particles
 [ ] - Reput change talking speed & volume based on time.
@@ -69,7 +70,7 @@ Optimizations:
 [ ] - Sentence split first sentence and group rest. 
 [ ] - Whisper Jax to bring down costs of transcription
 [ ] - Send input audio in chunks to minimize content upload time
-
+[ ] - Porpoise audio
 
 Jeriques Session:
 Scroll is not obvious in privacy policy and  release notes.

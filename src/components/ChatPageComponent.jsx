@@ -60,7 +60,7 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 	const [version, setVersion] = useLocalStorage("appVersion", "0.0.0");
 	const [isPrivacyPolicyAccepted, setPrivacyPolicyAccepted] = useLocalStorage("privacyPolicyAccepted",false);
 
-	const [showChatLog, setShowChatLog] = useLocalStorage("showChatLog", false);
+	const [showChatLog, setShowChatLog] = useLocalStorage("showChatLog", true);
 	const [gender, setGender] = useLocalStorage("gender", "Female");
 	const [role, setRole] = useLocalStorage("role", "Friend");
 	const [voiceQuality, setVoiceQuality] = useLocalStorage(
@@ -91,13 +91,11 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 	const [isMobile, setIsMobile] = useState(window.innerWidth < 800);
 
 	const [tokens, setTokens] = useState("Loading...");
-	const intervalRef = useRef(null);
-	const timeoutRef = useRef(null);
 
 	const { getAccessToken, auth } = useAuth();
 
 	useEffect(() => {
-		if (gender == "Female") {
+		if (gender === "Female") {
 			setCharacterName("Ela");
 		} else {
 			setCharacterName("Blake");
@@ -135,6 +133,20 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 		setReleaseNotesVisible(false);
 	};
 
+	const updateTokens = () => {
+		getAccessToken()
+			.then((token) => {
+				get_tokens(token).then((data) => {
+					let tokens = data?.tokenCount?.toString()?.replace(/\B(?=(\d{3})+(?!\d))/g, ",") || 0;
+					setTokens(tokens);
+				});
+			})
+			.catch((error) => {
+				console.error("Error getting ID token:", error);
+			});
+	};
+
+
 	const addMessage = (role, content) => {
 		if (content === "") return;
 
@@ -160,60 +172,12 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 
 			return [...prevMessages, { role, content }];
 		});
-
-		if (role == "assistant") {
-			// trigger the interval to get the token count if not already running
-			if (!intervalRef.current) {
-				intervalRef.current = setInterval(() => {
-					getAccessToken()
-						.then((token) => {
-							get_tokens(token).then((data) => {
-								let tokens =
-									data?.tokenCount
-										?.toString()
-										?.replace(/\B(?=(\d{3})+(?!\d))/g, ",") || 0;
-
-								setTokens(tokens);
-							});
-						})
-						.catch((error) => {
-							console.error("Error getting ID token:", error);
-						});
-				}, 60000);
-
-				// also set a timeout to clear the interval after 2 minutes
-				timeoutRef.current = setTimeout(() => {
-					clearInterval(intervalRef.current);
-					intervalRef.current = null;
-				}, 120000);
-			} else {
-				// if the interval is already running, reset the timeout
-				clearTimeout(timeoutRef.current);
-				timeoutRef.current = setTimeout(() => {
-					clearInterval(intervalRef.current);
-					intervalRef.current = null;
-				}, 120000);
-			}
-		}
 	};
 
 	useEffect(() => {
 		auth.onAuthStateChanged((user) => {
 			if (user) {
-				getAccessToken()
-					.then((token) => {
-						get_tokens(token).then((data) => {
-							let tokens =
-								data?.tokenCount
-									?.toString()
-									?.replace(/\B(?=(\d{3})+(?!\d))/g, ",") || 0;
-
-							setTokens(tokens);
-						});
-					})
-					.catch((error) => {
-						console.error("Error getting ID token:", error);
-					});
+				updateTokens();
 			} else {
 				setTokens(0);
 			}
@@ -232,16 +196,14 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 		const updatedMessages = [...messagesRef.current, { role: "user", content }];
 		setMessages(updatedMessages);
 
-		window.gtag("event", "text_sent", {
-			length: content.length,
-			gender, 
-			chatQuality, 
-			voiceQuality,
-			role
+		window.gtag("event", "spend_virtual_currency", {
+			value: content.length,
+			virtual_currency_name: "tokens",
+			item_name: "text",
 		 });
 
 		try {
-			const voice = gender == "Female" ? "female3" : "male1";
+			const voice = gender === "Female" ? "female3" : "male1";
 			const url =
 				"https://lg5m7pmkstz3ims7qkmh7u4xfi0gjebf.lambda-url.us-east-1.on.aws/";
 			const options = {
@@ -261,7 +223,14 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 
 			const response = await streamManager.fetchData(url, options);
 			await streamManager.parseStream(response, addMessage, showComponent);
+
+			updateTokens();
 		} catch (error) {
+			if (error.name === "AbortError") {
+				console.log("Request aborted");
+				return;
+			}
+
 			console.error(error);
 			const message = error.message || "There was an error with the server";
 			toast.error(message);
@@ -276,16 +245,16 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 		}
 
 		try {
-			window.gtag("event", "audio_sent", {
-				length: duration,
-				gender, 
-				chatQuality, 
-				voiceQuality,
-				role
-			});
+			window.gtag("event", "spend_virtual_currency", {
+				value: duration,
+				virtual_currency_name: "tokens",
+				item_name: "audio",
+			 });
+
+
 
 			//const blob = new Blob(chunks, { type: 'audio/webm' });
-			const voice = gender == "Female" ? "female1" : "male1";
+			const voice = gender === "Female" ? "female1" : "male1";
 
 			const fd = new FormData();
 			fd.append("messages", JSON.stringify(messagesRef.current.slice(-5)));
@@ -293,6 +262,7 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 			fd.append("role", role);
 			fd.append("languageModelQuality", chatQuality);
 			fd.append("voice", voice);
+			fd.append("duration", duration);
 			fd.append("file", blob, "speech.webm");
 
 			const url =
@@ -312,8 +282,16 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 				showComponent,
 				true
 			);
-			//await getAudioStreamFromAudioInput(blob, messages, name, accessToken, audioWorkletNode, addMessage, showComponent, abortController);
+
+			updateTokens();
 		} catch (error) {
+			// check for abort error
+			if (error.name === "AbortError") {
+				console.log("Request aborted");
+				return;
+			}
+
+
 			console.error(error);
 			const message = error.message || "There was an error with the server";
 			toast.error(message);
@@ -396,6 +374,8 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 				<TokensComponent
 					isVisible={isTokensPanelVisible}
 					onClose={() => setTokensPanelVisible(false)}
+					updateTokens={updateTokens}
+					isMobile={isMobile}
 				/>
 
 				<StartComponent

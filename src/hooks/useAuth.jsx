@@ -24,7 +24,10 @@ export const AuthProvider = ({ children }) => {
             window.gtag('event', 'login', {
                 method: user.isAnonymous ? 'anonymous' : 'email',
             });
-        }
+
+            // set user id
+            window.gtag('set', { user_id: user.uid });
+        } 
     });
 
 
@@ -94,6 +97,10 @@ export const AuthProvider = ({ children }) => {
                 return false;
             }
 
+            window.gtag('event', 'sign_up', {
+                method: 'email',
+            });
+
             toast.success('Registered user');
             return true;
         } catch (error) {
@@ -111,6 +118,10 @@ export const AuthProvider = ({ children }) => {
                 toast.error('Account already exists with this email');
                 return false;
             }
+
+            window.gtag('event', 'sign_up', {
+                method: 'email',
+            });
 
             await loginWithEmailAndPassword(data);
 

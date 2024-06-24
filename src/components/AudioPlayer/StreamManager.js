@@ -110,8 +110,8 @@ class StreamManager {
             let buffer = new Uint8Array();
             while (index < 2) {
                 let { done, value } = await reader.read();
-                if (done) break;
-    
+                if (done) return; // Exit if stream has ended
+
                 // Combine the new value with any existing overflow
                 let combinedBuffer = new Uint8Array(buffer.length + value.length);
                 combinedBuffer.set(buffer);

@@ -4,7 +4,6 @@ import AudioVisualizer from "../AudioVisualizer";
 
 import { toast } from "react-toastify";
 
-import { useAuth } from "@hooks/useAuth";
 import { useHue } from "@hooks/useHue";
 
 import { FaMicrophoneAlt } from "react-icons/fa";
@@ -66,84 +65,63 @@ function ChatInput({
 		setMessage("");
 	};
 
-	//console.log("inputMode", inputMode);
-
-	/*if (inputMode === "audio" && voiceInput.mediaStream) {
-		return (
-			<div
-				style={{
-					position: "fixed",
-					bottom: isMobile ? "0px" : "10px",
-					width: "100%",
-					alignItems: "center",
-					justifyContent: "space-between",
-					display: "flex",
-					flexDirection: "column",
-					alignItems: "center",
-					height: "160px",
-				}}
-			>
-				<AudioVisualizer
-					mediaStream={voiceInput.mediaStream}
-					streamManager={streamManager}
-					isRecording={isRecording}
-				/>
-
-			
-			</div>
-		);
-	}*/
-
 	return (
 		<div
 			style={{
 				position: "fixed",
-				bottom: isMobile ? "0px" : "10px",
+				bottom: "0px",
 				left: "50%",
 				transform: "translateX(-50%)",
-
-				width: "95%",
+				width: "90%",
 				maxWidth: "600px",
 				display: "flex",
-
-				padding: "10px 20px",
-
+				flexDirection: "column",
 				alignItems: "center",
-				justifyContent: 'center',
-				height: "160px",
+				justifyContent: 'flex-end',
+				padding: "10px 20px",
+				height: isMobile ? "140px" : "140px", // Adjusted for extra space
 			}}
 		>
 			{voiceInput.mediaStream && (
-				<AudioVisualizer
-					mediaStream={voiceInput.mediaStream}
-					streamManager={streamManager}
-					isRecording={isRecording}
-				/>
+				<div style={{ 
+					width: "95%", 
+					position: "absolute", 
+					bottom: isMobile ? "34px" : "44px", // Positioned right above the input area
+					left: 0,
+					right: 0,
+					margin: "auto",
+					zIndex: 0, // Ensures visualizer is above the input area
+				}}>
+					<AudioVisualizer
+						mediaStream={voiceInput.mediaStream}
+						streamManager={streamManager}
+						isRecording={isRecording}
+					/>
+				</div>
 			)}
 			<AnimatePresence>
-				
-					{inputMode === "text" ? (
-						<motion.div
+				{inputMode === "text" ? (
+					<motion.div
 						key="text-input"
 						initial={{ opacity: 0 }}
 						animate={{ opacity: 1 }}
 						exit={{ opacity: 0 }}
 						transition={{ duration: 0.3 }}
+						style={{
+							width: "100%", 
+							zIndex: 1, 
+							position: "absolute",
+							bottom: isMobile ? "0px" : "10px"
+						}}
 					>
 						<form
 							onSubmit={handleSubmit}
 							style={{
-								position: "fixed", // Fixed position at the bottom
-								bottom: "0px", // At the bottom of the viewport
-								left: "50%", // Centered horizontally
-								transform: "translateX(-50%)", // Keeps it centered
-								width: "95%", // Taking the full width with some margin
-								maxWidth: "600px", // Maximum width
+								width: "100%", 
 								display: "flex",
-								padding: "1px 20px",
 								alignItems: "center",
 								justifyContent: "center",
-								borderRadius: "20px", // Rounded corners
+								borderRadius: "20px",
 								transition: "all 0.3s ease-in-out",
 							}}
 						>
@@ -155,25 +133,20 @@ function ChatInput({
 								autoComplete="off"
 								required
 								rows="1"
+								style={{
+									flex: 1,
+									padding: "10px",
+									border: "1px solid rgba(255, 255, 255, 0.3)",
+									borderRadius: "20px 5px 5px 20px",
+									background: "rgba(0, 0, 0, 0.4)",
+									color: "#FFF",
+									resize: "none",
+								}}
 								onKeyDown={(e) => {
 									if (e.key === "Enter" && !e.shiftKey) {
 										e.preventDefault();
 										handleSubmit(e);
 									}
-								}}
-								style={{
-									flex: 1,
-								
-									padding: "10px",
-									border: "1px solid rgba(255, 255, 255, 0.3)",
-									borderRadius: "20px",
-									fontSize: isMobile ? "16px" : "16px",
-									background: "rgba(0, 0, 0, 0.4)",
-									color: "#FFF",
-									resize: "none",
-									boxSizing: "border-box",
-									scrollbarColor: "rgba(255, 255, 255, 0.3) rgba(0, 0, 0, 0.3)",
-									fontFamily: "Menlo, monospace",
 								}}
 							/>
 							<button
@@ -181,17 +154,17 @@ function ChatInput({
 								style={{
 									background: `rgba(${rgbStr}, 1)`,
 									color: "white",
-									border: "none",
-									borderRadius: "20px",
-									padding: "10px 20px",
-									fontSize: "16px",
+									borderRadius: "5px 20px 20px 5px",
+									padding: `10px ${isMobile ? "20px" : "15px"}`,
+									fontSize: "14px",
 									cursor: "pointer",
 									transition: "transform 0.3s, box-shadow 0.3s",
+									border: "none",
 									boxShadow: `0 0 5px rgba(${rgbStr}, 0.7)`,
 								}}
 								onMouseOver={({ target }) => {
 									target.style.transform = "scale(1.1)";
-									target.style.boxShadow = `0 0 30px rgba(${rgbStr}, 0.9)`;
+									target.style.boxShadow = `0 0 15px rgba(${rgbStr}, 0.9)`;
 								}}
 								onMouseOut={({ target }) => {
 									target.style.transform = "scale(1)";
@@ -201,49 +174,57 @@ function ChatInput({
 								{isMobile ? ">" : "Send"}
 							</button>
 						</form>
-						</motion.div>
-					) : (
-						<motion.div
+					</motion.div>
+				) : (
+					<motion.div
 						key="audio-input"
 						initial={{ opacity: 0 }}
 						animate={{ opacity: 1 }}
 						exit={{ opacity: 0 }}
 						transition={{ duration: 0.3 }}
-					
+						style={{
+							width: "100%", 
+							zIndex: 1,
+							position: "absolute",
+							bottom: isMobile ? "0px" : "10px",
+							display: "flex",
+							alignItems: "center",
+							justifyContent: "center",
+						}}
 					>
 						<FaMicrophoneAlt
 							onClick={() => {
 								setIsRecording((prev) => !prev);
 							}}
 							style={{
-								position: "fixed",
-								bottom: "10px",
-								left: "50%",
-
 								fontSize: "40px",
 								color: isRecording ? "red" : hue,
 								cursor: "pointer",
-								transition: "all 0.3s ease", // Broadened to include all properties
-								background: isRecording
-									? "rgba(255, 0, 0, 0.4)"
-									: "transparent", // Increased opacity
+								transition: "all 0.3s ease",
 								borderRadius: "50%",
 								padding: "10px",
-								border: isRecording ? "2px solid red" : `2px solid ${hue}`, // Conditional border color
-								boxShadow: isRecording
-									? "0 0 15px rgba(255, 0, 0, 0.5)"
-									: "none", // Conditional shadow
-								transform: isRecording
-									? "translateX(-50%) scale(1.1)"
-									: "translateX(-50%) scale(1)", // Scaling effect
+								border: isRecording ? "2px solid red" : `2px solid ${hue}`,
+								boxShadow: isRecording ? "0 0 15px rgba(255, 0, 0, 0.5)" : "none",
+								transform: isRecording ? "scale(1.1)" : "scale(1)",
+							}}
+							onMouseEnter={(e) => {
+								if (isRecording) return;
+								e.currentTarget.style.transform = "scale(1.1)";
+								e.currentTarget.style.boxShadow = `0 0 15px rgba(${rgbStr}, 0.9)`;
+							}}
+							onMouseLeave={(e) => {
+								if (isRecording) return;
+								e.currentTarget.style.transform = "scale(1)";
+								e.currentTarget.style.boxShadow = "none";
 							}}
 						/>
-						</motion.div>
-					)}
-			
+					</motion.div>
+				)}
 			</AnimatePresence>
 		</div>
 	);
+	
+	
 }
 
 export default ChatInput;

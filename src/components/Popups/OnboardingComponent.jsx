@@ -1,4 +1,3 @@
-import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "react-toastify";
 
 import { Overlay, Window } from "./OverlayComponent";

@@ -1,12 +1,7 @@
 import React, { useRef, useEffect } from 'react';
-import { useHue } from '@hooks/useHue';
 
 function AudioVisualizer({ mediaStream, streamManager, isRecording }) {
     const canvasRef = useRef(null);
-
-    const { hue, getRGBStr } = useHue();
-    const rgbStr = getRGBStr();
-
 
     const analyserRef = useRef(null);
     const dataArrayRef = useRef(null);
@@ -16,8 +11,6 @@ function AudioVisualizer({ mediaStream, streamManager, isRecording }) {
     const sourceNodeRef = useRef(null);
 
     useEffect(() => {
-        let sourceNode = null;
-    
         async function setupAudio() {
             try {
                 // Disconnect existing connections if they exist
@@ -34,7 +27,6 @@ function AudioVisualizer({ mediaStream, streamManager, isRecording }) {
                 }
     
                 // Setup new audio connections
-                console.log(mediaStream);
                 sourceNodeRef.current = await streamManager.audioContext.createMediaStreamSource(await mediaStream);
                 const analyser = streamManager.audioContext.createAnalyser();
     
@@ -149,7 +141,7 @@ function AudioVisualizer({ mediaStream, streamManager, isRecording }) {
     };
 
     return <canvas ref={canvasRef} width="640" height="140" style={{ 
-        maxWidth: "96%", 
+        maxWidth: "100%", 
         height: "auto",
         alignSelf: "center",
      }}/>;

@@ -1,8 +1,5 @@
 import { useHue } from "@hooks/useHue";
 
-import styles from "./Tokens.module.css";
-
-
 function Tokens({ showTokensPanel, tokens }) {
 	const { hue, getRGBStr } = useHue();
 	const rgbStr = getRGBStr();
@@ -53,8 +50,11 @@ function Tokens({ showTokensPanel, tokens }) {
 						color: "#f0f0f0",
 						cursor: "pointer",
 						fontSize: "15px",
-				
+						transition: "all 0.3s",
 					}}
+					onMouseEnter={(e) => e.currentTarget.style.scale = "1.3"}
+					onMouseLeave={(e) => e.currentTarget.style.scale = "1"}
+
 				>
 					<span>+</span>
 				</button>
