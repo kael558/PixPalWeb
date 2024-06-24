@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import styles from "./toolbar/TokensBar.module.css";
 
 import Toolbar from "../components/toolbar/Toolbar";
 import Chat from "../components/Chat/Chat";
@@ -55,6 +56,7 @@ async function get_tokens(accessToken) {
 function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 	const [messages, setMessages] = useLocalStorage("messages", []);
 	const messagesRef = useRef(messages);
+	const tokensBarRef = useRef(null);
 
 	const [name, setName] = useLocalStorage("name", "");
 	const [version, setVersion] = useLocalStorage("appVersion", "0.0.0");
@@ -91,6 +93,8 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 	const [isMobile, setIsMobile] = useState(window.innerWidth < 800);
 
 	const [tokens, setTokens] = useState("Loading...");
+
+	const [totalMessagesSent, setTotalMessagesSent] = useLocalStorage("totalMessagesSent", 0);
 
 	const { getAccessToken, auth } = useAuth();
 
@@ -172,6 +176,8 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 
 			return [...prevMessages, { role, content }];
 		});
+
+		if (role === "user") setTotalMessagesSent((prev) => prev + 1);
 	};
 
 	useEffect(() => {
@@ -184,10 +190,30 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 		});
 	}, []);
 
+	const triggerOutOfTokens = () => {
+		toast.error("You have run out of tokens. Please purchase more to continue.");
+
+		tokensBarRef.current.style.transform = 'scale(1.2)';
+		tokensBarRef.current.style.animation = '';
+		tokensBarRef.current.className = styles.rainbowAnimation;
+
+        // Set timeout to revert styles back to normal after 3 seconds
+        setTimeout(() => {
+            tokensBarRef.current.style.transform = 'scale(1)';
+            tokensBarRef.current.style.animation = 'none';
+        }, 2000);
+	};
+
 	const onMessageSend = async (content) => {
 		const accessToken = await getAccessToken();
 		if (!accessToken) {
 			toast.error("Please log in to send messages");
+			return;
+		}
+
+
+		if (parseInt(tokens) <= 0 && totalMessagesSent >= 10){
+			triggerOutOfTokens();
 			return;
 		}
 
@@ -241,6 +267,11 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 		const accessToken = await getAccessToken();
 		if (!accessToken) {
 			toast.error("Please log in to send messages");
+			return;
+		}
+
+		if (parseInt(tokens) <= 0 && totalMessagesSent >= 10){
+			triggerOutOfTokens();
 			return;
 		}
 
@@ -365,6 +396,7 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 					isMobile={isMobile}
 					setShowChatLog={setShowChatLog}
 					showChatLog={showChatLog}
+					tokensBarRef={tokensBarRef}
 				/>
 
 				<AuthenticationComponent

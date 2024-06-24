@@ -124,7 +124,7 @@ class StreamManager {
 
                 if (delimiterIndex !== -1) {
                     const data = combinedBuffer.slice(0, delimiterIndex);
-                    const overflow = combinedBuffer.slice(delimiterIndex + delimiter.length + 1);
+                    const overflow = combinedBuffer.slice(delimiterIndex + delimiter.length);
 
                     if (index === -1) {
                         await this.handleUserMessage(textDecoder.decode(data), addMessage);
@@ -152,24 +152,24 @@ class StreamManager {
     }
 
     async handleColorMessage(color) {
-        //console.log("Color message:", color);
+        console.log("Color message:", color);
         this.onmessage({ name: "change_color", data: { color } })
     }
     
 
     async handleUserMessage(userMessage, addMessage) {
-        //console.log("User message:", userMessage);
+        console.log("User message:", userMessage);
         addMessage("user", userMessage);
     }
 
     async handleComponents(componentList, showComponent) {
-        //console.log("Component list:", componentList);
+        console.log("Component list:", componentList);
         const components = JSON.parse(componentList);
         components.forEach(component => showComponent(component));
     }
 
     async handleAssistantMessage(assistantMessage, addMessage) {
-        //console.log("Assistant message:", assistantMessage);
+        console.log("Assistant message:", assistantMessage);
         addMessage("assistant", assistantMessage);
     }
 

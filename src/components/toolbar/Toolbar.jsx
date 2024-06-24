@@ -29,6 +29,7 @@ function Toolbar({
 	isMobile,
 	showChatLog,
 	setShowChatLog,
+	tokensBarRef
 }) {
 	const [showDialog, setShowDialog] = useState(false);
 	const [AIMenuOpen, setAIMenuOpen] = useState(false);
@@ -62,7 +63,7 @@ function Toolbar({
 					right: "100px",
 				}}
 			>
-				<Tokens showTokensPanel={showTokensPanel} tokens={tokens} />
+				<Tokens showTokensPanel={showTokensPanel} tokens={tokens} tokensBarRef={tokensBarRef} />
 			</div>
 
 			<div

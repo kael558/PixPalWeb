@@ -17,7 +17,7 @@ function TokensComponent({ isVisible, onClose, updateTokens, isMobile }) {
 		false
 	);
 
-	const get_free_tokens = async (accessToken) => {
+	const get_free_tokens = async (accessToken, updateTokens) => {
 		const response = await fetch(
 			"https://0xlgvmu6h4.execute-api.us-east-1.amazonaws.com/register",
 			{
@@ -39,7 +39,7 @@ function TokensComponent({ isVisible, onClose, updateTokens, isMobile }) {
 		}
 
 		setPurchaseInProgress(false);
-
+		updateTokens();
 		toast.success("Free tokens added to your account");
 
 		window.gtag("event", "purchase", {
@@ -63,7 +63,7 @@ function TokensComponent({ isVisible, onClose, updateTokens, isMobile }) {
 
 		setPurchaseInProgress(true);
 		if (id === 0) {
-			get_free_tokens(accessToken);
+			get_free_tokens(accessToken, updateTokens);
 			return;
 		}
 
