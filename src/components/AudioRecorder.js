@@ -9,6 +9,7 @@ class VoiceInput {
         this.mediaRecorder = null;
         //this.chunks = [];
         this.next = next; // Callback function to handle the recorded audio blob
+        this.startTime = 0; // Start timestamp of the recording
     }
 
     getUserMedia = async (constraints) => {
@@ -54,6 +55,7 @@ class VoiceInput {
             }
 
             //console.log("Starting media recorder...", this.mediaRecorder);
+            this.startTime = Date.now();
             this.mediaRecorder.startRecording();
         } catch (error) {
             console.error("Failed to start recording:", error);
@@ -72,7 +74,8 @@ class VoiceInput {
             
             this.mediaRecorder.reset();
             if (blob.size > 100) {
-                this.next(blob);
+                const duration = (Date.now() - this.startTime) / 1000;
+                this.next(blob, duration);
             }
         });
     }

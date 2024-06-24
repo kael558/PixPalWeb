@@ -13,10 +13,21 @@ import {
     sendPasswordResetEmail
 } from "firebase/auth";
 
+import { useFirebase } from "@hooks/useFirebase";
+
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
     const auth = getAuth();
+    const { setUserId } = useFirebase();
+
+    auth.onAuthStateChanged((user) => {
+        if (user) {
+            setUserId(user.uid);
+        } else {
+            setUserId(null);
+        }
+    });
 
 
     const getAccessToken = async () => {

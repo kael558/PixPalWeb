@@ -17,6 +17,8 @@ import { CURRENT_VERSION } from "../Constants";
 import { HueProvider } from "@hooks/useHue";
 import { useAuth } from "@hooks/useAuth";
 import { useLocalStorage } from "@hooks/useLocalStorage";
+import { useFirebase } from "@hooks/useFirebase";
+
 
 async function get_tokens(accessToken) {
 	//console.log("Bearer " + accessToken);
@@ -57,10 +59,7 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 
 	const [name, setName] = useLocalStorage("name", "");
 	const [version, setVersion] = useLocalStorage("appVersion", "0.0.0");
-	const [isPrivacyPolicyAccepted, setPrivacyPolicyAccepted] = useLocalStorage(
-		"privacyPolicyAccepted",
-		false
-	);
+	const [isPrivacyPolicyAccepted, setPrivacyPolicyAccepted] = useLocalStorage("privacyPolicyAccepted",false);
 
 	const [showChatLog, setShowChatLog] = useLocalStorage("showChatLog", false);
 	const [gender, setGender] = useLocalStorage("gender", "Female");
@@ -97,6 +96,7 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 	const timeoutRef = useRef(null);
 
 	const { getAccessToken, auth } = useAuth();
+	const { logEvent } = useFirebase();
 
 	useEffect(() => {
 		if (gender == "Female") {
@@ -234,6 +234,15 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 		const updatedMessages = [...messagesRef.current, { role: "user", content }];
 		setMessages(updatedMessages);
 
+
+		logEvent("text_sent", { 
+			length: content.length,
+			gender, 
+			chatQuality, 
+			voiceQuality,
+			role
+		 });
+
 		try {
 			const voice = gender == "Female" ? "female3" : "male1";
 			const url =
@@ -262,7 +271,7 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 		}
 	};
 
-	const onAudioSend = async (blob) => {
+	const onAudioSend = async (blob, duration) => {
 		const accessToken = await getAccessToken();
 		if (!accessToken) {
 			toast.error("Please log in to send messages");
@@ -270,6 +279,14 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 		}
 
 		try {
+			logEvent("audio_sent", { 
+				length: duration,
+				gender, 
+				chatQuality, 
+				voiceQuality,
+				role
+			});
+
 			//const blob = new Blob(chunks, { type: 'audio/webm' });
 			const voice = gender == "Female" ? "female1" : "male1";
 
