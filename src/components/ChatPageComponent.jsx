@@ -94,8 +94,6 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 
 	const [tokens, setTokens] = useState("Loading...");
 
-	const [totalMessagesSent, setTotalMessagesSent] = useLocalStorage("totalMessagesSent", 0);
-
 	const { getAccessToken, auth } = useAuth();
 
 	useEffect(() => {
@@ -176,8 +174,6 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 
 			return [...prevMessages, { role, content }];
 		});
-
-		if (role === "user") setTotalMessagesSent((prev) => prev + 1);
 	};
 
 	useEffect(() => {
@@ -212,7 +208,7 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 		}
 
 
-		if (parseInt(tokens) <= 0 && totalMessagesSent >= 10){
+		if (parseInt(tokens) <= 0 && messages.filter((msg) => msg.role === "user").length >= 10){
 			triggerOutOfTokens();
 			return;
 		}
@@ -270,7 +266,7 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 			return;
 		}
 
-		if (parseInt(tokens) <= 0 && totalMessagesSent >= 10){
+		if (parseInt(tokens) <= 0 && messages.filter((msg) => msg.role === "user").length >= 10){
 			triggerOutOfTokens();
 			return;
 		}

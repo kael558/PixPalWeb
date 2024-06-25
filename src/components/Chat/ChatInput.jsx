@@ -142,6 +142,7 @@ function ChatInput({
 									background: "rgba(0, 0, 0, 0.4)",
 									color: "#FFF",
 									resize: "none",
+									zIndex: 1,
 								}}
 								onKeyDown={(e) => {
 									if (e.key === "Enter" && !e.shiftKey) {
@@ -160,7 +161,7 @@ function ChatInput({
 									fontSize: "14px",
 									cursor: "pointer",
 									transition: "transform 0.3s, box-shadow 0.3s",
-									border: "none",
+									border: `1px solid rgba(${rgbStr}, 0.3)`,
 									boxShadow: `0 0 5px rgba(${rgbStr}, 0.7)`,
 								}}
 								onMouseOver={({ target }) => {
