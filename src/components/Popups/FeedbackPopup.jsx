@@ -51,6 +51,10 @@ function FeedbackPopup({ isVisible, onClose }) {
 			if (!response.ok) {
 				console.error("Failed to submit feedback:", response);
 				toast.error("Failed to submit feedback");
+			} else {
+				toast.success("Thank you for your feedback! 🙏");
+				setFeedback("");
+				setEmail("");
 			}
 		} catch (error) {
 			console.error("Error:", error);
@@ -62,7 +66,10 @@ function FeedbackPopup({ isVisible, onClose }) {
 	return (
 		<Overlay
 			isVisible={isVisible}
-			style={{ backgroundColor: "rgba(0, 0, 0, 0.85)" }}
+			style={{ backgroundColor: "rgba(0, 0, 0, 0.85)",
+			
+
+			 }}
 		>
 			{isSubmitting && (
 				<div
@@ -79,6 +86,7 @@ function FeedbackPopup({ isVisible, onClose }) {
 						justifyContent: "center",
 						borderRadius: "12px",
 						zIndex: 2, // Make sure this is on top of other content
+					
 					}}
 				>
 					<TailSpin height="80" width="80" color="white" ariaLabel="loading" />
@@ -102,7 +110,27 @@ function FeedbackPopup({ isVisible, onClose }) {
 					</button>
 				</div>
 			)}
-			<Window>
+			<Window
+				style={{
+					maxWidth: "600px",
+				}}
+			>
+				 <button
+                    onClick={onClose}
+                    style={{
+                        position: "absolute",
+                        top: "10px",
+                        right: "10px",
+                        background: "none",
+                        border: "none",
+                        cursor: "pointer",
+                        fontSize: "24px",
+                        color: "white", // Changed to white for visibility
+                        filter: `drop-shadow(0 0 5px rgba(${rgbStr},0.8)) ${isSubmitting ? "blur(5px)" : ""}`, // Adding a subtle glow effect
+                    }}
+                >
+                    ✖
+                </button>
 				<div>
 					<h1
 						style={{
@@ -113,6 +141,27 @@ function FeedbackPopup({ isVisible, onClose }) {
 					>
 						Hey! We'd love to hear your feedback!
 					</h1>
+			
+					<p style={{ color: "white" }}>
+					Hi 👋,
+</p>
+
+<p style={{ color: "white" }}>
+We hope PixPal is bringing comfort and support to your day. Our mission is to provide a trusted AI companion to help you build confidence and find self-love ❤️‍🩹 
+</p>
+
+<p style={{ color: "white" }}>
+As we are a startup 🐣 we value every users and we’d love to keep you updated with helpful tips, new features, and special offers.
+</p>
+
+<p style={{ color: "white" }}>
+We will also send more free tokens 💎 so you can try PixPal more!
+</p>
+
+
+
+
+
 					<p style={{ color: "white" }}>What do you want PixPal for?</p>
 					<textarea
 						value={feedback}

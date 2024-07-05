@@ -92,6 +92,7 @@ function Settings({
 	setShowChatLog,
 	showPrivacyPolicy,
 	showReleaseNotes,
+	showFeedbackPopup,
 }) {
 	const [volume, setVolume] = useLocalStorage(
 		"volume",
@@ -195,7 +196,11 @@ function Settings({
 					>
 						Settings
 					</div>
-					<ul>
+					<ul
+						style={{
+							marginBottom: "0px",
+						}}
+					>
 						<li style={liStyle}>
 							<span style={categoryStyle}>
 								<FaVolumeUp
@@ -352,13 +357,12 @@ function Settings({
 						</li>
 					</ul>
 
-			
-
 					<span
 						style={{
 							display: "flex",
 							flexDirection: "row",
-							gap: "10px",
+							marginTop: "0px",
+				
 							justifyContent: "center",
 							width: "100%",
 						}}
@@ -423,7 +427,50 @@ function Settings({
 							</button>
 						)}
 					</span>
-				
+					<span
+						style={{
+							marginTop: "10px",
+							textAlign: "center",
+							width: "100%",
+						}}
+					>
+						<button
+							onClick={showFeedbackPopup}
+							style={{
+								marginTop: "10px",
+								padding: "0px 20px",
+								border: "none",
+								background: "none",
+								color: "lightgrey", // Change to a link color
+								cursor: "pointer",
+								fontWeight: "bold",
+								letterSpacing: "0.1em",
+								transition: "color 0.3s",
+								fontSize: isMobile ? "11px" : "12px",
+								textDecoration: "underline", // Underline to look like a link
+							}}
+						>
+							Give Feedback
+						</button>
+						<button
+							onClick={showPrivacyPolicy}
+							style={{
+								marginTop: "10px",
+								padding: "0px 20px",
+								border: "none",
+								background: "none",
+								color: "lightgrey", // Change to a link color
+								cursor: "pointer",
+								fontWeight: "bold",
+								letterSpacing: "0.1em",
+								transition: "color 0.3s",
+								fontSize: isMobile ? "11px" : "12px",
+								textDecoration: "underline", // Underline to look like a link
+							}}
+						>
+							Privacy Policy
+						</button>
+					</span>
 				</motion.div>
 			)}
 		</AnimatePresence>

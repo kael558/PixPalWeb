@@ -31,7 +31,8 @@ function Toolbar({
 	setShowChatLog,
 	tokensBarRef,
 	showPrivacyPolicy,
-	showReleaseNotes
+	showReleaseNotes,
+	showFeedbackPopup,
 }) {
 	const [showDialog, setShowDialog] = useState(false);
 	const [AIMenuOpen, setAIMenuOpen] = useState(false);
@@ -97,6 +98,7 @@ function Toolbar({
 					setShowChatLog={setShowChatLog}
 					showPrivacyPolicy={showPrivacyPolicy}
 					showReleaseNotes={showReleaseNotes}
+					showFeedbackPopup={showFeedbackPopup}
 				/>
 
 				<AISettings

@@ -96,9 +96,9 @@ Returning user:
 -> See splash page
 -> Chatting
 
-
-1. User inputs their business idea
-2. 
+Feedback form:
+-> Shows up after sign in 
+-> 
 
 
 

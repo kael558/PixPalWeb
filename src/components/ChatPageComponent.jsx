@@ -89,7 +89,7 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 
 	const [isMobile, setIsMobile] = useState(window.innerWidth < 800);
 
-	const [showFeedbackPopup, setShowFeedbackPopup] = useState(false);
+	const [showFeedbackPopup, setShowFeedbackPopup] = useState(true);
 
 	const [tokens, setTokens] = useState("Loading...");
 
@@ -154,7 +154,6 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 
 		setTimeout(() => {
 			setBorderAnimation(false);
-		
 		}, 9000);
 	};
 
@@ -220,7 +219,7 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 		});
 
 		// if 8 messages have been sent, then set feedback popup to true
-		if (messages.length === 8) {
+		if (messages.length === 8 && !showFeedbackPopup) {
 			audioRef.current.play();
 			setShowFeedbackPopup(true);
 		}
@@ -245,7 +244,6 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 		tokensBarRef.current.style.animation = "";
 		tokensBarRef.current.className = styles.rainbowAnimation;
 
-		// Set timeout to revert styles back to normal after 3 seconds
 		setTimeout(() => {
 			tokensBarRef.current.style.transform = "scale(1)";
 			tokensBarRef.current.style.animation = "none";
@@ -449,6 +447,7 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 						tokensBarRef={tokensBarRef}
 						showPrivacyPolicy={() => setPrivacyPolicyVisible(true)}
 						showReleaseNotes={() => setReleaseNotesVisible(true)}
+						showFeedbackPopup={() => setShowFeedbackPopup(true)}
 					/>
 					<AuthenticationComponent
 						isVisible={isLoginVisible}
