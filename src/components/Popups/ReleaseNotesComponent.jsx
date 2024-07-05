@@ -4,7 +4,13 @@ import { Overlay, Window } from "./OverlayComponent";
 import { useHue } from "@hooks/useHue";
 
 function getApplicableReleaseNotes(version) {
-	const totalReleaseNotes = `### Version 0.9.6 *[Beta Launch]*
+	const totalReleaseNotes = `### Version 0.9.7 *[Beta]*
+- Update UI
+- Add scene memory
+- Feedback form
+- Add splash page with onboarding
+	
+### Version 0.9.6 *[Alpha]*
 - Update layouts
 - Fix pricing on backend
 - Analytics
