@@ -1,30 +1,14 @@
-import { toast } from "react-toastify";
-
 import { Overlay, Window } from "./OverlayComponent";
 import { useHue } from "@hooks/useHue";
 
 function OnboardingComponent({
 	isVisible,
-	onClose,
-	streamManager,
 	name,
 	setName,
-	setInputMode,
+	playOnboarding
 }) {
 	const { hue, getRGBStr } = useHue();
 	const rgbStr = getRGBStr();
-
-	const play_onboarding = async (input_mode) => {
-		if (name === "") {
-			toast.error("Please enter a name");
-			return;
-		}
-
-		streamManager.playAudioFile(`hello_${input_mode}.wav`).catch(console.error);
-		onClose();
-	};
-
-	//play_onboarding("audio");
 
 	return (
 		<Overlay
@@ -68,16 +52,14 @@ function OnboardingComponent({
 							<div style={{ display: "flex", justifyContent: "space-around" }}>
 								<button
 									onClick={() => {
-										setInputMode("audio");
-
-										play_onboarding("audio");
+										playOnboarding("audio");
 									}}
 									style={{
 										padding: "10px",
 										borderRadius: "5px",
 										border: "none",
 										cursor: "pointer",
-										backgroundColor: `rgba(${rgbStr}, 0.8)`,
+										backgroundColor: `rgba(${rgbStr}, 1.0)`,
 										color: "white",
 										width: "48%", // Match the width of the input field
 										fontSize: "14px",
@@ -98,15 +80,14 @@ function OnboardingComponent({
 								</button>
 								<button
 									onClick={() => {
-										setInputMode("text");
-										play_onboarding("text");
+										playOnboarding("text");
 									}}
 									style={{
 										padding: "10px",
 										borderRadius: "5px",
 										border: "none",
 										cursor: "pointer",
-										backgroundColor: `rgba(${rgbStr}, 0.8)`,
+										backgroundColor: `rgba(${rgbStr}, 1.0)`,
 										color: "white",
 										width: "48%", // Match the width of the input field
 										fontSize: "14px",

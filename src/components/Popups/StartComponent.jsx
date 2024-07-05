@@ -54,6 +54,7 @@ function StartComponent({
 					alignItems: "center",
 					justifyContent: "center",
 					minHeight: "300px", // Ensure there's enough vertical space
+					fontFamily: "Menlo, monospace", // Monospace font for the window
 				}}
 			>
 				{userMood == null ? (

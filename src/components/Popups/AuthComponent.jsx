@@ -59,7 +59,7 @@ function AuthenticationComponent({ isVisible, onClose }) {
 
 	return (
         <Overlay isVisible={isVisible} style={{ backgroundColor: 'rgba(0, 0, 0, 0.85)' }}>
-            {loading&& (
+            {loading && (
 					<div
 						style={{
 							position: "absolute",

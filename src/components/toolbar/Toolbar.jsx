@@ -29,7 +29,9 @@ function Toolbar({
 	isMobile,
 	showChatLog,
 	setShowChatLog,
-	tokensBarRef
+	tokensBarRef,
+	showPrivacyPolicy,
+	showReleaseNotes
 }) {
 	const [showDialog, setShowDialog] = useState(false);
 	const [AIMenuOpen, setAIMenuOpen] = useState(false);
@@ -93,6 +95,8 @@ function Toolbar({
 					isMobile={isMobile}
 					showChatLog={showChatLog}
 					setShowChatLog={setShowChatLog}
+					showPrivacyPolicy={showPrivacyPolicy}
+					showReleaseNotes={showReleaseNotes}
 				/>
 
 				<AISettings

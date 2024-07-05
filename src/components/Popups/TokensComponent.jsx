@@ -7,9 +7,9 @@ import { toast } from "react-toastify";
 import { Overlay, Window } from "./OverlayComponent";
 import { TailSpin } from "react-loader-spinner";
 
-function TokensComponent({ isVisible, onClose, updateTokens, isMobile }) {
+function TokensComponent({ isVisible, onClose, updateTokens, isMobile, showLoginUI }) {
 	const [purchaseInProgress, setPurchaseInProgress] = useState(false);
-	const { getAccessToken } = useAuth();
+	const { getAccessToken, isAnonymous } = useAuth();
 	const { getRGBStr } = useHue();
 	const rgbStr = getRGBStr();
 	const [freeTokensClaimed, setFreeTokensClaimed] = useLocalStorage(
@@ -55,8 +55,10 @@ function TokensComponent({ isVisible, onClose, updateTokens, isMobile }) {
 			toast.error("Purchase already in progress");
 			return;
 		}
+		
 		const accessToken = await getAccessToken();
-		if (!accessToken) {
+		if (!accessToken || isAnonymous()) {
+			showLoginUI();
 			toast.error("Please log in to purchase");
 			return;
 		}

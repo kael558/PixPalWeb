@@ -4,7 +4,7 @@ import { useLocalStorage } from "@hooks/useLocalStorage";
 const HueContext = createContext();
 
 export const HueProvider = ({ children }) => {
-    const [hue, setHue] = useLocalStorage("hue", "#871F78"); 
+    const [hue, setHue] = useLocalStorage("hue", "#f49315"); 
    
     // #FFA345 - orange
 

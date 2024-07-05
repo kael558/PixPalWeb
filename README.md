@@ -86,6 +86,24 @@ Narrator mode that describes the scene.
 Narrator can also be used as companion. 
 
 
+First time user:
+-> See splash page 
+-> Click Talk with Ela and take through name.
+-> Audio will play saying hello im Ela you cna chat with me about anything.
+-> Chatting
+
+Returning user:
+-> See splash page
+-> Chatting
+
+
+1. User inputs their business idea
+2. 
+
+
+
+
+
 Settings:
 - AI Settings
 -- Gender

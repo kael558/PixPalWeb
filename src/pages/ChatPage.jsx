@@ -30,6 +30,8 @@ function ChatPage() {
 		})();
 	}, []);
 
+
+
 	return (
 		<div
 			style={{

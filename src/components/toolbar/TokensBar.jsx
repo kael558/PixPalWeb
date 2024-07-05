@@ -1,5 +1,4 @@
 import { useHue } from "@hooks/useHue";
-import styles from "./TokensBar.module.css";
 
 function Tokens({ showTokensPanel, tokens, tokensBarRef }) {
 	const { hue, getRGBStr } = useHue();

@@ -94,7 +94,7 @@ const Scene = ({ streamManager, visualQuality }) => {
 					<Stars />
 					<FBOParticles
 						streamManager={streamManager}
-						visualQuality={visualQuality}
+		
 					/>
 				</Suspense>
 			</Canvas>

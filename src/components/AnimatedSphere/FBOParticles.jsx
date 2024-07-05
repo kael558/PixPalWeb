@@ -9,6 +9,7 @@ uniform vec3 uCurrentColor;
 uniform vec3 uTargetColor;
 uniform float uTransitionFactor;
 
+
 void main() {
     vec3 color = mix(uCurrentColor, uTargetColor, uTransitionFactor);
   	gl_FragColor = vec4(color, 1.0);
@@ -19,10 +20,10 @@ const vertexShader = `
 uniform sampler2D uPositions;
 uniform float uTime;
 uniform float uTargetGrowthScale;
+uniform float yPosition;
 
 void main() {
   vec3 pos = texture2D(uPositions, position.xy).xyz;
-  pos.y += 0.7;
 
   vec4 modelPosition = modelMatrix * vec4(pos, 1.0);
   vec4 viewPosition = viewMatrix * modelPosition;
@@ -40,7 +41,6 @@ extend({ SimulationMaterial: SimulationMaterial });
 
 const FBOParticles = ({ streamManager }) => {
 	const size = 256;
-
 
 	const points = useRef();
 	const simulationMaterialRef = useRef();
@@ -87,9 +87,16 @@ const FBOParticles = ({ streamManager }) => {
 			uPositions: {
 				value: null,
 			},
-			uCurrentColor: { value: new THREE.Color(0.34, 0.53, 0.96) },
-			uTargetColor: { value: new THREE.Color(0.34, 0.53, 0.96) },
+			//uCurrentColor: { value: new THREE.Color(0.34, 0.53, 0.96) },
+			//uTargetColor: { value: new THREE.Color(0.34, 0.53, 0.96) },
+			//uCurrentColor: { value: new THREE.Color(0.20, 0.04, 0.19) },
+			//uTargetColor: { value: new THREE.Color(0.20, 0.04, 0.19) },
+			//uCurrentColor: { value: new THREE.Color(0.82, 0.61, 0.84) },
+			//uTargetColor: { value: new THREE.Color(0.82, 0.61, 0.84) },
+			uCurrentColor: { value: new THREE.Color(0.95, 0.57, 0.08) },
+			uTargetColor: { value: new THREE.Color(0.95, 0.57, 0.08) },
 			uTransitionFactor: { value: 0.0 },
+			yPosition: { value: 0.0 },
 		}),
 		[]
 	);
@@ -110,6 +117,7 @@ const FBOParticles = ({ streamManager }) => {
 				baseShaderMaterialRef.current.uniforms.uTargetColor.value
 			);
 			baseShaderMaterialRef.current.uniforms.uTargetColor.value.set(color);
+		
 			baseShaderMaterialRef.current.uniforms.uTransitionFactor.value = 0.0;
 		};
 
@@ -129,6 +137,9 @@ const FBOParticles = ({ streamManager }) => {
 				);
 				baseShaderMaterialRef.current.uniforms.uTransitionFactor.value = 0.0;
 				startInterval();
+			} else if (e.name === "change_yPosition") {
+
+				simulationMaterialRef.current.uniforms.yPosition.value = e.data.yPosition;
 			}
 		};
 

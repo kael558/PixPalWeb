@@ -1,7 +1,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useState, useEffect } from "react";
 import { useAuth } from "@hooks/useAuth";
-import { FaVolumeUp, FaInstagram, FaTiktok, FaDiscord } from "react-icons/fa";
+import { FaVolumeUp } from "react-icons/fa";
 import { useHue } from "@hooks/useHue";
 import { useLocalStorage } from "@hooks/useLocalStorage";
 
@@ -90,6 +90,8 @@ function Settings({
 	isMobile,
 	showChatLog,
 	setShowChatLog,
+	showPrivacyPolicy,
+	showReleaseNotes,
 }) {
 	const [volume, setVolume] = useLocalStorage(
 		"volume",
@@ -102,9 +104,6 @@ function Settings({
 
 	// convert rgb hue to int
 	const hueValue = rgbToHue(hue);
-
-	//const [uiHue, setUiHue] = useState("#FFC107"); // Default color
-
 	const { isAuthenticated, isAnonymous, auth } = useAuth();
 
 	const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -353,48 +352,7 @@ function Settings({
 						</li>
 					</ul>
 
-					<div
-						style={{
-							display: "flex",
-							justifyContent: "center", // Centers the icons horizontally
-							alignItems: "center", // Centers the icons vertically
-							height: "100%", // Use an appropriate height as needed
-							padding: "0", // Adds vertical padding for better spacing
-							width: "100%", // Use an appropriate width as needed
-						}}
-					>
-						<FaDiscord
-							style={{
-								color: hue,
-								fontSize: "1.5em", // Slightly larger icons for better visibility
-								cursor: "pointer", // Indicates that the icon is clickable
-							}}
-							onClick={() => {
-								window.open("https://discord.gg/8bB5VpAHHT");
-							}}
-						/>
-						<FaInstagram
-							style={{
-								color: hue,
-								fontSize: "1.5em",
-								cursor: "pointer",
-								margin: "0 20px", // Adds horizontal margin between icons
-							}}
-							onClick={() => {
-								window.open("https://www.instagram.com/elagonai/");
-							}}
-						/>
-						<FaTiktok
-							style={{
-								color: hue,
-								fontSize: "1.5em",
-								cursor: "pointer",
-							}}
-							onClick={() => {
-								window.open("https://www.tiktok.com/@elagonai");
-							}}
-						/>
-					</div>
+			
 
 					<span
 						style={{
@@ -465,6 +423,7 @@ function Settings({
 							</button>
 						)}
 					</span>
+				
 				</motion.div>
 			)}
 		</AnimatePresence>

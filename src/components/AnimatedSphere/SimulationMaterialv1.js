@@ -15,7 +15,7 @@ uniform float uTargetGrowthScale;
 uniform float uAdditionalGrowthScale;
 
 uniform float uPreviousTotalGrowthScale;  // Previous growth scale
-
+uniform float yPosition;
 
 varying vec2 vUv;
 
@@ -183,10 +183,12 @@ void main() {
 
   pos = modulateCurlNoise(pos, uTime) + 0.5;
   pos *= interpolatedGrowthScale;
+  pos.y += yPosition;
 
   curlPos = modulateCurlNoise(curlPos, uTime) + 0.5;
   curlPos += modulateCurlNoise(curlPos * uFrequency * 2.0, uTime) * 0.25;
   curlPos *= interpolatedGrowthScale;
+  curlPos.y += yPosition;
 
   gl_FragColor = vec4(mix(pos, curlPos, sin(uTime)), 1.0);
 }
@@ -237,7 +239,6 @@ const getRandomData = (width, height) => {
 class SimulationMaterial extends THREE.ShaderMaterial {
   constructor(size) {
 
-
     const positionsTexture = new THREE.DataTexture(
       getRandomData(size, size),
       size,
@@ -257,6 +258,7 @@ class SimulationMaterial extends THREE.ShaderMaterial {
         uModulationAmplitude: { value: 0.2 }, // Amplitude modulation factor
         uTargetGrowthScale: { value: 0.0 },
         uAdditionalGrowthScale: { value: 1.0 },
+        yPosition: { value: 0.0 },
     };
     
 

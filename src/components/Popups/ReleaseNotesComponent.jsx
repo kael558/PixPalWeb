@@ -5,77 +5,79 @@ import { useHue } from "@hooks/useHue";
 
 function getApplicableReleaseNotes(version) {
 	const totalReleaseNotes = `### Version 0.9.6 *[Beta Launch]*
-	- Update layouts
-	- Fix pricing on backend
-	- Analytics
+- Update layouts
+- Fix pricing on backend
+- Analytics
 
-	### Version 0.9.5 *[Alpha]*
-	- Add chat log
-	- Base scene memory and sound effects
-	- Added socials
-	- Show audio visualizer on text input
-	- Use microphone button instead of tap anywhere
-	
-	### Version 0.9.4 *[Alpha]*
-	- Add hue slider for UI color customization
-	- Add visual quality options to support lower grade devices
-	- Make voice more sensual with narration
-	- Change character name to Ela
-	- Onboarding now asks for input options (either voice or chat)
+### Version 0.9.5 *[Alpha]*
+- Add chat log
+- Base scene memory and sound effects
+- Added socials
+- Show audio visualizer on text input
+- Use microphone button instead of tap anywhere
 
-	### Version 0.9.3 *[Alpha]*
-	- Add audio visualizer
-	- Update UI
-	- Basic NSFW with selectable options
-	- Color changes based on reaction
-	- Faster responses for medium and high quality chat models
-	
-	### Version 0.9.2 *[Alpha]*
-	- Mute and Interrupt buttons
-	- Fix UI for mobile
-	- Anonymous sign-in at start
-	- Orb grows on start-up
-	- Start sequence asking for mood and role
-	- Improved conversation quality
-	- Added improved FX to visuals
-	
-	### Version 0.9.1 *[Alpha]*
-	- Change audio input to tap instead of hold
-	- Now interrupts companion on new message
-	- Fix Asterisk spam
-	- Fix mobile UI
-	- Add mute button
-	
-	### Version 0.9.0 *[Alpha]*
-    - Added support for chat messages
-    - Improved audio quality
-    - Conversation style chat
-    - Privacy policy update
-    
-    ### Version 0.8.0 *[Alpha]*
-    - Token purchase options
-    - Toast system
-    - Voice input
-    - Fix basic chat memory
-    - Fix re-rendering of scene
-    - Fix audio glitching
-    - Basic onboarding sequence
-    - Randomize orb movement
-    - Authentication system
-    
-    ### Version 0.0.0
-    - Voice streaming
-    - Basic UI
-    - Chat input
-    - Particle orb`;
+### Version 0.9.4 *[Alpha]*
+- Add hue slider for UI color customization
+- Add visual quality options to support lower grade devices
+- Make voice more sensual with narration
+- Change character name to Ela
+- Onboarding now asks for input options (either voice or chat)
 
+### Version 0.9.3 *[Alpha]*
+- Add audio visualizer
+- Update UI
+- Basic NSFW with selectable options
+- Color changes based on reaction
+- Faster responses for medium and high quality chat models
+
+### Version 0.9.2 *[Alpha]*
+- Mute and Interrupt buttons
+- Fix UI for mobile
+- Anonymous sign-in at start
+- Orb grows on start-up
+- Start sequence asking for mood and role
+- Improved conversation quality
+- Added improved FX to visuals
+
+### Version 0.9.1 *[Alpha]*
+- Change audio input to tap instead of hold
+- Now interrupts companion on new message
+- Fix Asterisk spam
+- Fix mobile UI
+- Add mute button
+
+### Version 0.9.0 *[Alpha]*
+- Added support for chat messages
+- Improved audio quality
+- Conversation style chat
+- Privacy policy update
+
+### Version 0.8.0 *[Alpha]*
+- Token purchase options
+- Toast system
+- Voice input
+- Fix basic chat memory
+- Fix re-rendering of scene
+- Fix audio glitching
+- Basic onboarding sequence
+- Randomize orb movement
+- Authentication system
+
+### Version 0.0.0
+- Voice streaming
+- Basic UI
+- Chat input
+- Particle orb`;
+
+	if (version === "0.0.0") return totalReleaseNotes;
 	const versions = totalReleaseNotes.split("### ").slice(1);
 	const formattedVersions = versions.map((version) => `### ${version}`);
 	const versionIndex = formattedVersions.findIndex((text) =>
 		text.includes(`Version ${version}`)
 	);
 
-	return formattedVersions.slice(0, versionIndex).join("\n\n");
+	const releaseNotes = formattedVersions.slice(0, versionIndex).join("\n\n");
+	if (releaseNotes === "") return totalReleaseNotes;
 }
 
 const ReleaseNotesComponent = ({ isVisible, onClose, version }) => {
@@ -98,30 +100,35 @@ const ReleaseNotesComponent = ({ isVisible, onClose, version }) => {
 
 					width: "30%",
 
-
 					maxHeight: "400px",
-					overflowY: "auto",
-
-					alignItems: "flex-start",
-					justifyContent: "flex-start",
-					scrollbarColor: `rgba(${rgbStr}, 0.4) #0002`,
 				}}
 			>
-				<h1
+				<div
 					style={{
-						color: `rgba((${rgbStr}, 0.8)`, // Glowing text color
-						textAlign: "center",
-						textShadow: `0 0 20px rgba((${rgbStr},0.7)`, // Text shadow for glow effect
-						marginBottom: "20px", // Space below the header
+						overflowY: "auto",
+
+						alignItems: "flex-start",
+						justifyContent: "flex-start",
+						scrollbarColor: `rgba(${rgbStr}, 0.4) #0002`,
 					}}
 				>
-					What's New Since you Last Visited?
-				</h1>
-				<ReactMarkdown
-					children={applicableReleaseNotes}
-					className={`${style.releaseNotes}`} // Assuming `style` is defined, add specific styles for markdown in your CSS
+					<h1
+						style={{
+							color: `rgba((${rgbStr}, 0.8)`, // Glowing text color
+							textAlign: "center",
+							textShadow: `0 0 20px rgba((${rgbStr},0.7)`, // Text shadow for glow effect
+							marginBottom: "20px", // Space below the header
+							fontSize: "24px", // Larger font size for emphasis
+						}}
+					>
+						What's New Since you Last Visited?
+					</h1>
+					<ReactMarkdown
+						children={applicableReleaseNotes}
+						className={`${style.releaseNotes}`} // Assuming `style` is defined, add specific styles for markdown in your CSS
+					/>
+				</div>
 
-				/>
 				<button
 					onClick={onClose}
 					style={{
@@ -131,10 +138,12 @@ const ReleaseNotesComponent = ({ isVisible, onClose, version }) => {
 						cursor: "pointer",
 						backgroundColor: `rgba(${rgbStr}, 0.8)`, // Glowing button background
 						color: "white", // Text color for visibility
-						marginTop: "10px",
+						marginTop: "auto",
 						width: "100%", // Full-width button for better alignment and impact
 						textShadow: "0 0 2px rgba(0,0,0,0.5)", // Subtle text shadow for depth
-						fontSize: "16px"
+						fontSize: "16px",
+						position: "sticky",
+						bottom: "0",
 					}}
 					onMouseEnter={(event) => {
 						event.target.style.backgroundColor = `rgba(${rgbStr}, 1)`; // Brighten the button on hover

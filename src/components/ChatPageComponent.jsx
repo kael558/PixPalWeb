@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import styles from "./toolbar/TokensBar.module.css";
+import styles from "./ChatPageComponent.module.css";
 
 import Toolbar from "../components/toolbar/Toolbar";
 import Chat from "../components/Chat/Chat";
@@ -11,14 +11,15 @@ import TokensComponent from "../components/Popups/TokensComponent";
 import OnboardingComponent from "../components/Popups/OnboardingComponent";
 import PrivacyPolicyComponent from "../components/Popups/PrivacyPolicyComponent";
 import ReleaseNotesComponent from "../components/Popups/ReleaseNotesComponent";
-import StartComponent from "../components/Popups/StartComponent";
+import FeedbackPopup from "../components/Popups/FeedbackPopup";
+
+import SplashHeader from "./Popups/SplashComponent";
 
 import { CURRENT_VERSION } from "../Constants";
 
 import { HueProvider } from "@hooks/useHue";
 import { useAuth } from "@hooks/useAuth";
 import { useLocalStorage } from "@hooks/useLocalStorage";
-
 
 async function get_tokens(accessToken) {
 	//console.log("Bearer " + accessToken);
@@ -58,9 +59,9 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 	const messagesRef = useRef(messages);
 	const tokensBarRef = useRef(null);
 
+
 	const [name, setName] = useLocalStorage("name", "");
 	const [version, setVersion] = useLocalStorage("appVersion", "0.0.0");
-	const [isPrivacyPolicyAccepted, setPrivacyPolicyAccepted] = useLocalStorage("privacyPolicyAccepted",false);
 
 	const [showChatLog, setShowChatLog] = useLocalStorage("showChatLog", true);
 	const [gender, setGender] = useLocalStorage("gender", "Female");
@@ -74,35 +75,30 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 		"Medium"
 	);
 	const [characterName, setCharacterName] = useState("Ela");
+	const [scene, setScene] = useLocalStorage("scene", "");
 
 	const [isLoginVisible, setLoginVisible] = useState(false);
 	const [isTokensPanelVisible, setTokensPanelVisible] = useState(false);
 	const [isOnboardingVisible, setOnboardingVisible] = useState(name === "");
-	const [isPrivacyPolicyVisible, setPrivacyPolicyVisible] = useState(
-		!isPrivacyPolicyAccepted
-	);
+	const [isPrivacyPolicyVisible, setPrivacyPolicyVisible] = useState(false);
 	const [isReleaseNotesVisible, setReleaseNotesVisible] = useState(
-		version !== CURRENT_VERSION
+		version !== CURRENT_VERSION && version !== "0.0.0"
 	);
-	const [isStartVisible, setStartVisible] = useState(true);
-	const [isStartFinished, setStartFinished] = useState(false);
-
 	const [inputMode, setInputMode] = useLocalStorage("inputMode", "text");
 	const [isRecording, setIsRecording] = useState(false);
 
 	const [isMobile, setIsMobile] = useState(window.innerWidth < 800);
 
+	const [showFeedbackPopup, setShowFeedbackPopup] = useState(false);
+
 	const [tokens, setTokens] = useState("Loading...");
 
-	const { getAccessToken, auth } = useAuth();
+	const [isSplashVisible, setSplashVisible] = useState(true);
+	const [borderAnimation, setBorderAnimation] = useState(false);
 
-	useEffect(() => {
-		if (gender === "Female") {
-			setCharacterName("Ela");
-		} else {
-			setCharacterName("Blake");
-		}
-	}, [gender]);
+	const audioRef = useRef(null);
+
+	const { getAccessToken, auth } = useAuth();
 
 	useEffect(() => {
 		const handleResize = () => {
@@ -111,6 +107,23 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 		window.addEventListener("resize", handleResize);
 		return () => window.removeEventListener("resize", handleResize);
 	}, []);
+
+	useEffect(() => {
+		if (streamManager && streamManager.onmessage){
+			streamManager.onmessage({
+				name: "change_yPosition",
+				data: { yPosition: isMobile && !isSplashVisible ? 0.7 : 0.0 },
+			});
+		}
+	}, [isMobile, streamManager.onmessage]);
+
+	useEffect(() => {
+		if (gender === "Female") {
+			setCharacterName("Ela");
+		} else {
+			setCharacterName("Blake");
+		}
+	}, [gender]);
 
 	const showComponent = (component) => {
 		switch (component) {
@@ -125,8 +138,37 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 		}
 	};
 
+	const playOnboarding = async (input_mode) => {
+		if (name === "") {
+			toast.error("Please enter a name");
+			return;
+		}
+
+		setOnboardingVisible(false);
+		setInputMode(input_mode);
+		streamManager.playAudioFile(`hello_${input_mode}.wav`).catch(console.error);
+
+		setTimeout(() => {
+			setBorderAnimation(true);
+		}, 6000);
+
+		setTimeout(() => {
+			setBorderAnimation(false);
+		
+		}, 9000);
+	};
+
+	const continueSplash = () => {
+		if (isMobile){
+			streamManager.onmessage({
+				name: "change_yPosition",
+				data: { yPosition: 0.7 },
+			});
+		}
+		setSplashVisible(false);
+	};
+
 	const acceptPrivacyPolicy = () => {
-		setPrivacyPolicyAccepted(true);
 		setPrivacyPolicyVisible(false);
 	};
 
@@ -139,7 +181,10 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 		getAccessToken()
 			.then((token) => {
 				get_tokens(token).then((data) => {
-					let tokens = data?.tokenCount?.toString()?.replace(/\B(?=(\d{3})+(?!\d))/g, ",") || 0;
+					let tokens =
+						data?.tokenCount
+							?.toString()
+							?.replace(/\B(?=(\d{3})+(?!\d))/g, ",") || 0;
 					setTokens(tokens);
 				});
 			})
@@ -147,7 +192,6 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 				console.error("Error getting ID token:", error);
 			});
 	};
-
 
 	const addMessage = (role, content) => {
 		if (content === "") return;
@@ -174,6 +218,12 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 
 			return [...prevMessages, { role, content }];
 		});
+
+		// if 8 messages have been sent, then set feedback popup to true
+		if (messages.length === 8) {
+			audioRef.current.play();
+			setShowFeedbackPopup(true);
+		}
 	};
 
 	useEffect(() => {
@@ -187,18 +237,22 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 	}, []);
 
 	const triggerOutOfTokens = () => {
-		toast.error("You have run out of tokens. Please purchase more to continue.");
+		toast.error(
+			"You have run out of tokens. Please purchase more to continue."
+		);
 
-		tokensBarRef.current.style.transform = 'scale(1.2)';
-		tokensBarRef.current.style.animation = '';
+		tokensBarRef.current.style.transform = "scale(1.2)";
+		tokensBarRef.current.style.animation = "";
 		tokensBarRef.current.className = styles.rainbowAnimation;
 
-        // Set timeout to revert styles back to normal after 3 seconds
-        setTimeout(() => {
-            tokensBarRef.current.style.transform = 'scale(1)';
-            tokensBarRef.current.style.animation = 'none';
-        }, 2000);
+		// Set timeout to revert styles back to normal after 3 seconds
+		setTimeout(() => {
+			tokensBarRef.current.style.transform = "scale(1)";
+			tokensBarRef.current.style.animation = "none";
+		}, 2000);
 	};
+
+
 
 	const onMessageSend = async (content) => {
 		const accessToken = await getAccessToken();
@@ -207,8 +261,10 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 			return;
 		}
 
-
-		if (parseInt(tokens) <= 0 && messages.filter((msg) => msg.role === "user").length >= 10){
+		if (
+			parseInt(tokens) <= 0 &&
+			messages.filter((msg) => msg.role === "user").length >= 10
+		) {
 			triggerOutOfTokens();
 			return;
 		}
@@ -222,7 +278,7 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 			value: content.length,
 			virtual_currency_name: "tokens",
 			item_name: "text",
-		 });
+		});
 
 		try {
 			const voice = gender === "Female" ? "female3" : "male1";
@@ -240,11 +296,17 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 					role: role,
 					languageModelQuality: chatQuality,
 					voice,
+					scene,
 				}),
 			};
 
 			const response = await streamManager.fetchData(url, options);
-			await streamManager.parseStream(response, addMessage, showComponent);
+			await streamManager.parseStream(
+				response,
+				addMessage,
+				showComponent,
+				setScene
+			);
 
 			updateTokens();
 		} catch (error) {
@@ -266,7 +328,10 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 			return;
 		}
 
-		if (parseInt(tokens) <= 0 && messages.filter((msg) => msg.role === "user").length >= 10){
+		if (
+			parseInt(tokens) <= 0 &&
+			messages.filter((msg) => msg.role === "user").length >= 10
+		) {
 			triggerOutOfTokens();
 			return;
 		}
@@ -276,9 +341,7 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 				value: duration,
 				virtual_currency_name: "tokens",
 				item_name: "audio",
-			 });
-
-
+			});
 
 			//const blob = new Blob(chunks, { type: 'audio/webm' });
 			const voice = gender === "Female" ? "female1" : "male1";
@@ -291,6 +354,7 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 			fd.append("voice", voice);
 			fd.append("duration", duration);
 			fd.append("file", blob, "speech.webm");
+			fd.append("scene", scene);
 
 			const url =
 				"https://jfjrhqljjddvfemmcwbtn6fvmi0wndeu.lambda-url.us-east-1.on.aws/";
@@ -307,6 +371,7 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 				response,
 				addMessage,
 				showComponent,
+				setScene,
 				true
 			);
 
@@ -318,7 +383,6 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 				return;
 			}
 
-
 			console.error(error);
 			const message = error.message || "There was an error with the server";
 			toast.error(message);
@@ -329,107 +393,107 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 		messagesRef.current = messages;
 	}, [messages]);
 
-	useEffect(() => {
-		if (!role) return;
-		if (!isStartFinished) return;
-
-		setStartVisible(false);
-	}, [role, isStartFinished]);
-
 	//console.log(isRecording);
-
 	return (
 		<HueProvider>
-			<div>
+			 <audio ref={audioRef} src="./feedback_notif.mp3" style={{ display: 'none' }} />
+			{!isSplashVisible ? (
 				<div
-			
 					style={{
-						position: "absolute", // Correct property for positioning
-						top: 0, // Position at the top of the parent
-						left: 0, // Position at the left of the parent
-						width: "100vw", // Full viewport width
-						height: "100vh", // Full viewport height (corrected from 100vw)
+						position: "absolute",
+						top: 0,
+						left: 0,
+						width: "100vw",
+						height: "100vh",
 						boxShadow: isRecording
 							? "inset 0 0 40px rgba(255,40,69,0.8)"
 							: "none",
-						userSelect: "none", // Prevent text selection
-				
+						userSelect: "none",
 					}}
-				/>
+				>
+					<Chat
+						name={name}
+						messages={messages}
+						characterName={characterName}
+						isMobile={isMobile}
+						onSend={onMessageSend}
+						onAudio={onAudioSend}
+						streamManager={streamManager}
+						inputMode={inputMode}
+						setIsRecording={setIsRecording}
+						isRecording={isRecording}
+						showChatLog={showChatLog}
+						borderAnimation={borderAnimation}
+					/>
+					<Toolbar
+						showLoginUI={() => setLoginVisible(true)}
+						showTokensPanel={() => setTokensPanelVisible(true)}
+						streamManager={streamManager}
+						setMessages={setMessages}
+						inputMode={inputMode}
+						setInputMode={setInputMode}
+						gender={gender}
+						setGender={setGender}
+						role={role}
+						setRole={setRole}
+						voiceQuality={voiceQuality}
+						setVoiceQuality={setVoiceQuality}
+						chatQuality={chatQuality}
+						setChatQuality={setChatQuality}
+						visualQuality={visualQuality}
+						setVisualQuality={setVisualQuality}
+						tokens={tokens}
+						isMobile={isMobile}
+						setShowChatLog={setShowChatLog}
+						showChatLog={showChatLog}
+						tokensBarRef={tokensBarRef}
+						showPrivacyPolicy={() => setPrivacyPolicyVisible(true)}
+						showReleaseNotes={() => setReleaseNotesVisible(true)}
+					/>
+					<AuthenticationComponent
+						isVisible={isLoginVisible}
+						onClose={() => setLoginVisible(false)}
+					/>
+					<TokensComponent
+						isVisible={isTokensPanelVisible}
+						onClose={() => setTokensPanelVisible(false)}
+						updateTokens={updateTokens}
+						isMobile={isMobile}
+						showLoginUI={() => setLoginVisible(true)}
+					/>
 
-				<Chat
-					name={name}
-					messages={messages}
-					characterName={characterName}
+					<OnboardingComponent
+						isVisible={isOnboardingVisible}
+						onClose={() => setOnboardingVisible(false)}
+						name={name}
+						setName={setName}
+						playOnboarding={playOnboarding}
+					/>
+
+					<FeedbackPopup
+						isVisible={showFeedbackPopup}
+						onClose={() => setShowFeedbackPopup(false)}
+					/>
+				</div>
+			) : (
+				<SplashHeader
+					chatWithEla={continueSplash}
+					showPrivacyPolicy={() => setPrivacyPolicyVisible(true)}
+					showReleaseNotes={() => setReleaseNotesVisible(true)}
 					isMobile={isMobile}
-					onSend={onMessageSend}
-					onAudio={onAudioSend}
-					streamManager={streamManager}
-					inputMode={inputMode}
-					setIsRecording={setIsRecording}
-					isRecording={isRecording}
-					showChatLog={showChatLog}
 				/>
+			)}
 
-				<Toolbar
-					showLoginUI={() => setLoginVisible(true)}
-					showTokensPanel={() => setTokensPanelVisible(true)}
-					streamManager={streamManager}
-					setMessages={setMessages}
-					inputMode={inputMode}
-					setInputMode={setInputMode}
-					gender={gender}
-					setGender={setGender}
-					role={role}
-					setRole={setRole}
-					voiceQuality={voiceQuality}
-					setVoiceQuality={setVoiceQuality}
-					chatQuality={chatQuality}
-					setChatQuality={setChatQuality}
-					visualQuality={visualQuality}
-					setVisualQuality={setVisualQuality}
-					tokens={tokens}
-					isMobile={isMobile}
-					setShowChatLog={setShowChatLog}
-					showChatLog={showChatLog}
-					tokensBarRef={tokensBarRef}
-				/>
+			<ReleaseNotesComponent
+				isVisible={isReleaseNotesVisible}
+				onClose={acceptNewVersion}
+				version={version}
+			/>
 
-				<AuthenticationComponent
-					isVisible={isLoginVisible}
-					onClose={() => setLoginVisible(false)}
-				/>
-				<TokensComponent
-					isVisible={isTokensPanelVisible}
-					onClose={() => setTokensPanelVisible(false)}
-					updateTokens={updateTokens}
-					isMobile={isMobile}
-				/>
-
-				<StartComponent
-					isVisible={isStartVisible}
-					setRole={setRole}
-					onMessageSend={onMessageSend}
-					setStartFinished={setStartFinished}
-				/>
-				<PrivacyPolicyComponent
-					isVisible={isPrivacyPolicyVisible}
-					onClose={acceptPrivacyPolicy}
-				/>
-				<ReleaseNotesComponent
-					isVisible={isReleaseNotesVisible}
-					onClose={acceptNewVersion}
-					version={version}
-				/>
-				<OnboardingComponent
-					isVisible={isOnboardingVisible}
-					onClose={() => setOnboardingVisible(false)}
-					streamManager={streamManager}
-					name={name}
-					setName={setName}
-					setInputMode={setInputMode}
-				/>
-			</div>
+			<PrivacyPolicyComponent
+				isVisible={isPrivacyPolicyVisible}
+				onClose={acceptPrivacyPolicy}
+			/>
 		</HueProvider>
 	);
 }

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, forwardRef } from "react";
 import VoiceInput from "../AudioRecorder";
 import AudioVisualizer from "../AudioVisualizer";
 
@@ -9,8 +9,12 @@ import { useHue } from "@hooks/useHue";
 import { FaMicrophoneAlt } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
 
+import styles from "../ChatPageComponent.module.css";
+
 const voiceInput = new VoiceInput();
 voiceInput.setup();
+
+
 
 function ChatInput({
 	onSend,
@@ -21,6 +25,7 @@ function ChatInput({
 	isRecording,
 	setIsRecording,
 	isMobile,
+	borderAnimation,
 }) {
 	const [message, setMessage] = useState("");
 	const timeoutRef = useRef(null);
@@ -69,7 +74,7 @@ function ChatInput({
 		<div
 			style={{
 				position: "fixed",
-				bottom: "0px",
+				bottom: isMobile ? "0" : "10px",
 				left: "50%",
 				transform: "translateX(-50%)",
 				width: "90%",
@@ -116,7 +121,10 @@ function ChatInput({
 						}}
 					>
 						<form
+					
 							onSubmit={handleSubmit}
+							className={borderAnimation ? styles.rainbowAnimation : ""}
+							
 							style={{
 								width: "100%", 
 								display: "flex",
@@ -124,6 +132,7 @@ function ChatInput({
 								justifyContent: "center",
 								borderRadius: "20px",
 								transition: "all 0.3s ease-in-out",
+								transform: borderAnimation ? "scale(1.1)" : "scale(1)",
 							}}
 						>
 							<textarea
@@ -143,6 +152,8 @@ function ChatInput({
 									color: "#FFF",
 									resize: "none",
 									zIndex: 1,
+									transition: "transform 0.5s ease",
+			
 								}}
 								onKeyDown={(e) => {
 									if (e.key === "Enter" && !e.shiftKey) {
@@ -163,6 +174,7 @@ function ChatInput({
 									transition: "transform 0.3s, box-shadow 0.3s",
 									border: `1px solid rgba(${rgbStr}, 0.3)`,
 									boxShadow: `0 0 5px rgba(${rgbStr}, 0.7)`,
+		
 								}}
 								onMouseOver={({ target }) => {
 									target.style.transform = "scale(1.1)";
@@ -198,6 +210,8 @@ function ChatInput({
 							onClick={() => {
 								setIsRecording((prev) => !prev);
 							}}
+				
+							className={borderAnimation ? styles.rainbowAnimation : ""}
 							style={{
 								fontSize: "40px",
 								color: isRecording ? "red" : hue,
@@ -207,7 +221,7 @@ function ChatInput({
 								padding: "10px",
 								border: isRecording ? "2px solid red" : `2px solid ${hue}`,
 								boxShadow: isRecording ? "0 0 15px rgba(255, 0, 0, 0.5)" : "none",
-								transform: isRecording ? "scale(1.1)" : "scale(1)",
+								transform: isRecording || borderAnimation ? "scale(1.1)" : "scale(1)",
 							}}
 							onMouseEnter={(e) => {
 								if (isRecording) return;

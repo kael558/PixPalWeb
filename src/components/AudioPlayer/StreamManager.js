@@ -100,7 +100,7 @@ class StreamManager {
         return -1; // Return -1 if no delimiter is found.
     }
 
-    async parseStream(response, addMessage, showComponent, getUserMessage = false) {
+    async parseStream(response, addMessage, showComponent, setScene, getUserMessage = false) {
         const reader = response.body.getReader();
         try {
             // Find delimiter as binary data
@@ -127,11 +127,11 @@ class StreamManager {
                     const overflow = combinedBuffer.slice(delimiterIndex + delimiter.length + 1);
 
                     if (index === -1) {
-                        await this.handleUserMessage(textDecoder.decode(data), addMessage);
+                        this.handleUserMessage(textDecoder.decode(data), addMessage);
                     } else if (index === 0) {
-                        await this.handleComponents(textDecoder.decode(data), showComponent);
+                        this.handleComponents(textDecoder.decode(data), showComponent);
                     } else if (index === 1) {
-                        await this.handleColorMessage(textDecoder.decode(data));
+                        this.handleColorMessage(textDecoder.decode(data));
                     } 
     
                     buffer = overflow;
@@ -142,7 +142,7 @@ class StreamManager {
             }
     
             //console.log("Remaining data for audio processing:", buffer);
-            await this.processAudioAndText(reader, buffer, addMessage);
+            await this.processAudioAndText(reader, buffer, addMessage, setScene);
         } catch (error) {
             console.error('Stream processing error:', error);
             this.audioWorkletNode.port.postMessage({ method: "finishRequest", args: { id: 0} });
@@ -151,29 +151,39 @@ class StreamManager {
         }
     }
 
-    async handleColorMessage(color) {
+    handleColorMessage(color) {
         console.log("Color message:", JSON.stringify(color));
         this.onmessage({ name: "change_color", data: { color } })
     }
     
 
-    async handleUserMessage(userMessage, addMessage) {
+    handleUserMessage(userMessage, addMessage) {
         console.log("User message:", JSON.stringify(userMessage));
         addMessage("user", userMessage);
     }
 
-    async handleComponents(componentList, showComponent) {
+    handleComponents(componentList, showComponent) {
         console.log("Component list:", JSON.stringify(componentList));
-        const components = JSON.parse(componentList);
-        components.forEach(component => showComponent(component));
+        try {
+            const components = JSON.parse(componentList);
+            components.forEach(component => showComponent(component));
+        } catch (error) {
+            console.error("Error parsing component list:", error);
+        }
     }
 
-    async handleAssistantMessage(assistantMessage, addMessage) {
+    handleAssistantMessage(assistantMessage, addMessage) {
         console.log("Assistant message:", JSON.stringify(assistantMessage));
         addMessage("assistant", assistantMessage);
     }
 
-    async processAudioAndText(reader, overflow, addMessage) {
+    handleSceneMessage(scene, setScene){
+        console.log("Scene", scene);
+        if (scene.length <= 7) return;
+        setScene(scene);
+    }
+
+    async processAudioAndText(reader, overflow, addMessage, setScene) {
         // resume audio context if it's in suspended state
         if (this.audioContext.state !== "running") {
             await this.audioContext.resume();
@@ -189,7 +199,10 @@ class StreamManager {
         while (true) {
             let { done, value } = await reader.read();
             if (done) {
-                if (overflow) this.sendAudioChunk(overflow, true);
+                console.log("Final chunk sent.");
+                //if (overflow) this.sendAudioChunk(overflow, true);
+                if (overflow) console.log("Overflow:", textDecoder.decode(overflow));
+
                 this.audioWorkletNode.port.postMessage({ method: "finishRequest", args: { id: 0} });
                 break;
             }
@@ -204,7 +217,14 @@ class StreamManager {
                 if (delimiterIndex !== -1) {
                     const data = value.slice(0, delimiterIndex);
                     overflow = value.slice(delimiterIndex + delimiter.length);
-                    await this.handleAssistantMessage(textDecoder.decode(data), addMessage);
+                    const text = textDecoder.decode(data);
+
+                    if (text.startsWith("scene:")){ // last message after audio
+                        this.handleSceneMessage(text.slice(6), setScene);
+                    } else {
+                        this.handleAssistantMessage(text, addMessage);
+                    }
+
                     isText = false;
                 }
             } else {
@@ -222,12 +242,11 @@ class StreamManager {
         }
     }
 
-    sendAudioChunk(float32Array, isFinal = false) {
+    sendAudioChunk(float32Array) {
         this.audioWorkletNode.port.postMessage({
             method: "buffer",
             args: { channelData: [float32Array], sampleRate: 48000 },
         });
-        if (isFinal) console.log("Final audio chunk sent.");
     }
 
     convertAndNormalizeToFloat32Array(value) {
@@ -254,8 +273,6 @@ class StreamManager {
         this.audioWorkletNode.port.postMessage({ method: 'clear' });
         console.log("Audio processing has been stopped and cleared.");
     }
-
-
 }
 
 export default StreamManager;
