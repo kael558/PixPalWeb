@@ -89,7 +89,7 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 
 	const [isMobile, setIsMobile] = useState(window.innerWidth < 800);
 
-	const [showFeedbackPopup, setShowFeedbackPopup] = useState(true);
+	const [showFeedbackPopup, setShowFeedbackPopup] = useState(false);
 
 	const [tokens, setTokens] = useState("Loading...");
 
