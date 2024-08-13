@@ -74,6 +74,7 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 		"chatQuality",
 		"Medium"
 	);
+	const [narration, setNarration] = useLocalStorage("narration", false);
 	const [characterName, setCharacterName] = useState("Ela");
 	const [scene, setScene] = useLocalStorage("scene", "");
 
@@ -293,6 +294,8 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 					username: name,
 					role: role,
 					languageModelQuality: chatQuality,
+					narration,
+					voiceQuality: voiceQuality,
 					voice,
 					scene,
 				}),
@@ -300,6 +303,7 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 
 			const response = await streamManager.fetchData(url, options);
 			await streamManager.parseStream(
+				voiceQuality,
 				response,
 				addMessage,
 				showComponent,
@@ -349,6 +353,8 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 			fd.append("username", name);
 			fd.append("role", role);
 			fd.append("languageModelQuality", chatQuality);
+			fd.append("voiceQuality", voiceQuality);
+			fd.append("narration", narration);
 			fd.append("voice", voice);
 			fd.append("duration", duration);
 			fd.append("file", blob, "speech.webm");
@@ -366,6 +372,7 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 
 			const response = await streamManager.fetchData(url, options);
 			await streamManager.parseStream(
+				voiceQuality,
 				response,
 				addMessage,
 				showComponent,
@@ -440,6 +447,8 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 						setChatQuality={setChatQuality}
 						visualQuality={visualQuality}
 						setVisualQuality={setVisualQuality}
+						narration={narration}
+						setNarration={setNarration}
 						tokens={tokens}
 						isMobile={isMobile}
 						setShowChatLog={setShowChatLog}

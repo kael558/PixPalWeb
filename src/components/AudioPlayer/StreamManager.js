@@ -3,9 +3,11 @@ const textEncoder = new TextEncoder("utf-8");
 
 class StreamManager {
     constructor() {
-        this.audioContext = new AudioContext({ sampleRate: 48000 });
+        this.audioContext = new AudioContext();
         this.abortController = new AbortController();
         this.gainNode = this.audioContext.createGain();
+
+        this.previous = null;
     }
 
     async setupAudioWorkletNode() {
@@ -47,13 +49,50 @@ class StreamManager {
         if (this.abortController.signal.aborted) {
             this.abortController = new AbortController();
         }
-
+    
+        if (this.previous) {
+            return new Response(this.previous.body, {
+                headers: this.previous.headers,
+                status: this.previous.status,
+                statusText: this.previous.statusText
+            });
+        }
+    
         options.signal = this.abortController.signal;
         const response = await fetch(url, options);
         if (!response.ok) {
             throw new Error(`Network response was not ok: ${response.statusText}`);
         }
+    
         return response;
+        /*const cachedStream = await this.cacheStream(response.body);
+    
+        this.previous = new Response(cachedStream, {
+            headers: response.headers,
+            status: response.status,
+            statusText: response.statusText
+        });
+    
+        return this.previous.clone();*/
+    }
+    async cacheStream(readableStream) {
+        const chunks = [];
+        const reader = readableStream.getReader();
+
+        while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            chunks.push(value);
+        }
+
+        return new ReadableStream({
+            start(controller) {
+                for (const chunk of chunks) {
+                    controller.enqueue(chunk);
+                }
+                controller.close();
+            }
+        });
     }
 
     async playAudioFile(audioFilePath) {
@@ -100,7 +139,7 @@ class StreamManager {
         return -1; // Return -1 if no delimiter is found.
     }
 
-    async parseStream(response, addMessage, showComponent, setScene, getUserMessage = false) {
+    async parseStream(voiceQuality, response, addMessage, showComponent, setScene, getUserMessage = false) {
         const reader = response.body.getReader();
         try {
             // Find delimiter as binary data
@@ -114,6 +153,8 @@ class StreamManager {
                     this.audioWorkletNode.port.postMessage({ method: "finishRequest", args: { id: 0} });
                     return; // Exit if stream has ended
                 }
+
+                console.log("Value:", textDecoder.decode(value));
 
                 // Combine the new value with any existing overflow
                 let combinedBuffer = new Uint8Array(buffer.length + value.length);
@@ -140,9 +181,15 @@ class StreamManager {
                     buffer = combinedBuffer;
                 }
             }
+
+                  //console.log("Remaining data for audio processing:", buffer);
+            if (voiceQuality === "High") {
+                await this.processLowQualityAudioAndText(reader, buffer, addMessage, setScene);
+            } else {
+                await this.processLowQualityAudioAndText(reader, buffer, addMessage, setScene);
+            }
     
-            //console.log("Remaining data for audio processing:", buffer);
-            await this.processAudioAndText(reader, buffer, addMessage, setScene);
+
         } catch (error) {
             console.error('Stream processing error:', error);
             this.audioWorkletNode.port.postMessage({ method: "finishRequest", args: { id: 0} });
@@ -183,7 +230,68 @@ class StreamManager {
         setScene(scene);
     }
 
-    async processAudioAndText(reader, overflow, addMessage, setScene) {
+    /*async processHighQualityAudioAndText(reader, overflow, addMessage, setScene) {
+        // resume audio context if it's in suspended state
+        if (this.audioContext.state !== "running") {
+            await this.audioContext.resume();
+        }
+    
+        const delimiter = textEncoder.encode('|||');
+    
+        let buffer = overflow ? overflow : new Uint8Array();
+    
+        while (true) {
+            let { done, value } = await reader.read();
+            if (done) {
+                console.log("Final chunk sent.");
+                if (buffer.length > 0) {
+                    console.log("Remaining buffer:", textDecoder.decode(buffer));
+                }
+                this.audioWorkletNode.port.postMessage({ method: "finishRequest", args: { id: 0 } });
+                break;
+            }
+    
+            buffer = new Uint8Array([...buffer, ...value]);
+    
+            const delimiterIndex = this.findBinaryDelimiter(buffer, delimiter);
+    
+            if (delimiterIndex !== -1) {
+                const chunk = buffer.slice(0, delimiterIndex);
+                buffer = buffer.slice(delimiterIndex + delimiter.length);
+    
+                const chunkStr = textDecoder.decode(chunk);
+                try {
+                    const chunkObj = JSON.parse(chunkStr);
+    
+                    if (chunkObj.audio_base64) {
+                        // Process audio
+                        const audioData = atob(chunkObj.audio_base64);
+                        const audioArray = new Uint8Array(audioData.length);
+                        for (let i = 0; i < audioData.length; i++) {
+                            audioArray[i] = audioData.charCodeAt(i);
+                        }
+                        const [float32Array, _] = this.convertAndNormalizeToFloat32Array(audioArray);
+                        if (float32Array) this.sendAudioChunk(float32Array);
+    
+                        // Process text and alignment
+                        if (chunkObj.alignment) {
+                            const text = chunkObj.alignment.characters.join('');
+                            this.handleAssistantMessage(text, addMessage);
+                            // You can also process the alignment data here if needed
+                        }
+                    } else if (chunkStr.startsWith("scene:")) {
+                        // Handle scene message
+                        this.handleSceneMessage(chunkStr.slice(6), setScene);
+                    }
+                } catch (error) {
+                    console.log(chunkStr);
+                    console.error("Error processing chunk:", error);
+                }
+            }
+        }
+    }*/
+
+    async processLowQualityAudioAndText(reader, overflow, addMessage, setScene) {
         // resume audio context if it's in suspended state
         if (this.audioContext.state !== "running") {
             await this.audioContext.resume();
@@ -191,7 +299,7 @@ class StreamManager {
 
         const delimiter = textEncoder.encode('|||');
 
-        //console.log("Audio processing has started. + Overflow:", overflow.length);
+        console.log("Audio processing has started. + Overflow:", overflow.length);
 
         let isText = true;
 
@@ -245,7 +353,7 @@ class StreamManager {
     sendAudioChunk(float32Array) {
         this.audioWorkletNode.port.postMessage({
             method: "buffer",
-            args: { channelData: [float32Array], sampleRate: 48000 },
+            args: { channelData: [float32Array], sampleRate: 44100 },
         });
     }
 

@@ -47,11 +47,17 @@ Today:
 [x] - Fix layout
 [x] - Fix pricing for transcription
 
+[ ] - Remove narration
+[ ] - Switch to ElevenLabs
+
 [ ] - Add scene memory
 [ ] - Add sound effects with elevenlabs
 [ ] - Generation of image in scene with girl
-[ ] - custom personalities
 
+
+
+[ ] - custom personalities
+[ ] - 
 [ ] - Make orb interactive, moving cursor displaces particles
 [ ] - Reput change talking speed & volume based on time.
 
