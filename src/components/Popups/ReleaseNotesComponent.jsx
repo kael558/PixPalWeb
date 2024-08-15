@@ -8,6 +8,7 @@ function getApplicableReleaseNotes(version) {
 - Added high quality voice models
 - Added narration toggle
 - Added character thinking animation
+- Fix for iPhone audio issues
 
 ### Version 0.9.7 *[Beta]*
 - Update UI
