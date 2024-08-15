@@ -213,12 +213,7 @@ function AISettings({
 									marginLeft: "10px",
 								}}
 							>
-								<input
-									type="checkbox"
-									checked={narration}
-									onChange={() => setNarration(!narration)}
-									style={{ marginRight: "5px" }}
-								/>
+								
 								{narration ? "Enabled" : "Disabled"}
 							</span>
 						</li>

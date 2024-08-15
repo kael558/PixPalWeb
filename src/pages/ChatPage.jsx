@@ -11,7 +11,6 @@ import { useAuth } from "@hooks/useAuth";
 import { useLocalStorage } from "@hooks/useLocalStorage";
 
 const streamManager = new StreamManager();
-streamManager.setupAudioWorkletNode();
 
 
 function ChatPage() {

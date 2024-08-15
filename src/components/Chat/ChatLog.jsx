@@ -2,30 +2,35 @@ import { useEffect, useRef } from "react";
 import { useHue } from "@hooks/useHue";
 import ReactMarkdown from "react-markdown";
 import { renderers } from "react-markdown";
-import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import { FaChevronLeft, FaChevronRight, FaSpinner } from "react-icons/fa";
 
-function ChatLog({ name, characterName, messages, isMobile, inputMode }) {
+function ChatLog({
+	name,
+	characterName,
+	messages,
+	isMobile,
+	inputMode,
+	isThinking,
+}) {
 	const { hue, getRGBStr } = useHue();
 	const rgbStr = getRGBStr();
 	const messageListRef = useRef(null);
 
 	const messageList = messages.map((message, i) => {
-		const formattedContent = message.content
+		const formattedContent = (message.content || "")
 			.replace(/[^ \n-~]/g, "")
 			.replace(/\(/g, "*")
 			.replace(/\)/g, "*")
 			.replace(/\n+/g, "\n");
 
-
-			const arrowStyle = {
-				color: `rgba(${rgbStr}, 0.7)`,
-				margin: "0px 10px",
-				fontWeight: "bold",
-				alignSelf: "center",
-				fontSize: "20px",
-				
-			};
-			const arrow = message.role === "assistant" ? ">" : "<";
+		const arrowStyle = {
+			color: `rgba(${rgbStr}, 0.7)`,
+			margin: "0px 10px",
+			fontWeight: "bold",
+			alignSelf: "center",
+			fontSize: "20px",
+		};
+		const arrow = message.role === "assistant" ? ">" : "<";
 
 		return (
 			<section
@@ -47,13 +52,11 @@ function ChatLog({ name, characterName, messages, isMobile, inputMode }) {
 
 						background: `rgba(0,0,0, 0.5)`,
 						border: `1px solid rgba(${rgbStr}, 0.1)`, // Light white border
-			
 					},
 					...(message.role === "assistant"
 						? {
 								alignSelf: "flex-start",
 								flexDirection: "row",
-		
 						  }
 						: {
 								flexDirection: "row-reverse",
@@ -63,12 +66,8 @@ function ChatLog({ name, characterName, messages, isMobile, inputMode }) {
 						  }),
 				}}
 			>
+				<span style={arrowStyle}>{arrow}</span>
 
-	
-
-					<span style={arrowStyle}>{arrow}</span>
-
-			
 				<ReactMarkdown
 					children={formattedContent}
 					components={{
@@ -76,7 +75,6 @@ function ChatLog({ name, characterName, messages, isMobile, inputMode }) {
 							<em
 								style={{
 									color: "#888888",
-		
 								}}
 							>
 								{children}
@@ -97,10 +95,16 @@ function ChatLog({ name, characterName, messages, isMobile, inputMode }) {
 	return (
 		<div
 			style={{
-				height: isMobile ? "50vh" : (inputMode === "audio" ? "80%": "80%" ),
+				height: isMobile ? "50vh" : inputMode === "audio" ? "80%" : "80%",
 				position: isMobile ? "fixed" : "absolute",
 				top: isMobile ? "" : "0px",
-				bottom: isMobile ? (inputMode == "audio" ? "100px" : "100px") : (inputMode === "audio" ? "175px": "175px" ),
+				bottom: isMobile
+					? inputMode == "audio"
+						? "100px"
+						: "100px"
+					: inputMode === "audio"
+					? "175px"
+					: "175px",
 				left: isMobile ? "50%" : "10px",
 				transform: isMobile ? "translateX(-50%)" : "none",
 				width: isMobile ? "95%" : "40%",
@@ -110,9 +114,7 @@ function ChatLog({ name, characterName, messages, isMobile, inputMode }) {
 				marginTop: isMobile ? "0" : "20px",
 				padding: "0px",
 
-		
 				color: "#FFF",
-      
 
 				transition: "all 0.3s ease-in-out",
 			}}
@@ -128,6 +130,42 @@ function ChatLog({ name, characterName, messages, isMobile, inputMode }) {
 			>
 				{messageList}
 			</div>
+			{isThinking && (
+				<section
+					style={{
+						marginBottom: "10px",
+						padding: "2px 10px",
+						borderRadius: "20px",
+						fontFamily: "Menlo, monospace",
+						fontSize: "12px",
+						letterSpacing: "0.05em",
+						maxWidth: "69%",
+						width: "fit-content",
+						display: "flex",
+						alignSelf: "flex-start",
+						flexDirection: "row",
+						background: `rgba(0,0,0, 0.5)`,
+						border: `1px solid rgba(${rgbStr}, 0.1)`,
+					}}
+				>
+					<span
+						style={{
+							color: `rgba(${rgbStr}, 0.7)`,
+							margin: "0px 10px",
+							fontWeight: "bold",
+							alignSelf: "center",
+							fontSize: "20px",
+						}}
+					>
+						{">"}
+					</span>
+					<div className="thinking-indicator">
+						<span></span>
+						<span></span>
+						<span></span>
+					</div>
+				</section>
+			)}
 		</div>
 	);
 }
