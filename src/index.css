@@ -12,3 +12,38 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.thinking-indicator {
+  display: flex;
+  align-items: center;
+  height: 20px;
+}
+
+.thinking-indicator span {
+  background-color: rgba(255, 255, 255, 0.7);
+  border-radius: 50%;
+  display: inline-block;
+  width: 5px;
+  height: 5px;
+  margin: 0 2px;
+  animation: pulse 1.5s infinite ease-in-out;
+}
+
+.thinking-indicator span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.thinking-indicator span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes pulse {
+  0%, 60%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  30% {
+    transform: scale(2.5);
+    opacity: 0.5;
+  }
+}

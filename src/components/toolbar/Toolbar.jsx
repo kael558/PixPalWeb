@@ -25,6 +25,8 @@ function Toolbar({
 	setChatQuality,
 	visualQuality,
 	setVisualQuality,
+	narration,
+	setNarration,
 	tokens,
 	isMobile,
 	showChatLog,
@@ -112,6 +114,8 @@ function Toolbar({
 					setVoiceQuality={setVoiceQuality}
 					chatQuality={chatQuality}
 					setChatQuality={setChatQuality}
+					narration={narration}
+					setNarration={setNarration}
 					isMobile={isMobile}
 				/>
 

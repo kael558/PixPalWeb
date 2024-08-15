@@ -82,7 +82,7 @@ function SplashHeader({
 					e.currentTarget.style.transform = "translate(-50%, -50%) scale(1)";
 				}}
 			>
-				Talk with Ela
+				Talk with Viona
 			</button>
 			<div
 				style={{

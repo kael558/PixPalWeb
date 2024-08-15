@@ -1,7 +1,7 @@
 import ChatInput from "./ChatInput";
 import ChatLog from "./ChatLog";
 
-function Chat({ name, messages, characterName, isMobile, onSend, onAudio, streamManager, inputMode, setIsRecording, isRecording, showChatLog, borderAnimation }) {
+function Chat({ name, messages, characterName, isMobile, onSend, onAudio, streamManager, inputMode, setIsRecording, isRecording, showChatLog, borderAnimation, isThinking }) {
     return (
         <div>
            
@@ -17,7 +17,7 @@ function Chat({ name, messages, characterName, isMobile, onSend, onAudio, stream
 
 				/>
 				 {showChatLog && 
-            <ChatLog name={name} characterName={characterName} messages={messages} isMobile={isMobile} inputMode={inputMode}/>
+            <ChatLog name={name} characterName={characterName} messages={messages} isMobile={isMobile} inputMode={inputMode} isThinking={isThinking} />
 }
         </div>
     );

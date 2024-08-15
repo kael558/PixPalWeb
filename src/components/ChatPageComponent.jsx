@@ -74,7 +74,8 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 		"chatQuality",
 		"Medium"
 	);
-	const [characterName, setCharacterName] = useState("Ela");
+	const [narration, setNarration] = useLocalStorage("narration", false);
+	const [characterName, setCharacterName] = useState("Viona");
 	const [scene, setScene] = useLocalStorage("scene", "");
 
 	const [isLoginVisible, setLoginVisible] = useState(false);
@@ -95,6 +96,7 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 
 	const [isSplashVisible, setSplashVisible] = useState(true);
 	const [borderAnimation, setBorderAnimation] = useState(false);
+	const [isThinking, setIsThinking] = useState(false);
 
 	const audioRef = useRef(null);
 
@@ -119,7 +121,7 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 
 	useEffect(() => {
 		if (gender === "Female") {
-			setCharacterName("Ela");
+			setCharacterName("Viona");
 		} else {
 			setCharacterName("Blake");
 		}
@@ -194,6 +196,11 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 
 	const addMessage = (role, content) => {
 		if (content === "") return;
+
+		if (role === "assistant") {
+			setIsThinking(false);
+		}
+
 
 		setMessages((prevMessages) => {
 			// Check if there are any previous messages and if the last message's role matches the current role
@@ -272,6 +279,8 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 		const updatedMessages = [...messagesRef.current, { role: "user", content }];
 		setMessages(updatedMessages);
 
+		setIsThinking(true);
+
 		window.gtag("event", "spend_virtual_currency", {
 			value: content.length,
 			virtual_currency_name: "tokens",
@@ -293,26 +302,34 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 					username: name,
 					role: role,
 					languageModelQuality: chatQuality,
+					narration,
+					voiceQuality: voiceQuality,
 					voice,
 					scene,
 				}),
 			};
 
 			const response = await streamManager.fetchData(url, options);
+
 			await streamManager.parseStream(
+				voiceQuality,
 				response,
 				addMessage,
 				showComponent,
-				setScene
+				setScene,
+
+		
 			);
 
 			updateTokens();
 		} catch (error) {
+			setIsThinking(false);
 			if (error.name === "AbortError") {
 				console.log("Request aborted");
 				return;
 			}
 
+		
 			console.error(error);
 			const message = error.message || "There was an error with the server";
 			toast.error(message);
@@ -334,6 +351,8 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 			return;
 		}
 
+		setIsThinking(true);
+
 		try {
 			window.gtag("event", "spend_virtual_currency", {
 				value: duration,
@@ -349,6 +368,8 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 			fd.append("username", name);
 			fd.append("role", role);
 			fd.append("languageModelQuality", chatQuality);
+			fd.append("voiceQuality", voiceQuality);
+			fd.append("narration", narration);
 			fd.append("voice", voice);
 			fd.append("duration", duration);
 			fd.append("file", blob, "speech.webm");
@@ -365,17 +386,21 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 			};
 
 			const response = await streamManager.fetchData(url, options);
+		
 			await streamManager.parseStream(
+				voiceQuality,
 				response,
 				addMessage,
 				showComponent,
 				setScene,
+
 				true
 			);
 
 			updateTokens();
 		} catch (error) {
 			// check for abort error
+			setIsThinking(false);
 			if (error.name === "AbortError") {
 				console.log("Request aborted");
 				return;
@@ -422,6 +447,7 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 						isRecording={isRecording}
 						showChatLog={showChatLog}
 						borderAnimation={borderAnimation}
+						isThinking={isThinking}
 					/>
 					<Toolbar
 						showLoginUI={() => setLoginVisible(true)}
@@ -440,6 +466,8 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 						setChatQuality={setChatQuality}
 						visualQuality={visualQuality}
 						setVisualQuality={setVisualQuality}
+						narration={narration}
+						setNarration={setNarration}
 						tokens={tokens}
 						isMobile={isMobile}
 						setShowChatLog={setShowChatLog}

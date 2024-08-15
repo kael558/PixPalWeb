@@ -34,7 +34,7 @@ Today:
 [x] - Add visual quality slider
 [x] - Change UI to fit phone screen
 
-[x] - Change name to Ela
+[x] - Change name to Viona
 [x] - Onboarding should have initial settings choice of audio or text input
 [x] - Do narration voice
 [x] - Add speaking styles to prompts so "<whisper> Hey there" *lina leans forward* "How are you doing today?"
@@ -47,11 +47,20 @@ Today:
 [x] - Fix layout
 [x] - Fix pricing for transcription
 
+[ ] - Remove narration!!!!??? 
+[ ] - Weird audio bug where its bumping 
+[x] - Switch to ElevenLabs
+
+
+
 [ ] - Add scene memory
 [ ] - Add sound effects with elevenlabs
 [ ] - Generation of image in scene with girl
-[ ] - custom personalities
 
+
+
+[ ] - custom personalities
+[ ] - 
 [ ] - Make orb interactive, moving cursor displaces particles
 [ ] - Reput change talking speed & volume based on time.
 
@@ -88,8 +97,8 @@ Narrator can also be used as companion.
 
 First time user:
 -> See splash page 
--> Click Talk with Ela and take through name.
--> Audio will play saying hello im Ela you cna chat with me about anything.
+-> Click Talk with Viona and take through name.
+-> Audio will play saying hello im Viona you cna chat with me about anything.
 -> Chatting
 
 Returning user:

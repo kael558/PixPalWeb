@@ -2,7 +2,9 @@ import { AnimatePresence, motion } from "framer-motion";
 import { toast } from "react-toastify";
 import { useHue } from "@hooks/useHue";
 
-function AISettings({ isVisible, setMessages, 
+function AISettings({
+	isVisible,
+	setMessages,
 	gender,
 	setGender,
 	role,
@@ -11,9 +13,10 @@ function AISettings({ isVisible, setMessages,
 	setVoiceQuality,
 	chatQuality,
 	setChatQuality,
-	isMobile
- }) {
-	
+	narration,
+	setNarration,
+	isMobile,
+}) {
 	const { hue, getRGBStr } = useHue();
 	const rgbStr = getRGBStr();
 
@@ -24,7 +27,6 @@ function AISettings({ isVisible, setMessages,
 		toast.success("Memory reset successfully!");
 	};
 
-
 	const optionStyle = (current, value) => ({
 		cursor: "pointer",
 		color: current === value ? hue : "white",
@@ -33,38 +35,38 @@ function AISettings({ isVisible, setMessages,
 		margin: "0 5px",
 		position: "relative",
 		fontSize: isMobile ? "14px" : "inherit",
-        letterSpacing: isMobile ? "0.05em" : "0.1em"
+		letterSpacing: isMobile ? "0.05em" : "0.1em",
 	});
 
 	const categoryStyle = {
 		color: hue,
 		fontWeight: "bold",
 		fontSize: isMobile ? "12px" : "inherit",
-        letterSpacing: isMobile ? "0.05em" : "0.1em"
+		letterSpacing: isMobile ? "0.05em" : "0.1em",
 	};
 
 	const liStyle = {
 		padding: "8px 0",
 		listStyleType: "none",
 		textIndent: "-2em",
-		letterSpacing: isMobile ? "0.05em" : "0.1em"
+		letterSpacing: isMobile ? "0.05em" : "0.1em",
 	};
 
 	const divStyle = {
-        position: "absolute",
-        right: "60px",
-        top: "60px",
-        background: "#000",
-        border: `1px solid ${hue}`,
-        borderRadius: "8px",
-        padding: "10px",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "flex-start",
-        width: "auto",
-        minWidth: isMobile ? "300px" : "400px",
-        boxShadow: `0 0 20px rgba(${rgbStr},0.7)`,
-    };
+		position: "absolute",
+		right: "60px",
+		top: "60px",
+		background: "#000",
+		border: `1px solid ${hue}`,
+		borderRadius: "8px",
+		padding: "10px",
+		display: "flex",
+		flexDirection: "column",
+		alignItems: "flex-start",
+		width: "auto",
+		minWidth: isMobile ? "300px" : "400px",
+		boxShadow: `0 0 20px rgba(${rgbStr},0.7)`,
+	};
 
 	return (
 		<AnimatePresence>
@@ -139,7 +141,7 @@ function AISettings({ isVisible, setMessages,
 							/
 							<span
 								style={optionStyle(voiceQuality, "High")}
-								onClick={() => toast.warning("High voice quality coming soon!")}
+								onClick={() => setVoiceQuality("High")}
 							>
 								High
 							</span>
@@ -157,49 +159,66 @@ function AISettings({ isVisible, setMessages,
 								style={optionStyle(chatQuality, "Medium")}
 								onClick={() => setChatQuality("Medium")}
 							>
-								Medium   <sup
-								style={{
-									position: 'relative',
-									top: '0.2em', // Shift up to align with text
-					
-									left: '1em', // Shift left to reduce gap
-									padding: '2px',
-									color: 'red',
-							
-									fontSize: '8px',
-									margin: '0',
-									transform: 'rotate(12deg)', // Rotate text to match 'NSFW' style,
-									display: 'inline-block',
-								}}
-								
-								
-								>NSFW</sup>
+								Medium{" "}
+								<sup
+									style={{
+										position: "relative",
+										top: "0.2em", // Shift up to align with text
+
+										left: "1em", // Shift left to reduce gap
+										padding: "2px",
+										color: "red",
+
+										fontSize: "8px",
+										margin: "0",
+										transform: "rotate(12deg)", // Rotate text to match 'NSFW' style,
+										display: "inline-block",
+									}}
+								>
+									NSFW
+								</sup>
 							</span>
 							/
 							<span
 								style={optionStyle(chatQuality, "High")}
 								onClick={() => setChatQuality("High")}
-								
 							>
-								High    <sup
+								High{" "}
+								<sup
+									style={{
+										position: "relative",
+										top: "0.3em", // Shift up to align with text
+										left: "1.5em", // Shift left to reduce gap
+										padding: "2px",
+										color: "red",
+
+										fontSize: "8px",
+										margin: "0",
+										transform: "rotate(19deg)", // Rotate text to match 'NSFW' style,
+										display: "inline-block",
+									}}
+								>
+									NSFW
+								</sup>
+							</span>
+						</li>
+						<li style={liStyle}>
+							<span style={categoryStyle}>Narration:</span>
+							<span
+								onClick={() => setNarration(!narration)}
 								style={{
-									position: 'relative',
-									top: '0.3em', // Shift up to align with text
-									left: '1.5em', // Shift left to reduce gap
-									padding: '2px',
-									color: 'red',
-							
-									fontSize: '8px',
-									margin: '0',
-									transform: 'rotate(19deg)', // Rotate text to match 'NSFW' style,
-									display: 'inline-block',
+									cursor: "pointer",
+									color: narration ? "limegreen" : "gray",
+									fontWeight: "bold",
+									marginLeft: "10px",
 								}}
+							>
 								
-								
-								>NSFW</sup>
+								{narration ? "Enabled" : "Disabled"}
 							</span>
 						</li>
 					</ul>
+
 					{/* put items in center of row */}
 					<span
 						style={{
@@ -223,7 +242,7 @@ function AISettings({ isVisible, setMessages,
 								fontWeight: "bold",
 								letterSpacing: "0.1em",
 								transition: "background-color 0.3s, color 0.3s",
-                                fontSize: "13px",
+								fontSize: "13px",
 							}}
 							onMouseEnter={(e) => {
 								e.target.style.backgroundColor = "white";
@@ -251,7 +270,7 @@ function AISettings({ isVisible, setMessages,
 								fontWeight: "bold",
 								letterSpacing: "0.1em",
 								transition: "background-color 0.3s, color 0.3s",
-                                fontSize: "13px",
+								fontSize: "13px",
 							}}
 							onMouseEnter={(e) => {
 								e.target.style.backgroundColor = "white";
