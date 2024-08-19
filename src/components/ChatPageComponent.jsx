@@ -312,14 +312,13 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 			const response = await streamManager.fetchData(url, options);
 
 			await streamManager.parseStream(
-				voiceQuality,
 				response,
 				addMessage,
 				showComponent,
 				setScene,
 				voiceQuality,
 
-		
+	
 			);
 
 			updateTokens();
@@ -389,7 +388,6 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 			const response = await streamManager.fetchData(url, options);
 		
 			await streamManager.parseStream(
-				voiceQuality,
 				response,
 				addMessage,
 				showComponent,
