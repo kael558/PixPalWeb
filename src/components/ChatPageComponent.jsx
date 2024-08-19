@@ -317,6 +317,7 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 				addMessage,
 				showComponent,
 				setScene,
+				voiceQuality,
 
 		
 			);
@@ -393,7 +394,7 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 				addMessage,
 				showComponent,
 				setScene,
-
+				voiceQuality,
 				true
 			);
 
