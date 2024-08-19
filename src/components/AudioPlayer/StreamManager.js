@@ -103,13 +103,20 @@ class StreamManager {
 	}
 
 	async parseStream(
-		voiceQuality,
 		response,
 		addMessage,
 		showComponent,
 		setScene,
+		voiceQuality,
 		getUserMessage = false
 	) {
+		if (voiceQuality === "High") {
+			this.sampleRate = 22050;
+		} else if (voiceQuality === "Low") {
+			this.sampleRate = 48000;
+		}
+
+
 		const reader = response.body.getReader();
 		try {
 			// Find delimiter as binary data
@@ -194,19 +201,18 @@ class StreamManager {
 		setScene(scene);
 	}
 
-
-
 	async processChunk({ done, value }, audioFormat) {
 		try {
 			if (done || !value) {
 				return;
 			}
-	
+
 			let decodeAudioData;
 			let overflow = null;
-	
+
 			if (audioFormat === "mp3") {
 				decodeAudioData = await this.decodeMp3(value);
+				if (!decodeAudioData) return null; // Not enough data to decode yet
 			} else {
 				[decodeAudioData, overflow] = this.decodePcm(value);
 			}
@@ -253,8 +259,9 @@ class StreamManager {
 					console.log("Final chunk sent.");
 				}
 
-				if (overflow) {
+				if (overflow && overflow.length > 0) {
 					value = new Uint8Array([...overflow, ...value]);
+					console.log("Overflow data added to new chunk:", overflow.length);
 					overflow = null;
 				}
 
@@ -277,25 +284,23 @@ class StreamManager {
 				} else {
 					if (audioFormat === null) {
 						audioFormat = this.detectAudioFormat(value);
+						console.log("Detected audio format:", audioFormat);
 					}
 
 					if (delimiterIndex !== -1) {
 						const data = value.slice(0, delimiterIndex);
 						overflow = value.slice(delimiterIndex + delimiter.length);
 
-						await this.processChunk( // Don't care about overflow here
+						await this.processChunk(
+							// Don't care about overflow here
 							{ done, data },
 							audioFormat
 						);
-						
 
 						isText = true;
 					} else {
 						// There may be overflow in PCM audio data
-						overflow = await this.processChunk(
-							{ done, value },
-							audioFormat
-						);
+						overflow = await this.processChunk({ done, value }, audioFormat);
 					}
 				}
 
@@ -333,6 +338,7 @@ class StreamManager {
 		return chunk[0] === 0xff && chunk[1] === 0xfb ? "mp3" : "pcm";
 	}
 
+
 	async decodeMp3(chunk) {
 		const arrayBuffer = chunk.buffer.slice(
 			chunk.byteOffset,
@@ -356,7 +362,7 @@ class StreamManager {
 		const audioBuffer = this.audioContext.createBuffer(
 			1,
 			int16Array.length,
-			48000
+			this.sampleRate
 		);
 
 		// Fill the audio buffer with normalized sample data
@@ -381,7 +387,9 @@ class StreamManager {
 
 	stop() {
 		this.abortController.abort();
-		this.sourceNodes.forEach((sourceNode) => sourceNode.stop(this.audioContext.currentTime + 0.1));
+		this.sourceNodes.forEach((sourceNode) =>
+			sourceNode.stop(this.audioContext.currentTime + 0.1)
+		);
 		this.sourceNodes = [];
 		console.log("Audio processing has been stopped and cleared.");
 	}

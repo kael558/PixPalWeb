@@ -15,7 +15,7 @@ function getApplicableReleaseNotes(version) {
 - Add scene memory
 - Feedback form
 - Add splash page with onboarding
-	
+
 ### Version 0.9.6 *[Alpha]*
 - Update layouts
 - Fix pricing on backend
@@ -82,14 +82,20 @@ function getApplicableReleaseNotes(version) {
 - Particle orb`;
 
 	if (version === "0.0.0") return totalReleaseNotes;
+
 	const versions = totalReleaseNotes.split("### ").slice(1);
-	const formattedVersions = versions.map((version) => `### ${version}`);
+	const formattedVersions = versions.map((v) => `### ${v.trim()}`);
+
 	const versionIndex = formattedVersions.findIndex((text) =>
 		text.includes(`Version ${version}`)
 	);
 
-	const releaseNotes = formattedVersions.slice(0, versionIndex).join("\n\n");
-	if (releaseNotes === "") return totalReleaseNotes;
+	if (versionIndex === -1) return "No release notes found for this version.";
+
+	const releaseNotes = formattedVersions
+		.slice(0, versionIndex)
+		.join("\n\n");
+	return releaseNotes;
 }
 
 const ReleaseNotesComponent = ({ isVisible, onClose, version }) => {
