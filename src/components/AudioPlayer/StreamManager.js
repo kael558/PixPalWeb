@@ -9,11 +9,13 @@ class StreamManager {
 		this.abortController = new AbortController();
 		this.gainNode = this.audioContext.createGain();
 
+		this.gainNode.connect(this.audioContext.destination);
+
 		this.sourceNodes = [];
 	}
 
 	connectNode(node) {
-		//this.gainNode.connect(node);
+		this.gainNode.connect(node);
 	}
 
 	setVolume(volume) {
@@ -96,7 +98,7 @@ class StreamManager {
 		// create sourceNode
 		const sourceNode = this.audioContext.createBufferSource();
 		sourceNode.buffer = audioBuffer;
-		sourceNode.connect(this.audioContext.destination);
+		sourceNode.connect(this.gainNode);
 		sourceNode.start();
 
 		this.sourceNodes.push(sourceNode);
@@ -143,7 +145,7 @@ class StreamManager {
 				if (delimiterIndex !== -1) {
 					const data = combinedBuffer.slice(0, delimiterIndex);
 					const overflow = combinedBuffer.slice(
-						delimiterIndex + delimiter.length + 1
+						delimiterIndex + delimiter.length 
 					);
 
 					if (index === -1) {
@@ -172,7 +174,7 @@ class StreamManager {
 
 	handleColorMessage(color) {
 		console.log("Color message:", JSON.stringify(color));
-		this.onmessage({ name: "change_color", data: { color } });
+		if (this.onmessage) this.onmessage({ name: "change_color", data: { color } });
 	}
 
 	handleUserMessage(userMessage, addMessage) {
@@ -224,7 +226,7 @@ class StreamManager {
 			// append to buffer queue
 			const sourceNode = this.audioContext.createBufferSource();
 			sourceNode.buffer = decodeAudioData;
-			sourceNode.connect(this.audioContext.destination);
+			sourceNode.connect(this.gainNode);
 			sourceNode.start(this.nextStartTime);
 
 			this.sourceNodes.push(sourceNode);
@@ -270,6 +272,11 @@ class StreamManager {
 				if (isText) {
 					if (delimiterIndex !== -1) {
 						const data = value.slice(0, delimiterIndex);
+
+						
+
+
+
 						overflow = value.slice(delimiterIndex + delimiter.length);
 						const text = new TextDecoder().decode(data);
 

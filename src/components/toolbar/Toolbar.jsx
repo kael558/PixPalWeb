@@ -19,6 +19,8 @@ function Toolbar({
 	setGender,
 	role,
 	setRole,
+	useVAD,
+	setUseVAD,
 	voiceQuality,
 	setVoiceQuality,
 	chatQuality,
@@ -93,6 +95,8 @@ function Toolbar({
 					streamManager={streamManager}
 					doLogout={doLogout}
 					setShowDialog={setShowDialog}
+					useVAD={useVAD}
+					setUseVAD={setUseVAD}
 					visualQuality={visualQuality}
 					setVisualQuality={setVisualQuality}
 					isMobile={isMobile}

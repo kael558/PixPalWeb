@@ -85,6 +85,8 @@ function Settings({
 	streamManager,
 	doLogout,
 	setShowDialog,
+	useVAD,
+	setUseVAD,
 	visualQuality,
 	setVisualQuality,
 	isMobile,
@@ -339,6 +341,24 @@ function Settings({
 								Audio
 							</span>
 						</li>
+						{inputMode === "audio" && (
+							<li style={liStyle}>
+								<span style={categoryStyle}>Voice Activity Detection:</span>
+								<span
+									style={optionStyle(useVAD, true)}
+									onClick={() => setUseVAD(true)}
+								>
+									ON
+								</span>
+								/
+								<span
+									style={optionStyle(useVAD, false)}
+									onClick={() => setUseVAD(false)}
+								>
+									OFF
+								</span>
+							</li>
+						)}
 						<li style={liStyle}>
 							<span style={categoryStyle}>Visual Quality:</span>
 							<span
@@ -362,7 +382,7 @@ function Settings({
 							display: "flex",
 							flexDirection: "row",
 							marginTop: "0px",
-				
+
 							justifyContent: "center",
 							width: "100%",
 						}}

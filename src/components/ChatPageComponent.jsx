@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import styles from "./ChatPageComponent.module.css";
+import { MicVAD } from '@ricky0123/vad';
 
 import Toolbar from "../components/toolbar/Toolbar";
 import Chat from "../components/Chat/Chat";
@@ -59,24 +60,42 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 	const messagesRef = useRef(messages);
 	const tokensBarRef = useRef(null);
 
-
 	const [name, setName] = useLocalStorage("name", "");
 	const [version, setVersion] = useLocalStorage("appVersion", "0.0.0");
 
+
+
 	const [showChatLog, setShowChatLog] = useLocalStorage("showChatLog", true);
+
+	
 	const [gender, setGender] = useLocalStorage("gender", "Female");
+	const genderRef = useRef(gender);
+
 	const [role, setRole] = useLocalStorage("role", "Friend");
+	const roleRef = useRef(role);
+
+
 	const [voiceQuality, setVoiceQuality] = useLocalStorage(
 		"voiceQuality",
 		"Low"
 	);
+	const voiceQualityRef = useRef(voiceQuality);
+
+
 	const [chatQuality, setChatQuality] = useLocalStorage(
 		"chatQuality",
 		"Medium"
 	);
+	const chatQualityRef = useRef(chatQuality);
+
 	const [narration, setNarration] = useLocalStorage("narration", false);
+	const narrationRef = useRef(narration);
+
 	const [characterName, setCharacterName] = useState("Viona");
+	const characterNameRef = useRef(characterName);
+
 	const [scene, setScene] = useLocalStorage("scene", "");
+	const sceneRef = useRef(scene);
 
 	const [isLoginVisible, setLoginVisible] = useState(false);
 	const [isTokensPanelVisible, setTokensPanelVisible] = useState(false);
@@ -85,6 +104,9 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 	const [isReleaseNotesVisible, setReleaseNotesVisible] = useState(
 		version !== CURRENT_VERSION && version !== "0.0.0"
 	);
+
+	const vadRef = useRef(null);
+	const [useVAD, setUseVAD] = useLocalStorage("useVAD", false);
 	const [inputMode, setInputMode] = useLocalStorage("inputMode", "text");
 	const [isRecording, setIsRecording] = useState(false);
 
@@ -111,7 +133,7 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 	}, []);
 
 	useEffect(() => {
-		if (streamManager && streamManager.onmessage){
+		if (streamManager && streamManager.onmessage) {
 			streamManager.onmessage({
 				name: "change_yPosition",
 				data: { yPosition: isMobile && !isSplashVisible ? 0.7 : 0.0 },
@@ -125,7 +147,32 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 		} else {
 			setCharacterName("Blake");
 		}
+		genderRef.current = gender;
 	}, [gender]);
+
+	useEffect(() => {
+		roleRef.current = role;
+	}, [role]);
+
+	useEffect(() => {
+		voiceQualityRef.current = voiceQuality;
+	}, [voiceQuality]);
+
+	useEffect(() => {
+		chatQualityRef.current = chatQuality;
+	}, [chatQuality]);
+
+	useEffect(() => {
+		narrationRef.current = narration;
+	}, [narration]);
+
+	useEffect(() => {
+		characterNameRef.current = characterName;
+	}, [characterName]);
+
+	useEffect(() => {
+		sceneRef.current = scene;
+	}, [scene]);
 
 	const showComponent = (component) => {
 		switch (component) {
@@ -160,7 +207,7 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 	};
 
 	const continueSplash = () => {
-		if (isMobile){
+		if (isMobile) {
 			streamManager.onmessage({
 				name: "change_yPosition",
 				data: { yPosition: 0.7 },
@@ -200,7 +247,6 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 		if (role === "assistant") {
 			setIsThinking(false);
 		}
-
 
 		setMessages((prevMessages) => {
 			// Check if there are any previous messages and if the last message's role matches the current role
@@ -242,6 +288,45 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 		});
 	}, []);
 
+
+	useEffect(() => {
+		const initializeVAD = async () => {
+			try {
+				if (typeof window.vadit === 'function') {
+					window.vadit(() => setIsRecording(true), () => setIsRecording(false)).then(vad => {
+						console.log('VAD initialized');
+						vadRef.current = vad;
+					  });
+					}
+		  
+			} catch (error) {
+			  console.error("Error initializing VAD:", error);
+			  // Handle the error (e.g., show an error message to the user)
+			}
+		  };
+
+		initializeVAD();
+
+		return () => {
+			if (vadRef.current) {
+				vadRef.current.pause();
+			}
+		};
+	}, []);
+
+	useEffect(() => {
+		console.log("useVAD:", useVAD);
+		if (vadRef.current) {
+			if (useVAD) {
+				console.log("Starting VAD");
+				vadRef.current.start();
+			} else {
+				console.log("Stopping VAD");
+				vadRef.current.pause();
+			}
+		}
+	}, [useVAD]);
+
 	const triggerOutOfTokens = () => {
 		toast.error(
 			"You have run out of tokens. Please purchase more to continue."
@@ -256,8 +341,6 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 			tokensBarRef.current.style.animation = "none";
 		}, 2000);
 	};
-
-
 
 	const onMessageSend = async (content) => {
 		const accessToken = await getAccessToken();
@@ -288,7 +371,7 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 		});
 
 		try {
-			const voice = gender === "Female" ? "female3" : "male1";
+			const voice = genderRef.current === "Female" ? "female3" : "male1";
 			const url =
 				"https://lg5m7pmkstz3ims7qkmh7u4xfi0gjebf.lambda-url.us-east-1.on.aws/";
 			const options = {
@@ -300,12 +383,12 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 				body: JSON.stringify({
 					messages: updatedMessages.slice(-5),
 					username: name,
-					role: role,
-					languageModelQuality: chatQuality,
-					narration,
-					voiceQuality: voiceQuality,
+					role: roleRef.current,
+					languageModelQuality: chatQualityRef.current,
+					narration: narrationRef.current,
+					voiceQuality: voiceQualityRef.current,
 					voice,
-					scene,
+					scene: sceneRef.current,
 				}),
 			};
 
@@ -316,9 +399,7 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 				addMessage,
 				showComponent,
 				setScene,
-				voiceQuality,
-
-	
+				voiceQuality
 			);
 
 			updateTokens();
@@ -329,7 +410,6 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 				return;
 			}
 
-		
 			console.error(error);
 			const message = error.message || "There was an error with the server";
 			toast.error(message);
@@ -361,19 +441,19 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 			});
 
 			//const blob = new Blob(chunks, { type: 'audio/webm' });
-			const voice = gender === "Female" ? "female1" : "male1";
+			const voice = genderRef.current === "Female" ? "female1" : "male1";
 
 			const fd = new FormData();
 			fd.append("messages", JSON.stringify(messagesRef.current.slice(-5)));
 			fd.append("username", name);
-			fd.append("role", role);
-			fd.append("languageModelQuality", chatQuality);
-			fd.append("voiceQuality", voiceQuality);
-			fd.append("narration", narration);
+			fd.append("role", roleRef.current);
+			fd.append("languageModelQuality", chatQualityRef.current);
+			fd.append("voiceQuality", voiceQualityRef.current);
+			fd.append("narration", narrationRef.current);
 			fd.append("voice", voice);
 			fd.append("duration", duration);
 			fd.append("file", blob, "speech.webm");
-			fd.append("scene", scene);
+			fd.append("scene", sceneRef.current);
 
 			const url =
 				"https://jfjrhqljjddvfemmcwbtn6fvmi0wndeu.lambda-url.us-east-1.on.aws/";
@@ -386,7 +466,7 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 			};
 
 			const response = await streamManager.fetchData(url, options);
-		
+
 			await streamManager.parseStream(
 				response,
 				addMessage,
@@ -418,7 +498,11 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 	//console.log(isRecording);
 	return (
 		<HueProvider>
-			 <audio ref={audioRef} src="./feedback_notif.mp3" style={{ display: 'none' }} />
+			<audio
+				ref={audioRef}
+				src="./feedback_notif.mp3"
+				style={{ display: "none" }}
+			/>
 			{!isSplashVisible ? (
 				<div
 					style={{
@@ -457,6 +541,8 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 						setInputMode={setInputMode}
 						gender={gender}
 						setGender={setGender}
+						useVAD={useVAD}
+						setUseVAD={setUseVAD}
 						role={role}
 						setRole={setRole}
 						voiceQuality={voiceQuality}

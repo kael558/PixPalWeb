@@ -95,7 +95,7 @@ function AISettings({
 							<span style={categoryStyle}>Gender:</span>
 							<span
 								style={optionStyle(gender, "Male")}
-								onClick={() => toast.warning("Male voice coming soon!")}
+								onClick={() => setGender("Male")}
 							>
 								Male
 							</span>
