@@ -48,12 +48,11 @@ Today:
 [x] - Fix pricing for transcription
 
 [ ] - Remove narration!!!!??? 
-[ ] - Weird audio bug where its bumping 
 [x] - Switch to ElevenLabs
 
 
 
-[ ] - Add scene memory
+[x] - Add scene memory
 [ ] - Add sound effects with elevenlabs
 [ ] - Generation of image in scene with girl
 

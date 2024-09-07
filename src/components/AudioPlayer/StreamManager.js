@@ -108,7 +108,7 @@ class StreamManager {
 		response,
 		addMessage,
 		showComponent,
-		setScene,
+		setMeta,
 		voiceQuality,
 		getUserMessage = false
 	) {
@@ -164,7 +164,7 @@ class StreamManager {
 			}
 
 			//console.log("Remaining data for audio processing:", buffer);
-			await this.processAudioAndText(reader, buffer, addMessage, setScene);
+			await this.processAudioAndText(reader, buffer, addMessage, setMeta);
 		} catch (error) {
 			console.error("Stream processing error:", error);
 		} finally {
@@ -197,10 +197,24 @@ class StreamManager {
 		addMessage("assistant", assistantMessage);
 	}
 
-	handleSceneMessage(scene, setScene) {
-		console.log("Scene", scene);
-		if (scene.length <= 7) return;
-		setScene(scene);
+	handleMetaMessage(meta, setMeta) {
+		try {
+			console.log("Meta", meta);
+			if (meta.length <= 7) return;
+
+			const regex = /\{[^}]+\}/;
+			const match = meta.match(regex);
+
+			if (match) {
+				const jsonString = match[0];
+				const jsonObject = JSON.parse(jsonString);
+				setMeta(jsonObject);
+			} else {
+				console.log("No JSON object found in the input string");
+			}
+		} catch (error) {
+			console.error("Error parsing meta message:", error);
+		}
 	}
 
 	async processChunk({ done, value }, audioFormat) {
@@ -239,7 +253,7 @@ class StreamManager {
 		}
 	}
 
-	async processAudioAndText(reader, overflow, addMessage, setScene) {
+	async processAudioAndText(reader, overflow, addMessage, setMeta) {
 		if (this.audioContext.state !== "running") {
 			await this.audioContext.resume();
 		}
@@ -280,8 +294,8 @@ class StreamManager {
 						overflow = value.slice(delimiterIndex + delimiter.length);
 						const text = new TextDecoder().decode(data);
 
-						if (text.startsWith("scene:")) {
-							this.handleSceneMessage(text.slice(6), setScene);
+						if (text.startsWith("meta:")) {
+							this.handleMetaMessage(text.slice(5), setMeta);
 						} else {
 							this.handleAssistantMessage(text, addMessage);
 						}

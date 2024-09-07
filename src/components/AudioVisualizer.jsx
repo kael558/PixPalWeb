@@ -117,8 +117,14 @@ function AudioVisualizer({ mediaStream, streamManager, isRecording, inputMode })
             //console.log(JSON.stringify(dataArray));
 
      
-            ctx.fillStyle = isRecording ? 'rgba(0, 0, 0, 1)' : 'rgba(0, 0, 0, 0.2)';
+            ctx.globalCompositeOperation = 'destination-out';
+            ctx.globalAlpha = 0.1; // Adjust this value to control the fade speed
+            ctx.fillStyle = 'rgba(0, 0, 0, 1)';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Reset for drawing new bars
+            ctx.globalCompositeOperation = 'source-over';
+            ctx.globalAlpha = 1;
 
             const barWidth = (canvas.width / dataArray.length) * 2.5;
             let barHeight;
@@ -126,13 +132,7 @@ function AudioVisualizer({ mediaStream, streamManager, isRecording, inputMode })
 
             for (let i = 0; i < dataArray.length; i++) {
                 barHeight = dataArray[i];
-
-                //console.log(barHeight);
-
-                // use rgbStr in fillStyle
-                //ctx.fillStyle = `rgb(${rgbStr
-
-                ctx.fillStyle = isRecording ? `rgb(${barHeight + 100}, 50, 50)` : `rgb(50, 50, ${(barHeight + 100)})`;
+                ctx.fillStyle = isRecording ? `rgb(${barHeight + 100}, 50, 50, 0.8)` : `rgb(50, 50, ${(barHeight + 100)}, 0.8)`;
                 ctx.fillRect(x, canvas.height - barHeight / 2, barWidth, barHeight / 2);
 
                 x += barWidth + 1;

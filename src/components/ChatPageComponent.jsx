@@ -2,7 +2,6 @@ import { useState, useEffect, useRef } from "react";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import styles from "./ChatPageComponent.module.css";
-import { MicVAD } from '@ricky0123/vad';
 
 import Toolbar from "../components/toolbar/Toolbar";
 import Chat from "../components/Chat/Chat";
@@ -94,8 +93,8 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 	const [characterName, setCharacterName] = useState("Viona");
 	const characterNameRef = useRef(characterName);
 
-	const [scene, setScene] = useLocalStorage("scene", "");
-	const sceneRef = useRef(scene);
+	const [meta, setMeta] = useLocalStorage("meta", "");
+	const metaRef = useRef(meta);
 
 	const [isLoginVisible, setLoginVisible] = useState(false);
 	const [isTokensPanelVisible, setTokensPanelVisible] = useState(false);
@@ -171,8 +170,8 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 	}, [characterName]);
 
 	useEffect(() => {
-		sceneRef.current = scene;
-	}, [scene]);
+		metaRef.current = meta;
+	}, [meta]);
 
 	const showComponent = (component) => {
 		switch (component) {
@@ -388,7 +387,9 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 					narration: narrationRef.current,
 					voiceQuality: voiceQualityRef.current,
 					voice,
-					scene: sceneRef.current,
+					scene: metaRef?.current?.scene || "none",
+					memory: metaRef?.current?.memory || "none",
+
 				}),
 			};
 
@@ -398,8 +399,8 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 				response,
 				addMessage,
 				showComponent,
-				setScene,
-				voiceQuality
+				setMeta,
+				voiceQualityRef.current
 			);
 
 			updateTokens();
@@ -453,7 +454,8 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 			fd.append("voice", voice);
 			fd.append("duration", duration);
 			fd.append("file", blob, "speech.webm");
-			fd.append("scene", sceneRef.current);
+			fd.append("scene", metaRef?.current?.scene || "none");
+			fd.append("memory", metaRef?.current?.memory || "none");
 
 			const url =
 				"https://jfjrhqljjddvfemmcwbtn6fvmi0wndeu.lambda-url.us-east-1.on.aws/";
@@ -471,8 +473,8 @@ function ChatPageComponent({ streamManager, visualQuality, setVisualQuality }) {
 				response,
 				addMessage,
 				showComponent,
-				setScene,
-				voiceQuality,
+				setMeta,
+				voiceQualityRef.current,
 				true
 			);
 
