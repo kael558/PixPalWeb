@@ -1,0 +1,20 @@
+{
+  "files": {
+    "main.css": "/AudioSex/static/css/main.6293eeec.css",
+    "main.js": "/AudioSex/static/js/main.a15336d8.js",
+    "static/js/0.4801094d.chunk.js": "/AudioSex/static/js/0.4801094d.chunk.js",
+    "ort-wasm-simd-threaded.jsep.wasm": "/AudioSex/ort-wasm-simd-threaded.jsep.wasm",
+    "ort-training-wasm-simd-threaded.wasm": "/AudioSex/ort-training-wasm-simd-threaded.wasm",
+    "ort-wasm-simd-threaded.wasm": "/AudioSex/ort-wasm-simd-threaded.wasm",
+    "onnx": "/AudioSex/568bf886c02ac597add4.onnx",
+    "vad.worklet.js": "/AudioSex/vad.worklet.js",
+    "index.html": "/AudioSex/index.html",
+    "main.6293eeec.css.map": "/AudioSex/static/css/main.6293eeec.css.map",
+    "main.a15336d8.js.map": "/AudioSex/static/js/main.a15336d8.js.map",
+    "0.4801094d.chunk.js.map": "/AudioSex/static/js/0.4801094d.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.6293eeec.css",
+    "static/js/main.a15336d8.js"
+  ]
+}
