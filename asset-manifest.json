@@ -1,20 +1,20 @@
 {
   "files": {
-    "main.css": "/AudioSex/static/css/main.6293eeec.css",
-    "main.js": "/AudioSex/static/js/main.a15336d8.js",
-    "static/js/0.4801094d.chunk.js": "/AudioSex/static/js/0.4801094d.chunk.js",
-    "ort-wasm-simd-threaded.jsep.wasm": "/AudioSex/ort-wasm-simd-threaded.jsep.wasm",
-    "ort-training-wasm-simd-threaded.wasm": "/AudioSex/ort-training-wasm-simd-threaded.wasm",
-    "ort-wasm-simd-threaded.wasm": "/AudioSex/ort-wasm-simd-threaded.wasm",
-    "onnx": "/AudioSex/568bf886c02ac597add4.onnx",
-    "vad.worklet.js": "/AudioSex/vad.worklet.js",
-    "index.html": "/AudioSex/index.html",
-    "main.6293eeec.css.map": "/AudioSex/static/css/main.6293eeec.css.map",
-    "main.a15336d8.js.map": "/AudioSex/static/js/main.a15336d8.js.map",
-    "0.4801094d.chunk.js.map": "/AudioSex/static/js/0.4801094d.chunk.js.map"
+    "main.css": "/PixPalWeb/static/css/main.6293eeec.css",
+    "main.js": "/PixPalWeb/static/js/main.3faaef6e.js",
+    "static/js/0.4801094d.chunk.js": "/PixPalWeb/static/js/0.4801094d.chunk.js",
+    "ort-wasm-simd-threaded.jsep.wasm": "/PixPalWeb/ort-wasm-simd-threaded.jsep.wasm",
+    "ort-training-wasm-simd-threaded.wasm": "/PixPalWeb/ort-training-wasm-simd-threaded.wasm",
+    "ort-wasm-simd-threaded.wasm": "/PixPalWeb/ort-wasm-simd-threaded.wasm",
+    "onnx": "/PixPalWeb/568bf886c02ac597add4.onnx",
+    "vad.worklet.js": "/PixPalWeb/vad.worklet.js",
+    "index.html": "/PixPalWeb/index.html",
+    "main.6293eeec.css.map": "/PixPalWeb/static/css/main.6293eeec.css.map",
+    "main.3faaef6e.js.map": "/PixPalWeb/static/js/main.3faaef6e.js.map",
+    "0.4801094d.chunk.js.map": "/PixPalWeb/static/js/0.4801094d.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.6293eeec.css",
-    "static/js/main.a15336d8.js"
+    "static/js/main.3faaef6e.js"
   ]
 }
